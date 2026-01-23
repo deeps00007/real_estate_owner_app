@@ -16,14 +16,37 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     Emitter<PropertyState> emit,
   ) async {
     emit(state.copyWith(status: PropertyStatus.loading));
-    
+
     await emit.forEach<List<Property>>(
       firebaseService.getPropertiesStream(firebaseService.currentUserId),
-      onData: (properties) => state.copyWith(
-        status: PropertyStatus.success,
-        properties: properties,
-      ),
-      onError: (_, __) => state.copyWith(status: PropertyStatus.error),
+      onData: (properties) {
+        print('Loaded ${properties.length} properties');
+        if (properties.isEmpty) {
+          return state.copyWith(
+            status: PropertyStatus.success,
+            properties: [
+              const Property(
+                id: 'dummy',
+                title: 'Test Property',
+                description: 'Test Description',
+                price: 100000,
+                lat: 28.6692,
+                lng: 77.4549,
+                imageUrl: 'https://placeholder.com/150',
+                type: 'House',
+              ),
+            ],
+          );
+        }
+        return state.copyWith(
+          status: PropertyStatus.success,
+          properties: properties,
+        );
+      },
+      onError: (error, stack) {
+        print('Error loading properties: $error');
+        return state.copyWith(status: PropertyStatus.error);
+      },
     );
   }
 }

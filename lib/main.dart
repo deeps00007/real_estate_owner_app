@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';  // For service locator
 import 'core/firebase_service.dart';
 import 'features/map/map_screen.dart';
+import 'firebase_options.dart'; // Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // Add this line
+  );
   runApp(const RealEstateApp());
 }
 

@@ -13,9 +13,9 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PropertyBloc(
-        firebaseService: context.read<FirebaseService>(),
-      )..add(LoadProperties()),
+      create: (context) =>
+          PropertyBloc(firebaseService: context.read<FirebaseService>())
+            ..add(LoadProperties()),
       child: const _MapView(),
     );
   }
@@ -38,26 +38,25 @@ class _MapView extends StatelessWidget {
       ),
       body: BlocBuilder<PropertyBloc, PropertyState>(
         builder: (context, state) {
-          if (state.status == PropertyStatus.loading) {
+          if (state.status == PropertyStatus.initial ||
+              state.status == PropertyStatus.loading) {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.status == PropertyStatus.error) {
             return const Center(child: Text('Error loading properties'));
+          }
+          if (state.properties.isEmpty) {
+            return const Center(child: Text('No properties found. Add one!'));
           }
           return FlutterMapSmart.simple(
             items: state.properties,
             latitude: (property) => property.lat,
             longitude: (property) => property.lng,
             markerImage: (property) => property.imageUrl,
-            showUserLocation: true,
-            enableNearby: true,
-            nearbyRadiusKm: 5.0,
+            showUserLocation: false,
+            enableNearby: false,
             markerSize: 70,
             onTap: (property) => _showDetails(context, property as Property),
-            onLocationPermissionDenied: () =>
-                ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location needed for nearby')),
-            ),
           );
         },
       ),
@@ -73,7 +72,10 @@ class _MapView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(property.title, style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              property.title,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
             Text('₹${property.price.toStringAsFixed(0)}'),
             Text(property.description),
             Text('Type: ${property.type}'),
