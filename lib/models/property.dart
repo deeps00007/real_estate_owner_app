@@ -30,40 +30,51 @@ class Property extends Equatable {
     double? lng,
     String? imageUrl,
     String? type,
-  }) =>
-      Property(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        description: description ?? this.description,
-        price: price ?? this.price,
-        lat: lat ?? this.lat,
-        lng: lng ?? this.lng,
-        imageUrl: imageUrl ?? this.imageUrl,
-        type: type ?? this.type,
-      );
+  }) => Property(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    price: price ?? this.price,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    imageUrl: imageUrl ?? this.imageUrl,
+    type: type ?? this.type,
+  );
 
   @override
   List<Object?> get props => [id, title, price, lat, lng];
 
+  String get formattedPrice {
+    if (price >= 10000000) {
+      return '₹${(price / 10000000).toStringAsFixed(1)}Cr';
+    } else if (price >= 100000) {
+      return '₹${(price / 100000).toStringAsFixed(1)}L';
+    } else if (price >= 1000) {
+      return '₹${(price / 1000).toStringAsFixed(0)}k';
+    } else {
+      return '₹${price.toStringAsFixed(0)}';
+    }
+  }
+
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'description': description,
-        'price': price,
-        'lat': lat,
-        'lng': lng,
-        'imageUrl': imageUrl,
-        'type': type,
-      };
+    'id': id,
+    'title': title,
+    'description': description,
+    'price': price,
+    'lat': lat,
+    'lng': lng,
+    'imageUrl': imageUrl,
+    'type': type,
+  };
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
-        id: json['id'] ?? '',
-        title: json['title'] ?? '',
-        description: json['description'] ?? '',
-        price: (json['price'] as num?)?.toDouble() ?? 0.0,
-        lat: (json['lat'] as num?)?.toDouble() ?? 28.6692,  // Ghaziabad default
-        lng: (json['lng'] as num?)?.toDouble() ?? 77.4549,
-        imageUrl: json['imageUrl'] ?? '',
-        type: json['type'] ?? '',
-      );
+    id: json['id'] ?? '',
+    title: json['title'] ?? '',
+    description: json['description'] ?? '',
+    price: (json['price'] as num?)?.toDouble() ?? 0.0,
+    lat: (json['lat'] as num?)?.toDouble() ?? 28.6692, // Ghaziabad default
+    lng: (json['lng'] as num?)?.toDouble() ?? 77.4549,
+    imageUrl: json['imageUrl'] ?? '',
+    type: json['type'] ?? '',
+  );
 }

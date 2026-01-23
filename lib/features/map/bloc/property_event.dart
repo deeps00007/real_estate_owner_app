@@ -24,3 +24,5 @@ class DeleteProperty extends PropertyEvent {
   @override
   List<Object?> get props => [propertyId];
 }
+
+class ToggleViewMode extends PropertyEvent {}
