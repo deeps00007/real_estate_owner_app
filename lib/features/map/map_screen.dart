@@ -6,6 +6,7 @@ import '../../../models/property.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
+import 'add_property_screen.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -86,6 +87,9 @@ class _MapView extends StatelessWidget {
   }
 
   void _showAddDialog(BuildContext context) {
-    // Coming up next
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddPropertyScreen()),
+    );
   }
 }

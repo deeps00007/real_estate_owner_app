@@ -44,6 +44,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   equatable: ^2.0.8
   provider: ^6.1.5+1
+  image_picker: ^1.2.1
 
 dev_dependencies:
   flutter_test:
