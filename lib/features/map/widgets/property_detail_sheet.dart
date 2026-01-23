@@ -19,112 +19,90 @@ class PropertyDetailSheet extends StatelessWidget {
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Drag Handle
+              // Handle
               Center(
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 12),
-                  width: 48,
-                  height: 4,
+                  width: 40,
+                  height: 5,
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(2.5),
                   ),
                 ),
               ),
 
-              // Image Section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Stack(
-                  children: [
-                    Hero(
-                      tag: 'prop_image_${property.id}',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.network(
-                          property.imageUrl,
-                          height: 240,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            height: 240,
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.broken_image, size: 48),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: GlassContainer(
-                        borderRadius: 12,
-                        padding: const EdgeInsets.all(8),
-                        child: Icon(Icons.favorite_border, color: Colors.white),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 16,
-                      left: 16,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          property.type,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              // Hero Image (Non-Hero for sheet)
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(0),
+                ),
+                child: Image.network(
+                  property.imageUrl,
+                  height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 250,
+                    color: Colors.grey[100],
+                    child: const Icon(Icons.broken_image, size: 50),
+                  ),
                 ),
               ),
 
-              // Details Section
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8EAF6),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                           child: Text(
-                            property.title,
+                            property.type.toUpperCase(),
                             style: const TextStyle(
-                              fontSize: 24,
+                              color: Color(0xFF3F51B5),
+                              fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1A1A1A),
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ),
                         Text(
-                          '₹${property.price.toStringAsFixed(0)}',
+                          property.formattedPrice,
                           style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      property.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -136,18 +114,19 @@ class PropertyDetailSheet extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${property.lat.toStringAsFixed(4)}, ${property.lng.toStringAsFixed(4)}',
+                          'Ghaziabad, Uttar Pradesh',
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
+                    const Divider(),
+                    const SizedBox(height: 24),
                     const Text(
-                      'Description',
+                      'About this property',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A1A1A),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -156,33 +135,26 @@ class PropertyDetailSheet extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.grey[700],
-                        height: 1.5,
+                        height: 1.6,
                       ),
                     ),
                     const SizedBox(height: 32),
 
                     if (authState.isOwner) ...[
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            context.read<PropertyBloc>().add(
-                              DeleteProperty(property.id),
-                            );
-                            Navigator.pop(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red[50],
-                            foregroundColor: Colors.red,
-                            elevation: 0,
-                            side: const BorderSide(
-                              color: Colors.red,
-                              width: 1.5,
-                            ),
-                          ),
-                          icon: const Icon(Icons.delete_outline),
-                          label: const Text('Delete Property'),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          context.read<PropertyBloc>().add(
+                            DeleteProperty(property.id),
+                          );
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          minimumSize: const Size(double.infinity, 50),
                         ),
+                        icon: const Icon(Icons.delete_outline),
+                        label: const Text('Delete Property Listings'),
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -193,24 +165,24 @@ class PropertyDetailSheet extends StatelessWidget {
                           child: OutlinedButton(
                             onPressed: () {},
                             style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(0, 54),
+                              minimumSize: const Size(0, 56),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text('Contact Owner'),
+                            child: const Text('CONTACT'),
                           ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {},
-                            child: const Text('Book Now'),
+                            child: const Text('BOOK NOW'),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),

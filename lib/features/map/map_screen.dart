@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map_smart/flutter_map_smart.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../core/firebase_service.dart';
 import '../../../models/property.dart';
-import 'widgets/property_detail_sheet.dart';
-import '../../../core/widgets/glass_container.dart';
 import '../../../core/auth_bloc.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
 import 'add_property_screen.dart';
+import 'widgets/property_detail_sheet.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -33,8 +33,9 @@ class _MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<_MapView> {
-  bool _enableNearby = false;
+  final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
+  bool _isNearbyActive = false;
 
   @override
   void dispose() {
@@ -44,158 +45,273 @@ class _MapViewState extends State<_MapView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // 1. The Map
-          BlocBuilder<PropertyBloc, PropertyState>(
-            builder: (context, state) {
-              if (state.status == PropertyStatus.loading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state.status == PropertyStatus.error) {
-                return const Center(child: Text('Error loading properties'));
-              }
-              return FlutterMapSmart.simple(
-                items: state.filteredProperties,
-                latitude: (property) => property.lat,
-                longitude: (property) => property.lng,
-                markerImage: (property) => property.imageUrl,
-                showUserLocation: true,
-                enableNearby: _enableNearby,
-                nearbyRadiusKm: 5.0,
-                markerSize: 60,
-                onTap: (property) =>
-                    _showDetails(context, property as Property),
-                onLocationPermissionDenied: () =>
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Location needed for nearby'),
-                      ),
-                    ),
-              );
-            },
-          ),
-
-          // 2. Premium Search Bar (Top)
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-              child: GlassContainer(
-                borderRadius: 20,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search, color: Color(0xFF673AB7)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (val) {
-                          context.read<PropertyBloc>().add(
-                            SearchProperties(val),
-                          );
-                        },
-                        decoration: const InputDecoration(
-                          hintText: 'Search properties...',
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          filled: false,
-                        ),
-                      ),
-                    ),
-                    if (_searchController.text.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        onPressed: () {
-                          _searchController.clear();
-                          context.read<PropertyBloc>().add(
-                            const SearchProperties(''),
-                          );
-                          setState(() {});
-                        },
-                      ),
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, authState) {
-                        return IconButton(
-                          icon: Icon(
-                            authState.isOwner ? Icons.settings : Icons.login,
-                            color: const Color(0xFF673AB7),
-                            size: 20,
-                          ),
-                          onPressed: () => _showAuthDialog(context, authState),
-                        );
-                      },
-                    ),
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, authState) {
-                        if (!authState.isOwner) return const SizedBox.shrink();
-                        return Container(
-                          height: 40,
-                          width: 40,
-                          margin: const EdgeInsets.only(left: 8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF673AB7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AddPropertyScreen(),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+    return BlocBuilder<PropertyBloc, PropertyState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: Stack(
+            children: [
+              // 1. Map or List View
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: state.isListView
+                    ? _buildListView(state.filteredProperties)
+                    : _buildMapView(state.filteredProperties),
               ),
-            ),
-          ),
 
-          // 3. Nearby Toggle Control (Bottom Left)
-          Positioned(
-            left: 20,
-            bottom: 30,
-            child: GlassContainer(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              borderRadius: 30,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Nearby',
-                    style: TextStyle(
+              // 2. Clear Search Bar (Top)
+              _buildSearchBar(context),
+
+              // 3. View Toggle (Bottom Right)
+              _buildViewToggle(context, state.isListView),
+
+              // 4. Nearby Toggle (Bottom Left - if on map)
+              if (!state.isListView) _buildNearbyToggle(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMapView(List<Property> properties) {
+    return FlutterMap(
+      mapController: _mapController,
+      options: const MapOptions(
+        initialCenter: LatLng(28.6692, 77.4549), // Default to Ghaziabad
+        initialZoom: 13.0,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.example.app',
+        ),
+        MarkerLayer(
+          markers: properties.map((prop) {
+            return Marker(
+              point: LatLng(prop.lat, prop.lng),
+              width: 80,
+              height: 40,
+              child: GestureDetector(
+                onTap: () => _showDetails(context, prop),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    prop.formattedPrice,
+                    style: const TextStyle(
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A1A1A),
+                      fontSize: 13,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Switch(
-                    value: _enableNearby,
-                    activeColor: const Color(0xFF673AB7),
-                    onChanged: (val) {
-                      setState(() {
-                        _enableNearby = val;
-                      });
-                    },
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildListView(List<Property> properties) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 80),
+        child: properties.isEmpty
+            ? const Center(child: Text('No properties found'))
+            : ListView.separated(
+                padding: const EdgeInsets.all(20),
+                itemCount: properties.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  final prop = properties[index];
+                  return _buildPropertyCard(prop);
+                },
+              ),
+      ),
+    );
+  }
+
+  Widget _buildPropertyCard(Property prop) {
+    return GestureDetector(
+      onTap: () => _showDetails(context, prop),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              prop.imageUrl,
+              height: 200,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                height: 200,
+                color: Colors.grey[200],
+                child: const Icon(Icons.broken_image),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        prop.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        prop.formattedPrice,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    prop.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: Colors.grey[600]),
                   ),
                 ],
               ),
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
 
-          // 4. Floating Zoom Controls or My Location could be here if needed
-        ],
+  Widget _buildSearchBar(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              const Icon(Icons.search, color: Color(0xFF673AB7)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (val) {
+                    context.read<PropertyBloc>().add(SearchProperties(val));
+                  },
+                  decoration: const InputDecoration(
+                    hintText: 'Search properties or locations...',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    filled: false,
+                  ),
+                ),
+              ),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, authState) {
+                  return IconButton(
+                    icon: Icon(
+                      authState.isOwner ? Icons.settings : Icons.login,
+                      color: const Color(0xFF673AB7),
+                    ),
+                    onPressed: () => _showAuthDialog(context, authState),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViewToggle(BuildContext context, bool isListView) {
+    return Positioned(
+      right: 20,
+      bottom: 30,
+      child: FloatingActionButton.extended(
+        onPressed: () => context.read<PropertyBloc>().add(ToggleViewMode()),
+        backgroundColor: const Color(0xFF1A1A1A),
+        foregroundColor: Colors.white,
+        icon: Icon(isListView ? Icons.map : Icons.list),
+        label: Text(isListView ? 'Map View' : 'List View'),
+      ),
+    );
+  }
+
+  Widget _buildNearbyToggle() {
+    return Positioned(
+      left: 20,
+      bottom: 30,
+      child: Material(
+        elevation: 4,
+        borderRadius: BorderRadius.circular(30),
+        color: _isNearbyActive ? const Color(0xFF673AB7) : Colors.white,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              _isNearbyActive = !_isNearbyActive;
+            });
+            // Logic to move to current location if active
+          },
+          borderRadius: BorderRadius.circular(30),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.my_location,
+                  size: 20,
+                  color: _isNearbyActive
+                      ? Colors.white
+                      : const Color(0xFF673AB7),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Nearby',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _isNearbyActive
+                        ? Colors.white
+                        : const Color(0xFF1A1A1A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -206,7 +322,26 @@ class _MapViewState extends State<_MapView> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Owner Settings'),
-          content: const Text('You are currently logged in as an owner.'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('You are logged in as owner.'),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.add_business),
+                title: const Text('Add New Property'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AddPropertyScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -217,10 +352,7 @@ class _MapViewState extends State<_MapView> {
                 context.read<AuthBloc>().add(Logout());
                 Navigator.pop(context);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text('Logout'),
             ),
           ],
@@ -234,10 +366,7 @@ class _MapViewState extends State<_MapView> {
           title: const Text('Owner Login'),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Enter Owner ID',
-              hintText: 'e.g. OWNER123',
-            ),
+            decoration: const InputDecoration(labelText: 'Owner ID'),
             obscureText: true,
           ),
           actions: [
