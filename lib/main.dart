@@ -1,9 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // For service locator
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'core/firebase_service.dart';
+import 'core/auth_bloc.dart';
 import 'features/map/map_screen.dart';
-import 'firebase_options.dart'; // Add this import
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,8 +20,11 @@ class RealEstateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) => FirebaseService(),
+    return MultiProvider(
+      providers: [
+        Provider(create: (_) => FirebaseService()),
+        BlocProvider(create: (_) => AuthBloc()),
+      ],
       child: MaterialApp(
         title: 'Real Estate Owner',
         theme: ThemeData(

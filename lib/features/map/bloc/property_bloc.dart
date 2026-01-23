@@ -12,6 +12,9 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<SearchProperties>((event, emit) {
       emit(state.copyWith(searchQuery: event.query));
     });
+    on<DeleteProperty>((event, emit) async {
+      await firebaseService.deleteProperty(event.propertyId);
+    });
   }
 
   Future<void> _onLoadProperties(

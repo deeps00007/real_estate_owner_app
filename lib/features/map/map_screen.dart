@@ -5,6 +5,7 @@ import '../../../core/firebase_service.dart';
 import '../../../models/property.dart';
 import 'widgets/property_detail_sheet.dart';
 import '../../../core/widgets/glass_container.dart';
+import '../../../core/auth_bloc.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
@@ -116,26 +117,44 @@ class _MapViewState extends State<_MapView> {
                           setState(() {});
                         },
                       ),
-                    Container(
-                      height: 40,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF673AB7),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AddPropertyScreen(),
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, authState) {
+                        return IconButton(
+                          icon: Icon(
+                            authState.isOwner ? Icons.settings : Icons.login,
+                            color: const Color(0xFF673AB7),
+                            size: 20,
                           ),
-                        ),
-                      ),
+                          onPressed: () => _showAuthDialog(context, authState),
+                        );
+                      },
+                    ),
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, authState) {
+                        if (!authState.isOwner) return const SizedBox.shrink();
+                        return Container(
+                          height: 40,
+                          width: 40,
+                          margin: const EdgeInsets.only(left: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF673AB7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AddPropertyScreen(),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -179,6 +198,64 @@ class _MapViewState extends State<_MapView> {
         ],
       ),
     );
+  }
+
+  void _showAuthDialog(BuildContext context, AuthState authState) {
+    if (authState.isOwner) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Owner Settings'),
+          content: const Text('You are currently logged in as an owner.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(Logout());
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      final controller = TextEditingController();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Owner Login'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Enter Owner ID',
+              hintText: 'e.g. OWNER123',
+            ),
+            obscureText: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(LoginAsOwner(controller.text));
+                Navigator.pop(context);
+              },
+              child: const Text('Login'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _showDetails(BuildContext context, Property property) {

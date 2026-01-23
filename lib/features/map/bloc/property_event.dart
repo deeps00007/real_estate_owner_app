@@ -16,3 +16,11 @@ class SearchProperties extends PropertyEvent {
   @override
   List<Object?> get props => [query];
 }
+
+class DeleteProperty extends PropertyEvent {
+  final String propertyId;
+  const DeleteProperty(this.propertyId);
+
+  @override
+  List<Object?> get props => [propertyId];
+}
