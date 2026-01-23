@@ -136,7 +136,7 @@ class _MapViewState extends State<_MapView> {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.app',
+          userAgentPackageName: 'com.realestate.owner.app.v1',
         ),
         MarkerLayer(
           markers: properties.map((prop) {
