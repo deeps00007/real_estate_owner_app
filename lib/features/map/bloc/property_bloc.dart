@@ -18,6 +18,17 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<ToggleViewMode>((event, emit) {
       emit(state.copyWith(isListView: !state.isListView));
     });
+    on<ToggleNearbyFilter>((event, emit) {
+      emit(state.copyWith(isNearbyActive: !state.isNearbyActive));
+    });
+    on<UpdateUserLocation>((event, emit) {
+      emit(
+        state.copyWith(
+          userLatitude: event.latitude,
+          userLongitude: event.longitude,
+        ),
+      );
+    });
   }
 
   Future<void> _onLoadProperties(
