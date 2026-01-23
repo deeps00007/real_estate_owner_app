@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ImageKitService {
@@ -36,14 +37,20 @@ class ImageKitService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = jsonDecode(response.body);
-        print('Upload Success: ${jsonResponse['url']}');
+        if (kDebugMode) {
+          print('Upload Success: ${jsonResponse['url']}');
+        }
         return jsonResponse['url'];
       } else {
-        print('Upload Failed: ${response.body}');
+        if (kDebugMode) {
+          print('Upload Failed: ${response.body}');
+        }
         throw Exception('ImageKit Upload Failed: ${response.body}');
       }
     } catch (e) {
-      print('Network Error: $e');
+      if (kDebugMode) {
+        print('Network Error: $e');
+      }
       throw Exception('Network Error: $e');
     }
   }
