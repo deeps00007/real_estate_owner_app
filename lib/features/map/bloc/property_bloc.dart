@@ -15,6 +15,9 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<DeleteProperty>((event, emit) async {
       await firebaseService.deleteProperty(event.propertyId);
     });
+    on<ToggleViewMode>((event, emit) {
+      emit(state.copyWith(isListView: !state.isListView));
+    });
   }
 
   Future<void> _onLoadProperties(
