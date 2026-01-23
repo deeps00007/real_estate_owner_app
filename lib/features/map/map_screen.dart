@@ -14,9 +14,9 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          PropertyBloc(firebaseService: context.read<FirebaseService>())
-            ..add(LoadProperties()),
+      create: (context) => PropertyBloc(
+        firebaseService: context.read<FirebaseService>(),
+      )..add(LoadProperties()),
       child: const _MapView(),
     );
   }
@@ -33,31 +33,38 @@ class _MapView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _showAddDialog(context),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AddPropertyScreen()),
+            ),
           ),
         ],
       ),
       body: BlocBuilder<PropertyBloc, PropertyState>(
         builder: (context, state) {
-          if (state.status == PropertyStatus.initial ||
-              state.status == PropertyStatus.loading) {
+          if (state.status == PropertyStatus.loading) {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.status == PropertyStatus.error) {
             return const Center(child: Text('Error loading properties'));
           }
-          if (state.properties.isEmpty) {
-            return const Center(child: Text('No properties found. Add one!'));
-          }
           return FlutterMapSmart.simple(
             items: state.properties,
             latitude: (property) => property.lat,
             longitude: (property) => property.lng,
-            markerImage: (property) => property.imageUrl,
-            showUserLocation: false,
-            enableNearby: false,
-            markerSize: 70,
+            // Try using the URL for markers. If it fails due to network lag, 
+            // return null to use default pin, and show image in bottom sheet.
+            markerImage: (property) => property.imageUrl, 
+            
+            showUserLocation: true,
+            enableNearby: true,
+            nearbyRadiusKm: 5.0,
+            markerSize: 60,
             onTap: (property) => _showDetails(context, property as Property),
+            onLocationPermissionDenied: () =>
+                ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location needed for nearby')),
+            ),
           );
         },
       ),
@@ -67,29 +74,72 @@ class _MapView extends StatelessWidget {
   void _showDetails(BuildContext context, Property property) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true, // Allows bigger sheet
       builder: (_) => Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              property.title,
-              style: Theme.of(context).textTheme.headlineSmall,
+            // Handle Bar
+            Center(
+              child: Container(
+                width: 40, 
+                height: 5, 
+                decoration: BoxDecoration(
+                  color: Colors.grey[300], 
+                  borderRadius: BorderRadius.circular(10)
+                ),
+              ),
             ),
-            Text('₹${property.price.toStringAsFixed(0)}'),
-            Text(property.description),
-            Text('Type: ${property.type}'),
+            const SizedBox(height: 15),
+            
+            // Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                property.imageUrl,
+                height: 250,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => 
+                    Container(
+                      height: 250, 
+                      color: Colors.grey[200], 
+                      child: const Center(child: Icon(Icons.broken_image))
+                    ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            
+            // Details
+            Text(
+              property.title, 
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              '₹${property.price.toStringAsFixed(0)}', 
+              style: const TextStyle(
+                fontSize: 20, 
+                color: Colors.green, 
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              property.description,
+              style: const TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            const SizedBox(height: 10),
+            Chip(
+              label: Text(property.type), 
+              backgroundColor: Colors.blue[50],
+            ),
+            const SizedBox(height: 30), // Padding for bottom
           ],
         ),
       ),
-    );
-  }
-
-  void _showAddDialog(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AddPropertyScreen()),
     );
   }
 }

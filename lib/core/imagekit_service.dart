@@ -3,41 +3,48 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ImageKitService {
-  // 🔴 REPLACE THESE WITH YOUR KEYS FROM THE SCREENSHOT
-  final String publicKey = 'public_GuI5dCIV1TjRyPOY'; // From your screenshot
-  final String privateKey = 'private_DAREKSumKgYgTAX'; // From your screenshot
-  final String urlEndpoint = 'https://ik.imagekit.io/YOUR_ID'; // Find this in your ImageKit dashboard (e.g., /ik-user-id/)
+  // Credentials from your snippet
+  final String publicKey = 'public_GuI5dCIV1TjRyPOYtsf1IIqXkxk=';
+  final String privateKey = 'private_DAREKSumKgYgTAXq68MtLkoihOQ=';
+  final String urlEndpoint = 'https://ik.imagekit.io/projectss';
 
   Future<String> uploadImage(File file) async {
-    // ImageKit Upload API
     final uri = Uri.parse('https://upload.imagekit.io/api/v1/files/upload');
-    
-    // Create multipart request
+
+    // 1. Create Multipart Request
     final request = http.MultipartRequest('POST', uri);
-    
-    // Auth: Private key in base64 as Basic Auth
-    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$privateKey:'));
+
+    // 2. Authorization Header (Basic Auth with Private Key)
+    // Note: The colon ':' at the end is required for ImageKit Basic Auth
+    String basicAuth = 'Basic ${base64Encode(utf8.encode('$privateKey:'))}';
     request.headers['Authorization'] = basicAuth;
 
-    // Add File
+    // 3. Add File
     final multipartFile = await http.MultipartFile.fromPath('file', file.path);
     request.files.add(multipartFile);
 
-    // Add Parameters
-    request.fields['fileName'] = 'property_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    // 4. Add Parameters (Folder & File Name)
+    request.fields['fileName'] =
+        'prop_${DateTime.now().millisecondsSinceEpoch}.jpg';
     request.fields['useUniqueFileName'] = 'true';
-    request.fields['folder'] = '/real_estate_properties/'; // Optional folder
+    request.fields['folder'] = '/property_images/'; // New folder name
 
-    // Send
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+    try {
+      // 5. Send Request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      // Return the usable URL
-      return jsonResponse['url']; 
-    } else {
-      throw Exception('ImageKit Upload Failed: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+        print('Upload Success: ${jsonResponse['url']}');
+        return jsonResponse['url'];
+      } else {
+        print('Upload Failed: ${response.body}');
+        throw Exception('ImageKit Upload Failed: ${response.body}');
+      }
+    } catch (e) {
+      print('Network Error: $e');
+      throw Exception('Network Error: $e');
     }
   }
 }
