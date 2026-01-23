@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart';
 import '../../../core/firebase_service.dart';
 import '../../../models/property.dart';
+import 'widgets/property_detail_sheet.dart';
+import '../../../core/widgets/glass_container.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
@@ -30,24 +32,19 @@ class _MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<_MapView> {
-  // State to toggle nearby filter
   bool _enableNearby = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Properties'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AddPropertyScreen()),
-            ),
-          ),
-        ],
-      ),
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           // 1. The Map
@@ -60,16 +57,13 @@ class _MapViewState extends State<_MapView> {
                 return const Center(child: Text('Error loading properties'));
               }
               return FlutterMapSmart.simple(
-                items: state.properties,
+                items: state.filteredProperties,
                 latitude: (property) => property.lat,
                 longitude: (property) => property.lng,
                 markerImage: (property) => property.imageUrl,
-
                 showUserLocation: true,
-                // Pass the toggle state here
                 enableNearby: _enableNearby,
-                nearbyRadiusKm: 5.0, // 5 km radius
-
+                nearbyRadiusKm: 5.0,
                 markerSize: 60,
                 onTap: (property) =>
                     _showDetails(context, property as Property),
@@ -83,34 +77,93 @@ class _MapViewState extends State<_MapView> {
             },
           ),
 
-          // 2. Toggle Control (Bottom Left)
+          // 2. Premium Search Bar (Top)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+              child: GlassContainer(
+                borderRadius: 20,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search, color: Color(0xFF673AB7)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (val) {
+                          context.read<PropertyBloc>().add(
+                            SearchProperties(val),
+                          );
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Search properties...',
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          filled: false,
+                        ),
+                      ),
+                    ),
+                    if (_searchController.text.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () {
+                          _searchController.clear();
+                          context.read<PropertyBloc>().add(
+                            const SearchProperties(''),
+                          );
+                          setState(() {});
+                        },
+                      ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF673AB7),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AddPropertyScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 3. Nearby Toggle Control (Bottom Left)
           Positioned(
             left: 20,
             bottom: 30,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
+            child: GlassContainer(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              borderRadius: 30,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Nearby (5km)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    'Nearby',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1A1A),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Switch(
                     value: _enableNearby,
-                    activeColor: Colors.blue,
+                    activeColor: const Color(0xFF673AB7),
                     onChanged: (val) {
                       setState(() {
                         _enableNearby = val;
@@ -121,6 +174,8 @@ class _MapViewState extends State<_MapView> {
               ),
             ),
           ),
+
+          // 4. Floating Zoom Controls or My Location could be here if needed
         ],
       ),
     );
@@ -130,57 +185,8 @@ class _MapViewState extends State<_MapView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                property.imageUrl,
-                height: 250,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  height: 250,
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.broken_image),
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Text(
-              property.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '₹${property.price.toStringAsFixed(0)}',
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(property.description),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+      backgroundColor: Colors.transparent,
+      builder: (_) => PropertyDetailSheet(property: property),
     );
   }
 }

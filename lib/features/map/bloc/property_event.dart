@@ -8,3 +8,11 @@ abstract class PropertyEvent extends Equatable {
 }
 
 class LoadProperties extends PropertyEvent {}
+
+class SearchProperties extends PropertyEvent {
+  final String query;
+  const SearchProperties(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}

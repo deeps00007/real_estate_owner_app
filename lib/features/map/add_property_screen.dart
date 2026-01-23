@@ -20,7 +20,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final _titleController = TextEditingController();
   final _priceController = TextEditingController();
   final _descController = TextEditingController();
-  
+
   File? _imageFile;
   bool _isLoading = false;
 
@@ -46,16 +46,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         _lat = result.latitude;
         _lng = result.longitude;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location updated!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Location updated!')));
     }
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() || _imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields and add an image')),
+        const SnackBar(
+          content: Text('Please fill all fields and add an image'),
+        ),
       );
       return;
     }
@@ -81,13 +83,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
       // 3. Save to Firestore
       await context.read<FirebaseService>().addProperty(property);
-      
+
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -97,76 +99,224 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Property')),
+      appBar: AppBar(
+        title: const Text('New Property'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Image Picker Widget
+                    const Text(
+                      'Property Photos',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Enhanced Image Picker
                     GestureDetector(
                       onTap: _pickImage,
                       child: Container(
-                        height: 200,
+                        height: 220,
                         width: double.infinity,
-                        color: Colors.grey[200],
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: const Color(0xFFE0E0E0)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
                         child: _imageFile != null
-                            ? Image.file(_imageFile!, fit: BoxFit.cover)
-                            : const Column(
+                            ? Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: Image.file(
+                                      _imageFile!,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 12,
+                                    right: 12,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_a_photo, size: 50, color: Colors.grey),
-                                  Text('Tap to add image', style: TextStyle(color: Colors.grey)),
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF3E5F5),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Icon(
+                                      Icons.add_a_photo_outlined,
+                                      size: 32,
+                                      color: Color(0xFF673AB7),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text(
+                                    'Add Property Image',
+                                    style: TextStyle(
+                                      color: Color(0xFF673AB7),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Up to 5MB, JPG or PNG',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ],
                               ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 32),
 
-                    // Location Picker
-                    ListTile(
-                      leading: const Icon(Icons.map, color: Colors.blue),
-                      title: Text('Location: ${_lat.toStringAsFixed(4)}, ${_lng.toStringAsFixed(4)}'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: _pickLocation,
-                      tileColor: Colors.grey[100],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Fields
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(labelText: 'Title', border: OutlineInputBorder()),
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _priceController,
-                      decoration: const InputDecoration(labelText: 'Price (₹)', border: OutlineInputBorder()),
-                      keyboardType: TextInputType.number,
-                      validator: (v) => v!.isEmpty ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descController,
-                      decoration: const InputDecoration(labelText: 'Description', border: OutlineInputBorder()),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Submit Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _submit,
-                        child: const Text('Save Property', style: TextStyle(fontSize: 18)),
+                    const Text(
+                      'Information',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A1A1A),
                       ),
                     ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Property Title',
+                        hintText: 'e.g. Luxury Apartment in Downtown',
+                        prefixIcon: Icon(Icons.title),
+                      ),
+                      validator: (v) =>
+                          v!.isEmpty ? 'Please enter a title' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _priceController,
+                      decoration: const InputDecoration(
+                        labelText: 'Price',
+                        hintText: 'Enter amount in ₹',
+                        prefixIcon: Icon(Icons.currency_rupee),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (v) =>
+                          v!.isEmpty ? 'Please enter a price' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Location Picker Action
+                    InkWell(
+                      onTap: _pickLocation,
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE0E0E0)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE3F2FD),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Location',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${_lat.toStringAsFixed(4)}, ${_lng.toStringAsFixed(4)}',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _descController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                        hintText: 'Describe your property property...',
+                        alignLabelWithHint: true,
+                      ),
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 40),
+
+                    // Submit Button
+                    ElevatedButton(
+                      onPressed: _submit,
+                      child: const Text('Publish Property'),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

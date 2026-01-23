@@ -9,6 +9,9 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
   PropertyBloc({required this.firebaseService}) : super(const PropertyState()) {
     on<LoadProperties>(_onLoadProperties);
+    on<SearchProperties>((event, emit) {
+      emit(state.copyWith(searchQuery: event.query));
+    });
   }
 
   Future<void> _onLoadProperties(
