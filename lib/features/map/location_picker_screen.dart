@@ -39,8 +39,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         children: [
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName:
-                'com.example.real_estate_owner_app', // Replace with your package name
+            userAgentPackageName: 'com.realestate.owner.app.v1',
           ),
           MarkerLayer(
             markers: [
