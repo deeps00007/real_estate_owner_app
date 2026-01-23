@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_smart/flutter_map_smart.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../core/firebase_service.dart';
 import '../../../models/property.dart';
@@ -35,14 +36,13 @@ class _MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<_MapView> {
-  final MapController _mapController = MapController();
+  // MapController is handled internally by FlutterMapSmart
   final TextEditingController _searchController = TextEditingController();
   bool _isNearbyActive = false;
 
   @override
   void dispose() {
     _searchController.dispose();
-    _mapController.dispose();
     super.dispose();
   }
 
@@ -127,52 +127,50 @@ class _MapViewState extends State<_MapView> {
   }
 
   Widget _buildMapView(List<Property> properties) {
-    return FlutterMap(
-      mapController: _mapController,
-      options: const MapOptions(
-        initialCenter: LatLng(28.6692, 77.4549), // Default to Ghaziabad
-        initialZoom: 13.0,
-      ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.realestate.owner.app.v1',
-        ),
-        MarkerLayer(
-          markers: properties.map((prop) {
-            return Marker(
-              point: LatLng(prop.lat, prop.lng),
-              width: 80,
-              height: 40,
-              child: GestureDetector(
-                onTap: () => _showDetails(context, prop),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    prop.formattedPrice,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
+    return FlutterMapSmart.simple(
+      items: properties,
+      latitude: (property) => property.lat,
+      longitude: (property) => property.lng,
+      markerImage: (property) => property.imageUrl,
+      showUserLocation: true,
+      enableNearby: true,
+      nearbyRadiusKm: 10.0,
+      markerSize: 80,
+      onTap: (property) => _showDetails(context, property as Property),
+      onLocationPermissionDenied: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location needed for nearby features')),
+        );
+      },
+      // Building custom marker to show price
+      itemBuilder: (context, property) {
+        final prop = property as Property;
+        return GestureDetector(
+          onTap: () => _showDetails(context, prop),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
                 ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              prop.formattedPrice,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
               ),
-            );
-          }).toList(),
-        ),
-      ],
+            ),
+          ),
+        );
+      },
     );
   }
 
