@@ -26,3 +26,15 @@ class DeleteProperty extends PropertyEvent {
 }
 
 class ToggleViewMode extends PropertyEvent {}
+
+class ToggleNearbyFilter extends PropertyEvent {}
+
+class UpdateUserLocation extends PropertyEvent {
+  final double latitude;
+  final double longitude;
+
+  const UpdateUserLocation(this.latitude, this.longitude);
+
+  @override
+  List<Object?> get props => [latitude, longitude];
+}

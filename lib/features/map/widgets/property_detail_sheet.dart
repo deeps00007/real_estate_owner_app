@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/property.dart';
-import '../../../core/widgets/glass_container.dart';
 import '../../../core/auth_bloc.dart';
 import '../bloc/property_bloc.dart';
 import '../bloc/property_event.dart';
