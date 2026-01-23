@@ -10,6 +10,8 @@ import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
 import 'add_property_screen.dart';
 import 'widgets/property_detail_sheet.dart';
+import 'package:geocoding/geocoding.dart' as geo;
+import 'package:geolocator/geolocator.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -40,7 +42,57 @@ class _MapViewState extends State<_MapView> {
   @override
   void dispose() {
     _searchController.dispose();
+    _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _performSearch(String query) async {
+    final bloc = context.read<PropertyBloc>();
+    if (query.isEmpty) {
+      bloc.add(const SearchProperties(''));
+      return;
+    }
+
+    // Filter properties locally
+    bloc.add(SearchProperties(query));
+
+    // Try to geocode and move map
+    try {
+      List<geo.Location> locations = await geo.locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        final location = locations.first;
+        _mapController.move(
+          LatLng(location.latitude, location.longitude),
+          13.0,
+        );
+      }
+    } catch (e) {
+      debugPrint('Geocoding error: $e');
+    }
+  }
+
+  Future<void> _toggleNearby() async {
+    final bloc = context.read<PropertyBloc>();
+
+    if (!_isNearbyActive) {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+
+      if (permission == LocationPermission.deniedForever) return;
+
+      final position = await Geolocator.getCurrentPosition();
+      bloc.add(UpdateUserLocation(position.latitude, position.longitude));
+
+      _mapController.move(LatLng(position.latitude, position.longitude), 14.0);
+    }
+
+    setState(() {
+      _isNearbyActive = !_isNearbyActive;
+    });
+    bloc.add(ToggleNearbyFilter());
   }
 
   @override
@@ -230,6 +282,7 @@ class _MapViewState extends State<_MapView> {
                   onChanged: (val) {
                     context.read<PropertyBloc>().add(SearchProperties(val));
                   },
+                  onSubmitted: _performSearch,
                   decoration: const InputDecoration(
                     hintText: 'Search properties or locations...',
                     border: InputBorder.none,
@@ -280,12 +333,7 @@ class _MapViewState extends State<_MapView> {
         borderRadius: BorderRadius.circular(30),
         color: _isNearbyActive ? const Color(0xFF673AB7) : Colors.white,
         child: InkWell(
-          onTap: () {
-            setState(() {
-              _isNearbyActive = !_isNearbyActive;
-            });
-            // Logic to move to current location if active
-          },
+          onTap: _toggleNearby,
           borderRadius: BorderRadius.circular(30),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
