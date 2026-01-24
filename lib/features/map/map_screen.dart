@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart'; // Changed from flutter_map_smart
 import 'package:latlong2/latlong.dart'; // Added for LatLng
 import '../../../models/property.dart';
-import '../../../core/auth_bloc.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
@@ -251,6 +250,7 @@ class _MapScreenState extends State<MapScreen> {
         controller: _searchController,
         onChanged: (val) =>
             context.read<PropertyBloc>().add(SearchProperties(val)),
+        onSubmitted: _performSearch, // Restore search functionality
         decoration: InputDecoration(
           hintText: 'Silverpine Meadows, Warburton', // Example from image
           hintStyle: TextStyle(color: Colors.pink[100]),

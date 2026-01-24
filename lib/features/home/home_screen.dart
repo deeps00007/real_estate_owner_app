@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
 import 'widgets/property_card.dart';
-import '../../models/property.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
