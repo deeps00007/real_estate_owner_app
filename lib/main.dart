@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'core/firebase_service.dart';
 import 'core/auth_bloc.dart';
-import 'features/map/map_screen.dart';
+import 'features/map/bloc/property_bloc.dart';
+import 'features/map/bloc/property_event.dart';
+import 'features/home/main_navigation.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -24,6 +26,11 @@ class RealEstateApp extends StatelessWidget {
       providers: [
         Provider(create: (_) => FirebaseService()),
         BlocProvider(create: (_) => AuthBloc()),
+        BlocProvider(
+          create: (context) =>
+              PropertyBloc(firebaseService: context.read<FirebaseService>())
+                ..add(LoadProperties()),
+        ),
       ],
       child: MaterialApp(
         title: 'Real Estate App',
@@ -97,7 +104,7 @@ class RealEstateApp extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.grey[500]),
           ),
         ),
-        home: const MapScreen(),
+        home: const MainNavigation(),
         debugShowCheckedModeBanner: false,
       ),
     );
