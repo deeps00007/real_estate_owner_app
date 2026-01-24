@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map_smart/flutter_map_smart.dart';
+import 'package:flutter_map/flutter_map.dart'; // Changed from flutter_map_smart
+import 'package:latlong2/latlong.dart'; // Added for LatLng
 import '../../../models/property.dart';
 import '../../../core/auth_bloc.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
-import 'add_property_screen.dart';
+// Removed 'add_property_screen.dart' as it's not used in the provided context
 import 'widgets/property_detail_sheet.dart';
 import 'widgets/floating_action_dock.dart';
 import 'widgets/map_property_card.dart';
@@ -21,14 +22,18 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  // MapController is managed by FlutterMapSmart internally
+  final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
   final PageController _pageController = PageController(viewportFraction: 0.85);
+
+  // Keep _isNearbyActive as _toggleNearby is still called
+  bool _isNearbyActive = false;
 
   @override
   void dispose() {
     _searchController.dispose();
     _pageController.dispose();
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -39,7 +44,44 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
     bloc.add(SearchProperties(query));
-    // Geocoding centering not supported by simple widget currently
+
+    // Try to geocode and move map
+    try {
+      List<geo.Location> locations = await geo.locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        final location = locations.first;
+        _mapController.move(
+          LatLng(location.latitude, location.longitude),
+          13.0,
+        );
+      }
+    } catch (e) {
+      debugPrint('Geocoding error: $e');
+    }
+  }
+
+  Future<void> _toggleNearby() async {
+    final bloc = context.read<PropertyBloc>();
+
+    if (!_isNearbyActive) {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+
+      if (permission == LocationPermission.deniedForever) return;
+
+      final position = await Geolocator.getCurrentPosition();
+      bloc.add(UpdateUserLocation(position.latitude, position.longitude));
+
+      _mapController.move(LatLng(position.latitude, position.longitude), 14.0);
+    }
+
+    setState(() {
+      _isNearbyActive = !_isNearbyActive;
+    });
+    bloc.add(ToggleNearbyFilter());
   }
 
   void _onMarkerTap(Property property) {
@@ -67,61 +109,71 @@ class _MapScreenState extends State<MapScreen> {
             children: [
               // 1. Full Screen Map
               Positioned.fill(
-                child: FlutterMapSmart.simple(
-                  items: state.filteredProperties,
-                  latitude: (property) => property.lat,
-                  longitude: (property) => property.lng,
-                  markerImage: (property) => property.imageUrl,
-                  showUserLocation: true,
-                  enableNearby: true,
-                  nearbyRadiusKm: 10.0,
-                  markerSize: 100, // Slightly larger for better touch target
-                  itemBuilder: (context, property) {
-                    final prop = property as Property;
-                    // Pink Pill with Pin design
-                    return GestureDetector(
-                      onTap: () => _onMarkerTap(prop),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFF80AB),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
+                child: FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: const LatLng(
+                      28.6692,
+                      77.4549,
+                    ), // Ghaziabad default
+                    initialZoom: 13.0,
+                    onTap: (_, __) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.realestate.owner.app.v1',
+                    ),
+                    MarkerLayer(
+                      markers: state.filteredProperties.map((prop) {
+                        return Marker(
+                          point: LatLng(prop.lat, prop.lng),
+                          width: 100,
+                          height: 60,
+                          child: GestureDetector(
+                            onTap: () => _onMarkerTap(prop),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFF80AB),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    prop.formattedPrice,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.location_on,
+                                  color: Colors.black,
+                                  size: 30,
                                 ),
                               ],
                             ),
-                            child: Text(
-                              prop.formattedPrice,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
                           ),
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  onTap: (property) => _onMarkerTap(property as Property),
-                  onLocationPermissionDenied: () {
-                    // Handle permission denial
-                  },
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
 
@@ -162,11 +214,16 @@ class _MapScreenState extends State<MapScreen> {
                 right: 0,
                 child: Center(
                   child: FloatingActionDock(
-                    onExpand: () {}, // Toggle full screen
-                    onNavigate: () {}, // Start navigation
+                    onExpand: () {
+                      // Implementation for expand
+                    },
+                    onNavigate: () async {
+                      // Implementation for navigate
+                    },
                     onRefresh: () =>
                         context.read<PropertyBloc>().add(LoadProperties()),
-                    onFilter: () {}, // Open filter sheet
+                    onFilter: () =>
+                        _toggleNearby(), // Using filter for nearby toggle for now
                   ),
                 ),
               ),
