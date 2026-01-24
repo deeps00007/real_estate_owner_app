@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart';
-import '../../../core/firebase_service.dart';
 import '../../../models/property.dart';
 import '../../../core/auth_bloc.dart';
 import 'bloc/property_bloc.dart';
@@ -18,12 +17,7 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          PropertyBloc(firebaseService: context.read<FirebaseService>())
-            ..add(LoadProperties()),
-      child: const _MapView(),
-    );
+    return const _MapView();
   }
 }
 
