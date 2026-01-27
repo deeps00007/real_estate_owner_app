@@ -24,7 +24,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
-  final PageController _pageController = PageController(viewportFraction: 0.85);
+  final ScrollController _scrollController = ScrollController();
 
   // Keep _isNearbyActive as _toggleNearby is still called
   bool _isNearbyActive = false;
@@ -32,7 +32,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    _pageController.dispose();
+    _scrollController.dispose();
     _mapController.dispose();
     super.dispose();
   }
@@ -91,8 +91,8 @@ class _MapScreenState extends State<MapScreen> {
       (p) => p.id == property.id,
     );
     if (index != -1) {
-      _pageController.animateToPage(
-        index,
+      _scrollController.animateTo(
+        index * 320.0, // 300 width + 20 padding/margin estimate
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -196,10 +196,13 @@ class _MapScreenState extends State<MapScreen> {
                     height: 140,
                     child: state.filteredProperties.isEmpty
                         ? const SizedBox()
-                        : PageView.builder(
-                            controller: _pageController,
+                        : ListView.separated(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            scrollDirection: Axis.horizontal,
                             itemCount: state.filteredProperties.length,
-                            padEnds: true,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 16),
                             itemBuilder: (context, index) {
                               final prop = state.filteredProperties[index];
                               return MapPropertyCard(
