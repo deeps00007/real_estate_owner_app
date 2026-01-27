@@ -337,6 +337,10 @@ class PropertyDetailScreen extends StatelessWidget {
                           horizontal: 32,
                           vertical: 16,
                         ),
+                        minimumSize: const Size(
+                          120,
+                          50,
+                        ), // Override global infinite width
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
