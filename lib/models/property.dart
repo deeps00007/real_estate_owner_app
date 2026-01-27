@@ -47,7 +47,6 @@ class Property extends Equatable {
     type: type ?? this.type,
     ownerId: ownerId ?? this.ownerId,
     address: address ?? this.address,
-  );  address: address ?? this.address,
   );
 
   @override
