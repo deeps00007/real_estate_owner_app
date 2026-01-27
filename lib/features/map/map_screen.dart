@@ -66,6 +66,27 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _isNearbyActive = !_isNearbyActive;
     });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isNearbyActive
+              ? 'Nearby properties visible (5km radius)'
+              : 'Showing all properties',
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.only(
+          bottom: 100,
+          left: 20,
+          right: 20,
+        ), // Above dock
+        backgroundColor: _isNearbyActive
+            ? const Color(0xFFFF80AB)
+            : Colors.grey[800],
+      ),
+    );
     // PropertyBloc nearby filter removed in favor of UI filtering
   }
 

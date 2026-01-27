@@ -41,7 +41,7 @@ class FloatingActionDock extends StatelessWidget {
           _buildIcon(Icons.refresh, onRefresh, color: Colors.pinkAccent),
           const SizedBox(width: 24),
           _buildIcon(
-            Icons.filter_list,
+            Icons.radar,
             onFilter,
             color: isNearbyActive ? const Color(0xFFFF80AB) : Colors.grey,
           ), // or filter icon
