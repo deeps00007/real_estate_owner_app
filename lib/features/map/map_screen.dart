@@ -350,6 +350,7 @@ class _MapScreenState extends State<MapScreen> {
                 lng: _mapController.camera.center.longitude,
                 imageUrl: 'https://picsum.photos/400/300',
                 type: 'apartment',
+                ownerId: context.read<AuthBloc>().state.ownerId, // Set Owner ID
               );
 
               context.read<PropertyBloc>().add(AddProperty(newProperty));

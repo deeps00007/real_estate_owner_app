@@ -6,7 +6,9 @@ import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onProfileTap;
+
+  const HomeScreen({super.key, this.onProfileTap});
 
   @override
   Widget build(BuildContext context) {
@@ -76,17 +78,20 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.grey[300],
-            image: const DecorationImage(
-              image: NetworkImage(
-                'https://i.pravatar.cc/150?img=32',
-              ), // Mock Avatar
-              fit: BoxFit.cover,
+        GestureDetector(
+          onTap: onProfileTap,
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey[300],
+              image: const DecorationImage(
+                image: NetworkImage(
+                  'https://i.pravatar.cc/150?img=32',
+                ), // Mock Avatar
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),

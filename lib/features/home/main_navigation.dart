@@ -13,8 +13,8 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
+  late final List<Widget> _screens = [
+    HomeScreen(onProfileTap: () => _onItemTapped(3)),
     const MapScreen(),
     const Center(child: Text('Messages - Coming Soon')),
     const ProfileScreen(),
