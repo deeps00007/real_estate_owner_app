@@ -9,7 +9,7 @@ class Property extends Equatable {
   final double lng;
   final String imageUrl;
   final String type;
-  final String? ownerId; // Added
+  final String? address; // Added
 
   const Property({
     required this.id,
@@ -21,6 +21,7 @@ class Property extends Equatable {
     required this.imageUrl,
     required this.type,
     this.ownerId,
+    this.address,
   });
 
   Property copyWith({
@@ -33,6 +34,7 @@ class Property extends Equatable {
     String? imageUrl,
     String? type,
     String? ownerId,
+    String? address,
   }) => Property(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -43,10 +45,11 @@ class Property extends Equatable {
     imageUrl: imageUrl ?? this.imageUrl,
     type: type ?? this.type,
     ownerId: ownerId ?? this.ownerId,
+    address: address ?? this.address,
   );
 
   @override
-  List<Object?> get props => [id, title, price, lat, lng, ownerId];
+  List<Object?> get props => [id, title, price, lat, lng, ownerId, address];
 
   String get formattedPrice {
     if (price >= 10000000) {
@@ -70,6 +73,7 @@ class Property extends Equatable {
     'imageUrl': imageUrl,
     'type': type,
     'ownerId': ownerId,
+    'address': address,
   };
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
@@ -82,5 +86,6 @@ class Property extends Equatable {
     imageUrl: json['imageUrl'] ?? '',
     type: json['type'] ?? '',
     ownerId: json['ownerId'],
+    address: json['address'],
   );
 }
