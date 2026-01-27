@@ -6,6 +6,7 @@ import '../../../models/property.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
+import '../../core/auth_bloc.dart'; // Added
 // Removed 'add_property_screen.dart' as it's not used in the provided context
 import '../property_details/property_detail_screen.dart';
 import 'widgets/floating_action_dock.dart';
@@ -100,134 +101,151 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PropertyBloc, PropertyState>(
-      builder: (context, state) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: Stack(
-            children: [
-              // 1. Full Screen Map
-              Positioned.fill(
-                child: FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter: const LatLng(
-                      28.6692,
-                      77.4549,
-                    ), // Ghaziabad default
-                    initialZoom: 13.0,
-                    onTap: (_, __) =>
-                        FocusManager.instance.primaryFocus?.unfocus(),
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.realestate.owner.app.v1',
-                    ),
-                    MarkerLayer(
-                      markers: state.filteredProperties.map((prop) {
-                        return Marker(
-                          point: LatLng(prop.lat, prop.lng),
-                          width: 100,
-                          height: 60,
-                          child: GestureDetector(
-                            onTap: () => _onMarkerTap(prop),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFFF80AB),
-                                    borderRadius: BorderRadius.circular(20),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 4,
-                                        offset: Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    prop.formattedPrice,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.location_on,
-                                  color: Colors.black,
-                                  size: 30,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 2. Floating Search Bar (Top)
-              Positioned(
-                top: 50,
-                left: 20,
-                right: 20,
-                child: _buildFloatingSearchBar(context),
-              ),
-
-              // 3. Properties Carousel (Bottom)
-              Positioned(
-                bottom: 120, // Space for Bottom Navigation and Action Dock
-                left: 0,
-                right: 0,
-                height: 140,
-                child: state.filteredProperties.isEmpty
-                    ? const SizedBox()
-                    : PageView.builder(
-                        controller: _pageController,
-                        itemCount: state.filteredProperties.length,
-                        padEnds: true,
-                        itemBuilder: (context, index) {
-                          final prop = state.filteredProperties[index];
-                          return MapPropertyCard(
-                            property: prop,
-                            onTap: () => _showDetails(context, prop),
-                          );
-                        },
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        return BlocBuilder<PropertyBloc, PropertyState>(
+          builder: (context, state) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: Stack(
+                children: [
+                  // ... (Existing Map and Overlays)
+                  // 1. Full Screen Map
+                  Positioned.fill(
+                    child: FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter: const LatLng(
+                          28.6692,
+                          77.4549,
+                        ), // Ghaziabad default
+                        initialZoom: 13.0,
+                        onTap: (_, __) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
                       ),
-              ),
-
-              // 4. Floating Action Dock (Bottom Center)
-              Positioned(
-                bottom: 30, // Above MainNavigation
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: FloatingActionDock(
-                    onExpand: () {
-                      // Implementation for expand
-                    },
-                    onNavigate: () async {
-                      // Implementation for navigate
-                    },
-                    onRefresh: () =>
-                        context.read<PropertyBloc>().add(LoadProperties()),
-                    onFilter: () =>
-                        _toggleNearby(), // Using filter for nearby toggle for now
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName: 'com.realestate.owner.app.v1',
+                        ),
+                        MarkerLayer(
+                          markers: state.filteredProperties.map((prop) {
+                            return Marker(
+                              point: LatLng(prop.lat, prop.lng),
+                              width: 100,
+                              height: 60,
+                              child: GestureDetector(
+                                onTap: () => _onMarkerTap(prop),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFF80AB),
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 4,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        prop.formattedPrice,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+
+                  // 2. Floating Search Bar (Top)
+                  Positioned(
+                    top: 50,
+                    left: 20,
+                    right: 20,
+                    child: _buildFloatingSearchBar(context),
+                  ),
+
+                  // 3. Properties Carousel (Bottom)
+                  Positioned(
+                    bottom: 120, // Space for Bottom Navigation and Action Dock
+                    left: 0,
+                    right: 0,
+                    height: 140,
+                    child: state.filteredProperties.isEmpty
+                        ? const SizedBox()
+                        : PageView.builder(
+                            controller: _pageController,
+                            itemCount: state.filteredProperties.length,
+                            padEnds: true,
+                            itemBuilder: (context, index) {
+                              final prop = state.filteredProperties[index];
+                              return MapPropertyCard(
+                                property: prop,
+                                onTap: () => _showDetails(context, prop),
+                              );
+                            },
+                          ),
+                  ),
+
+                  // 4. Floating Action Dock (Bottom Center)
+                  Positioned(
+                    bottom: 30, // Above MainNavigation
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: FloatingActionDock(
+                        onExpand: () {
+                          // Implementation for expand
+                        },
+                        onNavigate: () async {
+                          // Implementation for navigate
+                        },
+                        onRefresh: () =>
+                            context.read<PropertyBloc>().add(LoadProperties()),
+                        onFilter: () =>
+                            _toggleNearby(), // Using filter for nearby toggle for now
+                      ),
+                    ),
+                  ),
+
+                  // 5. Admin Add Property Button
+                  if (authState.isOwner)
+                    Positioned(
+                      bottom: 110,
+                      right: 20,
+                      child: FloatingActionButton(
+                        backgroundColor: const Color(0xFFFF80AB),
+                        onPressed: () => _showAddPropertyDialog(context),
+                        child: const Icon(Icons.add, color: Colors.white),
+                      ),
+                    ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

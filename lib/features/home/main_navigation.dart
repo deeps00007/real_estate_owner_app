@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import '../map/map_screen.dart';
+import '../profile/profile_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -16,7 +17,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomeScreen(),
     const MapScreen(),
     const Center(child: Text('Messages - Coming Soon')),
-    const Center(child: Text('Profile - Coming Soon')),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
