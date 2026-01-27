@@ -298,4 +298,70 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+
+  void _showAddPropertyDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final priceController = TextEditingController();
+    final addressController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Add New Property'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'Title'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: priceController,
+              decoration: const InputDecoration(
+                labelText: 'Price (e.g., 50000)',
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: addressController,
+              decoration: const InputDecoration(labelText: 'Location Name'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final double price = double.tryParse(priceController.text) ?? 0.0;
+              // Using a simple ID generation strategy for demo
+              final newProperty = Property(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                title: titleController.text,
+                description: addressController.text.isNotEmpty
+                    ? addressController.text
+                    : 'New Listing',
+                price: price,
+                lat: _mapController.camera.center.latitude,
+                lng: _mapController.camera.center.longitude,
+                imageUrl: 'https://picsum.photos/400/300',
+                type: 'apartment',
+              );
+
+              context.read<PropertyBloc>().add(AddProperty(newProperty));
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Property Added!')));
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
 }
