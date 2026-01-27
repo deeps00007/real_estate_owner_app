@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart' hide debugPrint;
-import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
+import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer, LatLngBounds, CameraFit;
 
 import 'package:latlong2/latlong.dart'; // Transitive from flutter_map_smart
 import '../../../models/property.dart';
@@ -245,6 +245,7 @@ class _MapScreenState extends State<MapScreen> {
                             context.read<PropertyBloc>().add(LoadProperties()),
                         onFilter: () =>
                             _toggleNearby(), // Using filter for nearby toggle for now
+                        onMore: _showMoreOptions,
                         isNearbyActive: _isNearbyActive,
                       ),
                       // child: FloatingActionDock(
