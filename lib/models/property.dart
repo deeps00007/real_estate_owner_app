@@ -10,6 +10,7 @@ class Property extends Equatable {
   final String imageUrl;
   final String type;
   final String? address; // Added
+  final String? ownerId; // Added
 
   const Property({
     required this.id,
