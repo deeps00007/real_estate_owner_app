@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart' hide debugPrint;
-import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer, LatLngBounds, CameraFit;
+import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
 
 import 'package:latlong2/latlong.dart'; // Transitive from flutter_map_smart
 import '../../../models/property.dart';
@@ -103,26 +103,6 @@ class _MapScreenState extends State<MapScreen> {
         curve: Curves.easeInOut,
       );
     }
-  void _fitBounds() {
-    final state = context.read<PropertyBloc>().state;
-    if (state.filteredProperties.isEmpty) return;
-
-    final points =
-        state.filteredProperties.map((p) => LatLng(p.lat, p.lng)).toList();
-    if (points.isEmpty) return;
-
-    final bounds = LatLngBounds.fromPoints(points);
-    // Add padding so markers aren't on the edge
-    final paddedBounds = LatLngBounds(
-        LatLng(bounds.south - 0.01, bounds.west - 0.01),
-        LatLng(bounds.north + 0.01, bounds.east + 0.01));
-
-    _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: paddedBounds,
-        padding: const EdgeInsets.all(50),
-      ),
-    );
   }
 
   void _recenterMap() {
@@ -239,7 +219,6 @@ class _MapScreenState extends State<MapScreen> {
                     right: 0,
                     child: Center(
                       child: FloatingActionDock(
-                        onExpand: _fitBounds,
                         onNavigate: _recenterMap,
                         onRefresh: () =>
                             context.read<PropertyBloc>().add(LoadProperties()),
@@ -248,15 +227,15 @@ class _MapScreenState extends State<MapScreen> {
                         onMore: _showMoreOptions,
                         isNearbyActive: _isNearbyActive,
                       ),
+
                       // child: FloatingActionDock(
                       //   onExpand: () {
                       //     // Implementation for expand
                       //   },
                       //   onNavigate: () async {
                       //     // Implementation for navigate
-                      //   }, 
+                      //   },
                       // ... (removed old implementation)
-
                     ),
                   ),
 

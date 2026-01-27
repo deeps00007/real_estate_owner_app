@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class FloatingActionDock extends StatelessWidget {
-  final VoidCallback onExpand;
   final VoidCallback onNavigate;
   final VoidCallback onRefresh;
   final VoidCallback onFilter;
@@ -10,7 +9,6 @@ class FloatingActionDock extends StatelessWidget {
 
   const FloatingActionDock({
     super.key,
-    required this.onExpand,
     required this.onNavigate,
     required this.onRefresh,
     required this.onFilter,
@@ -36,8 +34,6 @@ class FloatingActionDock extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildIcon(Icons.fullscreen, onExpand, color: Colors.pinkAccent),
-          const SizedBox(width: 24),
           _buildIcon(Icons.navigation, onNavigate, color: Colors.pinkAccent),
           const SizedBox(width: 24),
           _buildIcon(Icons.refresh, onRefresh, color: Colors.pinkAccent),
