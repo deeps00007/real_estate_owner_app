@@ -121,6 +121,7 @@ class _MapScreenState extends State<MapScreen> {
                     child: FlutterMapSmart.simple(
                       mapController: _mapController,
                       items: state.filteredProperties,
+                      initialCenter: const LatLng(28.6139, 77.2090), // Delhi
                       latitude: (Property prop) => prop.lat,
                       longitude: (Property prop) => prop.lng,
                       markerImage: (Property prop) => prop.imageUrl,

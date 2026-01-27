@@ -12,8 +12,8 @@ class LocationPickerScreen extends StatefulWidget {
 }
 
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
-  // Default Location: Ghaziabad
-  LatLng _pickedLocation = const LatLng(28.6692, 77.4538);
+  // Default Location: Delhi
+  LatLng _pickedLocation = const LatLng(28.6139, 77.2090);
 
   @override
   Widget build(BuildContext context) {
