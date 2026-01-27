@@ -32,6 +32,9 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<AddProperty>((event, emit) async {
       await firebaseService.addProperty(event.property);
     });
+    on<UpdateProperty>((event, emit) async {
+      await firebaseService.updateProperty(event.property);
+    });
   }
 
   Future<void> _onLoadProperties(

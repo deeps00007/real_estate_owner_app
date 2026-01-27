@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:real_estate_owner_app/models/property.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/auth_bloc.dart';
+import '../map/bloc/property_bloc.dart';
+import '../map/bloc/property_event.dart';
+import '../admin/add_edit_property_screen.dart';
 
 class PropertyDetailScreen extends StatelessWidget {
   final Property property;
@@ -44,10 +49,51 @@ class PropertyDetailScreen extends StatelessWidget {
                   icon: Icons.arrow_back,
                   onTap: () => Navigator.pop(context),
                 ),
-                _buildCircleIcon(
-                  context,
-                  icon: Icons.favorite_border,
-                  onTap: () {}, // TODO: Favorite toggle
+                // Owner Actions
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state.isOwner && state.ownerId == property.ownerId) {
+                      return Row(
+                        children: [
+                          _buildCircleIcon(
+                            context,
+                            icon: Icons.edit,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddEditPropertyScreen(property: property),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          _buildCircleIcon(
+                            context,
+                            icon: Icons.delete,
+                            onTap: () {
+                              context.read<PropertyBloc>().add(
+                                DeleteProperty(property.id),
+                              );
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Property Deleted'),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    } else {
+                      return _buildCircleIcon(
+                        context,
+                        icon: Icons.favorite_border,
+                        onTap: () {}, // TODO: Favorite toggle
+                      );
+                    }
+                  },
                 ),
               ],
             ),

@@ -13,6 +13,7 @@ import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/floating_action_dock.dart';
 import 'widgets/map_property_card.dart';
+import '../admin/add_edit_property_screen.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 // import 'package:geolocator/geolocator.dart'; // Handled by package
 
@@ -308,69 +309,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showAddPropertyDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final priceController = TextEditingController();
-    final addressController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add New Property'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: priceController,
-              decoration: const InputDecoration(
-                labelText: 'Price (e.g., 50000)',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: addressController,
-              decoration: const InputDecoration(labelText: 'Location Name'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final double price = double.tryParse(priceController.text) ?? 0.0;
-              // Using a simple ID generation strategy for demo
-              final newProperty = Property(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                title: titleController.text,
-                description: addressController.text.isNotEmpty
-                    ? addressController.text
-                    : 'New Listing',
-                price: price,
-                lat: _mapController.camera.center.latitude,
-                lng: _mapController.camera.center.longitude,
-                imageUrl: 'https://picsum.photos/400/300',
-                type: 'apartment',
-                ownerId: context.read<AuthBloc>().state.ownerId, // Set Owner ID
-              );
-
-              context.read<PropertyBloc>().add(AddProperty(newProperty));
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Property Added!')));
-            },
-            child: const Text('Add'),
-          ),
-        ],
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddEditPropertyScreen()),
     );
   }
 }

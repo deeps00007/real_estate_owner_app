@@ -26,6 +26,16 @@ class FirebaseService {
     await _firestore.collection('properties').add(property.toJson());
   }
 
+  Future<void> updateProperty(Property property) async {
+    final query = await _firestore
+        .collection('properties')
+        .where('id', isEqualTo: property.id)
+        .get();
+    for (var doc in query.docs) {
+      await doc.reference.update(property.toJson());
+    }
+  }
+
   Future<void> deleteProperty(String id) async {
     final query = await _firestore
         .collection('properties')

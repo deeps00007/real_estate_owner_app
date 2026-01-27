@@ -47,3 +47,11 @@ class AddProperty extends PropertyEvent {
   @override
   List<Object?> get props => [property];
 }
+
+class UpdateProperty extends PropertyEvent {
+  final Property property;
+  const UpdateProperty(this.property);
+
+  @override
+  List<Object?> get props => [property];
+}
