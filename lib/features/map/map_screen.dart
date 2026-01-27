@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart'; // Changed from flutter_map_smart
-import 'package:latlong2/latlong.dart'; // Added for LatLng
+import 'package:flutter_map_smart/flutter_map_smart.dart' hide debugPrint;
+import 'package:flutter_map/flutter_map.dart' show MapController;
+
+import 'package:latlong2/latlong.dart'; // Transitive from flutter_map_smart
 import '../../../models/property.dart';
 import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
@@ -12,7 +14,7 @@ import '../property_details/property_detail_screen.dart';
 import 'widgets/floating_action_dock.dart';
 import 'widgets/map_property_card.dart';
 import 'package:geocoding/geocoding.dart' as geo;
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart'; // Handled by package
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -60,28 +62,11 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _toggleNearby() async {
-    final bloc = context.read<PropertyBloc>();
-
-    if (!_isNearbyActive) {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
-      }
-
-      if (permission == LocationPermission.deniedForever) return;
-
-      final position = await Geolocator.getCurrentPosition();
-      bloc.add(UpdateUserLocation(position.latitude, position.longitude));
-
-      _mapController.move(LatLng(position.latitude, position.longitude), 14.0);
-    }
-
+  void _toggleNearby() {
     setState(() {
       _isNearbyActive = !_isNearbyActive;
     });
-    bloc.add(ToggleNearbyFilter());
+    // PropertyBloc nearby filter removed in favor of UI filtering
   }
 
   void _onMarkerTap(Property property) {
@@ -112,71 +97,19 @@ class _MapScreenState extends State<MapScreen> {
                   // ... (Existing Map and Overlays)
                   // 1. Full Screen Map
                   Positioned.fill(
-                    child: FlutterMap(
+                    child: FlutterMapSmart.simple(
                       mapController: _mapController,
-                      options: MapOptions(
-                        initialCenter: const LatLng(
-                          28.6692,
-                          77.4549,
-                        ), // Ghaziabad default
-                        initialZoom: 13.0,
-                        onTap: (_, __) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.realestate.owner.app.v1',
-                        ),
-                        MarkerLayer(
-                          markers: state.filteredProperties.map((prop) {
-                            return Marker(
-                              point: LatLng(prop.lat, prop.lng),
-                              width: 100,
-                              height: 60,
-                              child: GestureDetector(
-                                onTap: () => _onMarkerTap(prop),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFF80AB),
-                                        borderRadius: BorderRadius.circular(20),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 4,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Text(
-                                        prop.formattedPrice,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                    const Icon(
-                                      Icons.location_on,
-                                      color: Colors.black,
-                                      size: 30,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
+                      items: state.filteredProperties,
+                      latitude: (Property prop) => prop.lat,
+                      longitude: (Property prop) => prop.lng,
+                      markerImage: (Property prop) => prop.imageUrl,
+                      onTap: (Property prop) => _onMarkerTap(prop),
+                      onMapTap: (_, __) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      showUserLocation: _isNearbyActive, // Or track separately
+                      enableNearby: _isNearbyActive,
+                      nearbyRadiusKm: 5.0, // Default 5km radius
+                      radiusColor: const Color(0xFF6366F1).withOpacity(0.12),
                     ),
                   ),
 
@@ -230,6 +163,7 @@ class _MapScreenState extends State<MapScreen> {
                             context.read<PropertyBloc>().add(LoadProperties()),
                         onFilter: () =>
                             _toggleNearby(), // Using filter for nearby toggle for now
+                        isNearbyActive: _isNearbyActive,
                       ),
                     ),
                   ),

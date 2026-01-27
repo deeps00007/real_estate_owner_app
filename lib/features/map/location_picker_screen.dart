@@ -1,6 +1,6 @@
 // TODO Implement this library.
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_smart/flutter_map_smart.dart';
 import 'package:latlong2/latlong.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -26,36 +26,13 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           ),
         ],
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: _pickedLocation,
-          initialZoom: 13,
-          onTap: (_, latLng) {
-            setState(() {
-              _pickedLocation = latLng;
-            });
-          },
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.realestate.owner.app.v1',
-          ),
-          MarkerLayer(
-            markers: [
-              Marker(
-                point: _pickedLocation,
-                width: 50,
-                height: 50,
-                child: const Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                  size: 40,
-                ),
-              ),
-            ],
-          ),
-        ],
+      body: SmartLocationPicker(
+        initialCenter: _pickedLocation,
+        onLocationChanged: (latLng) {
+          setState(() {
+            _pickedLocation = latLng;
+          });
+        },
       ),
     );
   }

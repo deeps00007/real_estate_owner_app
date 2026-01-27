@@ -370,10 +370,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_map_smart
-      sha256: "88045d56e72a3ee5af8e071bb27103035c942cf48aa94669e2b5614d97ed3dc0"
+      sha256: "387df88cdf01b120b6a31f6cd82b4643c30f970c821253ff5b64ff0a1baae1a8"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -433,7 +433,7 @@ packages:
     source: hosted
     version: "3.2.0"
   geolocator:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: geolocator
       sha256: "79939537046c9025be47ec645f35c8090ecadb6fe98eba146a0d25e8c1357516"
