@@ -92,7 +92,7 @@ class _MapScreenState extends State<MapScreen> {
     );
     if (index != -1) {
       _scrollController.animateTo(
-        index * 320.0, // 300 width + 20 padding/margin estimate
+        index * 296.0, // 280 width + 16 separator
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
