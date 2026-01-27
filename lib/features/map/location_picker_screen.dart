@@ -1,6 +1,7 @@
 // TODO Implement this library.
 import 'package:flutter/material.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart';
+import 'package:flutter_map/flutter_map.dart'; // For TileLayer override
 import 'package:latlong2/latlong.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -26,13 +27,30 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           ),
         ],
       ),
-      body: SmartLocationPicker(
-        initialCenter: _pickedLocation,
-        onLocationChanged: (latLng) {
-          setState(() {
-            _pickedLocation = latLng;
-          });
-        },
+      body: Stack(
+        children: [
+          FlutterMap(
+            options: MapOptions(
+              initialCenter: _pickedLocation,
+              initialZoom: 13.0,
+              onPositionChanged: (camera, hasGesture) {
+                _pickedLocation = camera.center;
+              },
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.realestate.owner.app.v1',
+              ),
+            ],
+          ),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 35.0),
+              child: Icon(Icons.location_on, size: 50, color: Colors.red),
+            ),
+          ),
+        ],
       ),
     );
   }

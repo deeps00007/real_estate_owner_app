@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart' hide debugPrint;
-import 'package:flutter_map/flutter_map.dart' show MapController;
+import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
 
 import 'package:latlong2/latlong.dart'; // Transitive from flutter_map_smart
 import '../../../models/property.dart';
@@ -131,6 +131,14 @@ class _MapScreenState extends State<MapScreen> {
                       enableNearby: _isNearbyActive,
                       nearbyRadiusKm: 5.0, // Default 5km radius
                       radiusColor: const Color(0xFF6366F1).withOpacity(0.12),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName:
+                              'com.realestate.owner.app.v1', // Fix for OSM policy
+                        ),
+                      ],
                     ),
                   ),
 
