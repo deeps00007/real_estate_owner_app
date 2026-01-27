@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
+import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -182,11 +183,12 @@ class HomeScreen extends StatelessWidget {
                 property: property,
                 isFeatured: true, // Use the large vertical card style
                 onTap: () {
-                  // Navigate to formatted details or use existing sheet
-                  // leveraging the bloc to show details?
-                  // Ideally we'd navigate to a Details Screen.
-                  // For now, consistent interaction -> maybe nothing or minimal.
-                  // The prompt didn't specify interaction, just the screen.
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PropertyDetailScreen(property: property),
+                    ),
+                  );
                 },
               );
             },
@@ -215,6 +217,14 @@ class HomeScreen extends StatelessWidget {
             return PropertyCard(
               property: property,
               isFeatured: false, // Use standard horizontal style
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PropertyDetailScreen(property: property),
+                  ),
+                );
+              },
             );
           },
         );

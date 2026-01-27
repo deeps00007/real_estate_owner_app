@@ -7,7 +7,7 @@ import 'bloc/property_bloc.dart';
 import 'bloc/property_event.dart';
 import 'bloc/property_state.dart';
 // Removed 'add_property_screen.dart' as it's not used in the provided context
-import 'widgets/property_detail_sheet.dart';
+import '../property_details/property_detail_screen.dart';
 import 'widgets/floating_action_dock.dart';
 import 'widgets/map_property_card.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -273,11 +273,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showDetails(BuildContext context, Property property) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => PropertyDetailSheet(property: property),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PropertyDetailScreen(property: property),
+      ),
     );
   }
 }
