@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../models/property.dart';
 
 abstract class PropertyEvent extends Equatable {
   const PropertyEvent();
@@ -37,4 +38,12 @@ class UpdateUserLocation extends PropertyEvent {
 
   @override
   List<Object?> get props => [latitude, longitude];
+}
+
+class AddProperty extends PropertyEvent {
+  final Property property;
+  const AddProperty(this.property);
+
+  @override
+  List<Object?> get props => [property];
 }
