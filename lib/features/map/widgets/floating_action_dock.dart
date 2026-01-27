@@ -5,6 +5,7 @@ class FloatingActionDock extends StatelessWidget {
   final VoidCallback onNavigate;
   final VoidCallback onRefresh;
   final VoidCallback onFilter;
+  final VoidCallback onMore; // Added
   final bool isNearbyActive;
 
   const FloatingActionDock({
@@ -13,6 +14,7 @@ class FloatingActionDock extends StatelessWidget {
     required this.onNavigate,
     required this.onRefresh,
     required this.onFilter,
+    required this.onMore, // Added
     this.isNearbyActive = false,
   });
 
@@ -46,7 +48,7 @@ class FloatingActionDock extends StatelessWidget {
             color: isNearbyActive ? const Color(0xFFFF80AB) : Colors.grey,
           ), // or filter icon
           const SizedBox(width: 24),
-          _buildIcon(Icons.more_horiz, () {}, color: Colors.pinkAccent),
+          _buildIcon(Icons.more_horiz, onMore, color: Colors.pinkAccent),
         ],
       ),
     );

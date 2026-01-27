@@ -103,6 +103,62 @@ class _MapScreenState extends State<MapScreen> {
         curve: Curves.easeInOut,
       );
     }
+  void _fitBounds() {
+    final state = context.read<PropertyBloc>().state;
+    if (state.filteredProperties.isEmpty) return;
+
+    final points =
+        state.filteredProperties.map((p) => LatLng(p.lat, p.lng)).toList();
+    if (points.isEmpty) return;
+
+    final bounds = LatLngBounds.fromPoints(points);
+    // Add padding so markers aren't on the edge
+    final paddedBounds = LatLngBounds(
+        LatLng(bounds.south - 0.01, bounds.west - 0.01),
+        LatLng(bounds.north + 0.01, bounds.east + 0.01));
+
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: paddedBounds,
+        padding: const EdgeInsets.all(50),
+      ),
+    );
+  }
+
+  void _recenterMap() {
+    // Reset to default Delphi location
+    _mapController.move(const LatLng(28.6139, 77.2090), 13.0);
+  }
+
+  void _showMoreOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.restart_alt, color: Color(0xFFFF80AB)),
+              title: const Text('Reset Map View'),
+              onTap: () {
+                Navigator.pop(context);
+                _recenterMap();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline, color: Color(0xFFFF80AB)),
+              title: const Text('About this Map'),
+              subtitle: const Text('Using FlutterMapSmart & OpenStreetMap'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -183,18 +239,23 @@ class _MapScreenState extends State<MapScreen> {
                     right: 0,
                     child: Center(
                       child: FloatingActionDock(
-                        onExpand: () {
-                          // Implementation for expand
-                        },
-                        onNavigate: () async {
-                          // Implementation for navigate
-                        },
+                        onExpand: _fitBounds,
+                        onNavigate: _recenterMap,
                         onRefresh: () =>
                             context.read<PropertyBloc>().add(LoadProperties()),
                         onFilter: () =>
                             _toggleNearby(), // Using filter for nearby toggle for now
                         isNearbyActive: _isNearbyActive,
                       ),
+                      // child: FloatingActionDock(
+                      //   onExpand: () {
+                      //     // Implementation for expand
+                      //   },
+                      //   onNavigate: () async {
+                      //     // Implementation for navigate
+                      //   }, 
+                      // ... (removed old implementation)
+
                     ),
                   ),
 
