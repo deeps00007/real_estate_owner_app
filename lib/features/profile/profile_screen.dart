@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/auth_bloc.dart';
+import 'my_properties_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -89,13 +90,50 @@ class ProfileScreen extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.all(24),
                     children: [
-                      _buildMenuItem(Icons.person, 'My Profile'),
+                      if (state.isOwner) ...[
+                        _buildMenuItem(
+                          context,
+                          Icons.home_work,
+                          'My Properties',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const MyPropertiesScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      _buildMenuItem(
+                        context,
+                        Icons.person,
+                        'My Profile',
+                        onTap: () {},
+                      ),
                       const SizedBox(height: 16),
-                      _buildMenuItem(Icons.palette, 'App Theme'),
+                      _buildMenuItem(
+                        context,
+                        Icons.palette,
+                        'App Theme',
+                        onTap: () {},
+                      ),
                       const SizedBox(height: 16),
-                      _buildMenuItem(Icons.settings, 'Settings'),
+                      _buildMenuItem(
+                        context,
+                        Icons.settings,
+                        'Settings',
+                        onTap: () {},
+                      ),
                       const SizedBox(height: 16),
-                      _buildMenuItem(Icons.notifications, 'Notifications'),
+                      _buildMenuItem(
+                        context,
+                        Icons.notifications,
+                        'Notifications',
+                        onTap: () {},
+                      ),
                       const SizedBox(height: 40),
 
                       // Actions
@@ -144,28 +182,36 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFFFF80AB)),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: const Color(0xFFFF80AB)),
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          const Spacer(),
-          const Icon(Icons.chevron_right, color: Colors.grey),
-        ],
+            const Spacer(),
+            const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

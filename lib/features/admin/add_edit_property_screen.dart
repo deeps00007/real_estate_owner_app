@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/auth_bloc.dart';
+import '../../core/image_upload_service.dart';
 import '../../models/property.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
@@ -67,6 +70,21 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
     super.dispose();
   }
 
+  File? _selectedImage;
+  bool _isUploading = false;
+
+  void _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _imageUrlController.clear(); // Clear URL if local image selected
+      });
+    }
+  }
+
   void _pickLocation() async {
     final result = await Navigator.push<LatLng>(
       context,
@@ -80,7 +98,7 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
     }
   }
 
-  void _saveProperty() {
+  Future<void> _saveProperty() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedLocation == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -97,6 +115,30 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
         return;
       }
 
+      setState(() => _isUploading = true);
+
+      String imageUrl = _imageUrlController.text;
+      if (_selectedImage != null) {
+        final uploadedUrl = await ImageUploadService().uploadImage(
+          _selectedImage!,
+        );
+        if (uploadedUrl != null) {
+          imageUrl = uploadedUrl;
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to upload image')),
+            );
+            setState(() => _isUploading = false);
+            return;
+          }
+        }
+      }
+
+      if (imageUrl.isEmpty) {
+        imageUrl = 'https://picsum.photos/400/300'; // Default
+      }
+
       final double price = double.tryParse(_priceController.text) ?? 0.0;
       final property = Property(
         id: widget.isEdit
@@ -107,13 +149,13 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
         price: price,
         lat: _selectedLocation!.latitude,
         lng: _selectedLocation!.longitude,
-        imageUrl: _imageUrlController.text.isNotEmpty
-            ? _imageUrlController.text
-            : 'https://picsum.photos/400/300', // Default
+        imageUrl: imageUrl,
         type: _typeController.text,
         ownerId: ownerId,
         address: _addressController.text,
       );
+
+      if (!mounted) return;
 
       final bloc = context.read<PropertyBloc>();
       if (widget.isEdit) {
@@ -147,7 +189,19 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
           padding: const EdgeInsets.all(20),
           children: [
             // Image Preview (if URL valid)
-            if (_imageUrlController.text.isNotEmpty)
+            // Image Preview (Local or Network)
+            if (_selectedImage != null)
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    image: FileImage(_selectedImage!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+            else if (_imageUrlController.text.isNotEmpty)
               Container(
                 height: 200,
                 decoration: BoxDecoration(
@@ -158,6 +212,24 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
                   ),
                 ),
               ),
+
+            const SizedBox(height: 10),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.image),
+                label: const Text('Pick Image from Gallery'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[200],
+                  foregroundColor: Colors.black87,
+                ),
+              ),
+            ),
+            if (_isUploading) ...[
+              const SizedBox(height: 10),
+              const Center(child: LinearProgressIndicator()),
+              const Center(child: Text('Uploading Image...')),
+            ],
             const SizedBox(height: 20),
 
             _buildTextField('Title', _titleController),

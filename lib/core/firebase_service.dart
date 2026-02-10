@@ -16,9 +16,14 @@ class FirebaseService {
         .orderBy('price')
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => Property.fromJson(doc.data()))
-              .toList(),
+          (snapshot) => snapshot.docs.map((doc) {
+            final data = doc.data();
+            // Fallback for legacy data with missing/empty id
+            if (data['id'] == null || data['id'] == '') {
+              data['id'] = doc.id;
+            }
+            return Property.fromJson(data);
+          }).toList(),
         );
   }
 
