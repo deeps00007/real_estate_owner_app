@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 class ImageUploadService {
   static const String _privateKey = 'private_DAREKSumKgYgTAXq68MtLkoihOQ=';
   static const String _publicKey = 'public_GuI5dCIV1TjRyPOYtsf1IIqXkxk=';
-  static const String _urlEndpoint =
-      'https://ik.imagekit.io/projectss/property_images/';
+
   static const String _uploadUrl =
       'https://upload.imagekit.io/api/v1/files/upload';
 

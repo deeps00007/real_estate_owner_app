@@ -211,10 +211,20 @@ class PropertyDetailScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildAmenityItem(Icons.bed_outlined, '4 Beds'),
-                        _buildAmenityItem(Icons.bathtub_outlined, '2 Baths'),
-                        _buildAmenityItem(Icons.aspect_ratio, '1,250 sqft'),
-                        _buildAmenityItem(Icons.kitchen_outlined, 'Kitchen'),
+                        _buildAmenityItem(
+                          Icons.bed_outlined,
+                          '${property.beds} Beds',
+                        ),
+                        _buildAmenityItem(
+                          Icons.bathtub_outlined,
+                          '${property.baths} Baths',
+                        ),
+                        _buildAmenityItem(
+                          Icons.aspect_ratio,
+                          '${property.sqft.toStringAsFixed(0)} sqft',
+                        ),
+                        if (property.hasKitchen)
+                          _buildAmenityItem(Icons.kitchen_outlined, 'Kitchen'),
                       ],
                     ),
                     const SizedBox(height: 32),
@@ -249,24 +259,27 @@ class PropertyDetailScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Sarah Wilson',
+                                  property.agentName.isNotEmpty
+                                      ? property.agentName
+                                      : 'Listing Agent',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
-                                Text(
-                                  'Real Estate Agent',
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
+                                if (property.agentPhone.isNotEmpty)
+                                  Text(
+                                    property.agentPhone,
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),
@@ -298,36 +311,37 @@ class PropertyDetailScreen extends StatelessWidget {
                     const SizedBox(height: 32),
 
                     // Gallery (Thumbnail placeholder)
-                    const Text(
-                      'Gallery',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    if (property.gallery.isNotEmpty) ...[
+                      const Text(
+                        'Gallery',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 80,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
-                        itemBuilder: (context, index) {
-                          return Container(
-                            width: 80,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                  'https://picsum.photos/200/200?random=$index',
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 80,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: property.gallery.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                image: DecorationImage(
+                                  image: NetworkImage(property.gallery[index]),
+                                  fit: BoxFit.cover,
                                 ),
-                                fit: BoxFit.cover,
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

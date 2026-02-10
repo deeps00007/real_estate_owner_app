@@ -12,6 +12,14 @@ class Property extends Equatable {
   final String? address; // Added
   final String? ownerId; // Added
 
+  final int beds;
+  final int baths;
+  final double sqft;
+  final bool hasKitchen;
+  final String agentName;
+  final String agentPhone;
+  final List<String> gallery;
+
   const Property({
     required this.id,
     required this.title,
@@ -23,6 +31,13 @@ class Property extends Equatable {
     required this.type,
     this.ownerId,
     this.address,
+    this.beds = 0,
+    this.baths = 0,
+    this.sqft = 0.0,
+    this.hasKitchen = false,
+    this.agentName = '',
+    this.agentPhone = '',
+    this.gallery = const [],
   });
 
   Property copyWith({
@@ -36,6 +51,13 @@ class Property extends Equatable {
     String? type,
     String? ownerId,
     String? address,
+    int? beds,
+    int? baths,
+    double? sqft,
+    bool? hasKitchen,
+    String? agentName,
+    String? agentPhone,
+    List<String>? gallery,
   }) => Property(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -47,10 +69,32 @@ class Property extends Equatable {
     type: type ?? this.type,
     ownerId: ownerId ?? this.ownerId,
     address: address ?? this.address,
+    beds: beds ?? this.beds,
+    baths: baths ?? this.baths,
+    sqft: sqft ?? this.sqft,
+    hasKitchen: hasKitchen ?? this.hasKitchen,
+    agentName: agentName ?? this.agentName,
+    agentPhone: agentPhone ?? this.agentPhone,
+    gallery: gallery ?? this.gallery,
   );
 
   @override
-  List<Object?> get props => [id, title, price, lat, lng, ownerId, address];
+  List<Object?> get props => [
+    id,
+    title,
+    price,
+    lat,
+    lng,
+    ownerId,
+    address,
+    beds,
+    baths,
+    sqft,
+    hasKitchen,
+    agentName,
+    agentPhone,
+    gallery,
+  ];
 
   String get formattedPrice {
     if (price >= 10000000) {
@@ -75,6 +119,13 @@ class Property extends Equatable {
     'type': type,
     'ownerId': ownerId,
     'address': address,
+    'beds': beds,
+    'baths': baths,
+    'sqft': sqft,
+    'hasKitchen': hasKitchen,
+    'agentName': agentName,
+    'agentPhone': agentPhone,
+    'gallery': gallery,
   };
 
   factory Property.fromJson(Map<String, dynamic> json) => Property(
@@ -88,5 +139,12 @@ class Property extends Equatable {
     type: json['type'] ?? '',
     ownerId: json['ownerId'],
     address: json['address'],
+    beds: json['beds'] ?? 0,
+    baths: json['baths'] ?? 0,
+    sqft: (json['sqft'] as num?)?.toDouble() ?? 0.0,
+    hasKitchen: json['hasKitchen'] ?? false,
+    agentName: json['agentName'] ?? '',
+    agentPhone: json['agentPhone'] ?? '',
+    gallery: List<String>.from(json['gallery'] ?? []),
   );
 }

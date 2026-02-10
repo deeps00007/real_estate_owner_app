@@ -29,6 +29,14 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
   late TextEditingController _addressController;
   late TextEditingController _imageUrlController;
   late TextEditingController _typeController;
+  late TextEditingController _bedsController;
+  late TextEditingController _bathsController;
+  late TextEditingController _sqftController;
+  late TextEditingController _agentNameController;
+  late TextEditingController _agentPhoneController;
+  bool _hasKitchen = false;
+  List<String> _galleryUrls = [];
+  List<File> _galleryFiles = [];
 
   LatLng? _selectedLocation;
 
@@ -53,6 +61,23 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
     _typeController = TextEditingController(
       text: widget.property?.type ?? 'Apartment',
     );
+    _bedsController = TextEditingController(
+      text: widget.property?.beds.toString() ?? '0',
+    );
+    _bathsController = TextEditingController(
+      text: widget.property?.baths.toString() ?? '0',
+    );
+    _sqftController = TextEditingController(
+      text: widget.property?.sqft.toString() ?? '0.0',
+    );
+    _agentNameController = TextEditingController(
+      text: widget.property?.agentName ?? '',
+    );
+    _agentPhoneController = TextEditingController(
+      text: widget.property?.agentPhone ?? '',
+    );
+    _hasKitchen = widget.property?.hasKitchen ?? false;
+    _galleryUrls = List.from(widget.property?.gallery ?? []);
 
     if (widget.isEdit) {
       _selectedLocation = LatLng(widget.property!.lat, widget.property!.lng);
@@ -67,6 +92,11 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
     _addressController.dispose();
     _imageUrlController.dispose();
     _typeController.dispose();
+    _bedsController.dispose();
+    _bathsController.dispose();
+    _sqftController.dispose();
+    _agentNameController.dispose();
+    _agentPhoneController.dispose();
     super.dispose();
   }
 
@@ -81,6 +111,17 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
       setState(() {
         _selectedImage = File(pickedFile.path);
         _imageUrlController.clear(); // Clear URL if local image selected
+      });
+    }
+  }
+
+  void _pickGalleryImages() async {
+    final picker = ImagePicker();
+    final pickedFiles = await picker.pickMultiImage();
+
+    if (pickedFiles.isNotEmpty) {
+      setState(() {
+        _galleryFiles.addAll(pickedFiles.map((x) => File(x.path)));
       });
     }
   }
@@ -139,7 +180,22 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
         imageUrl = 'https://picsum.photos/400/300'; // Default
       }
 
+      // Upload Gallery Images
+      List<String> finalGallery = List.from(_galleryUrls);
+      if (_galleryFiles.isNotEmpty) {
+        for (var file in _galleryFiles) {
+          final url = await ImageUploadService().uploadImage(file);
+          if (url != null) {
+            finalGallery.add(url);
+          }
+        }
+      }
+
       final double price = double.tryParse(_priceController.text) ?? 0.0;
+      final int beds = int.tryParse(_bedsController.text) ?? 0;
+      final int baths = int.tryParse(_bathsController.text) ?? 0;
+      final double sqft = double.tryParse(_sqftController.text) ?? 0.0;
+
       final property = Property(
         id: widget.isEdit
             ? widget.property!.id
@@ -153,6 +209,13 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
         type: _typeController.text,
         ownerId: ownerId,
         address: _addressController.text,
+        beds: beds,
+        baths: baths,
+        sqft: sqft,
+        hasKitchen: _hasKitchen,
+        agentName: _agentNameController.text,
+        agentPhone: _agentPhoneController.text,
+        gallery: finalGallery,
       );
 
       if (!mounted) return;
@@ -243,6 +306,121 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
             _buildTextField('Address / Location Name', _addressController),
             const SizedBox(height: 16),
             _buildTextField('Image URL', _imageUrlController),
+
+            const SizedBox(height: 24),
+            const Text(
+              'Amenities & Details',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    'Beds',
+                    _bedsController,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildTextField(
+                    'Baths',
+                    _bathsController,
+                    isNumber: true,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    'Area (sqft)',
+                    _sqftController,
+                    isNumber: true,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SwitchListTile(
+                    title: const Text('Kitchen'),
+                    value: _hasKitchen,
+                    onChanged: (val) => setState(() => _hasKitchen = val),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+            const Text(
+              'Listing Agent',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            _buildTextField('Agent Name', _agentNameController),
+            const SizedBox(height: 16),
+            _buildTextField(
+              'Agent Phone',
+              _agentPhoneController,
+              isNumber: true,
+            ),
+
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Gallery',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                TextButton.icon(
+                  onPressed: _pickGalleryImages,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('Add Photos'),
+                ),
+              ],
+            ),
+            if (_galleryUrls.isNotEmpty || _galleryFiles.isNotEmpty)
+              Container(
+                height: 100,
+                margin: const EdgeInsets.only(top: 8),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ..._galleryUrls.map(
+                      (url) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            url,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                    ..._galleryFiles.map(
+                      (file) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            file,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
             const SizedBox(height: 24),
             ListTile(
