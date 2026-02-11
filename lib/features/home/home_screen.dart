@@ -25,8 +25,8 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSearchBar(context),
               const SizedBox(height: 24),
-              _buildCategories(),
-              const SizedBox(height: 32),
+              // _buildCategories(),
+              // const SizedBox(height: 32),
               _buildSectionHeader('Best Offers', onSeeMore: () {}),
               const SizedBox(height: 16),
               _buildBestOffersList(context),
@@ -148,36 +148,36 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories() {
-    final categories = ['All', 'Rent', 'Buy', 'House', 'Apartment'];
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final isSelected = index == 0; // Mock selection
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFF673AB7)
-                  : const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              categories[index],
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // Widget _buildCategories() {
+  //   final categories = ['All', 'Rent', 'Buy', 'House', 'Apartment'];
+  //   return SizedBox(
+  //     height: 40,
+  //     child: ListView.separated(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: categories.length,
+  //       separatorBuilder: (_, __) => const SizedBox(width: 12),
+  //       itemBuilder: (context, index) {
+  //         final isSelected = index == 0; // Mock selection
+  //         return Container(
+  //           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+  //           decoration: BoxDecoration(
+  //             color: isSelected
+  //                 ? const Color(0xFF673AB7)
+  //                 : const Color(0xFFF5F5F5),
+  //             borderRadius: BorderRadius.circular(20),
+  //           ),
+  //           child: Text(
+  //             categories[index],
+  //             style: TextStyle(
+  //               color: isSelected ? Colors.white : Colors.grey[600],
+  //               fontWeight: FontWeight.w500,
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildSectionHeader(String title, {required VoidCallback onSeeMore}) {
     return Row(
@@ -204,7 +204,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBestOffersList(BuildContext context) {
     return SizedBox(
-      height: 320,
+      height: 280,
       child: BlocBuilder<PropertyBloc, PropertyState>(
         builder: (context, state) {
           if (state.properties.isEmpty) {
