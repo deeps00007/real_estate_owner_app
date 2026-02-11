@@ -45,7 +45,7 @@ dependencies:
   equatable: ^2.0.8
   provider: ^6.1.5+1
   image_picker: ^1.2.1
-  # geolocator: ^14.0.2
+  geolocator: ^13.0.0
   geocoding: ^3.0.0
   http: ^1.1.0
 
