@@ -425,7 +425,7 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
             ),
 
             const SizedBox(height: 24),
-            
+
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Location Coordinates'),
