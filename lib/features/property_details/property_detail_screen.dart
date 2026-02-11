@@ -135,6 +135,44 @@ class PropertyDetailScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Gallery (Thumbnail placeholder)
+                              if (property.gallery.isNotEmpty) ...[
+                                // const Text(
+                                //   'Gallery',
+                                //   style: TextStyle(
+                                //     fontSize: 18,
+                                //     fontWeight: FontWeight.bold,
+                                //   ),
+                                // ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  height: 80,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: property.gallery.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(width: 12),
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        width: 90,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              property.gallery[index],
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+
+                              const SizedBox(height: 24),
                               Text(
                                 property.title,
                                 style: const TextStyle(
@@ -168,33 +206,33 @@ class PropertyDetailScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF0F5), // Light pink
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                size: 16,
-                                color: Color(0xFFFF80AB),
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                '4.8',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFFFF80AB),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Container(
+                        //   padding: const EdgeInsets.symmetric(
+                        //     horizontal: 12,
+                        //     vertical: 6,
+                        //   ),
+                        //   decoration: BoxDecoration(
+                        //     color: const Color(0xFFFFF0F5), // Light pink
+                        //     borderRadius: BorderRadius.circular(20),
+                        //   ),
+                        //   child: const Row(
+                        //     children: [
+                        //       Icon(
+                        //         Icons.star,
+                        //         size: 16,
+                        //         color: Color(0xFFFF80AB),
+                        //       ),
+                        //       SizedBox(width: 4),
+                        //       Text(
+                        //         '4.8',
+                        //         style: TextStyle(
+                        //           fontWeight: FontWeight.bold,
+                        //           color: Color(0xFFFF80AB),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -309,39 +347,6 @@ class PropertyDetailScreen extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[600], height: 1.5),
                     ),
                     const SizedBox(height: 32),
-
-                    // Gallery (Thumbnail placeholder)
-                    if (property.gallery.isNotEmpty) ...[
-                      const Text(
-                        'Gallery',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 80,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: property.gallery.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 12),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                image: DecorationImage(
-                                  image: NetworkImage(property.gallery[index]),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
