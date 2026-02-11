@@ -7,13 +7,12 @@ import 'core/auth_bloc.dart';
 import 'features/map/bloc/property_bloc.dart';
 import 'features/map/bloc/property_event.dart';
 import 'features/home/main_navigation.dart';
+import 'features/auth/login_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // Add this line
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const RealEstateApp());
 }
 
@@ -25,7 +24,7 @@ class RealEstateApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider(create: (_) => FirebaseService()),
-        BlocProvider(create: (_) => AuthBloc()),
+        BlocProvider(create: (_) => AuthBloc()..add(CheckAuthStatus())),
         BlocProvider(
           create: (context) =>
               PropertyBloc(firebaseService: context.read<FirebaseService>())
@@ -104,7 +103,14 @@ class RealEstateApp extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.grey[500]),
           ),
         ),
-        home: const MainNavigation(),
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state.user != null) {
+              return const MainNavigation();
+            }
+            return const LoginScreen();
+          },
+        ),
         debugShowCheckedModeBanner: false,
       ),
     );
