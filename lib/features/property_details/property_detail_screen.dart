@@ -23,6 +23,18 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   final MapController _mapController = MapController();
   // Maintain local state for current zoom if needed, but controller handles it.
 
+  void _openGallery(BuildContext context, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullScreenGallery(
+          images: widget.property.gallery,
+          initialIndex: index,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final property = widget.property;
@@ -35,16 +47,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             left: 0,
             right: 0,
             height: MediaQuery.of(context).size.height * 0.45,
-            child: CachedNetworkImage(
-              imageUrl: property.imageUrl,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(color: Colors.grey[200]),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey[200],
-                child: const Icon(
-                  Icons.broken_image,
-                  size: 50,
-                  color: Colors.grey,
+            child: GestureDetector(
+              onTap: () => _openGallery(context, 0),
+              child: CachedNetworkImage(
+                imageUrl: property.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    Container(color: Colors.grey[200]),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[200],
+                  child: const Icon(
+                    Icons.broken_image,
+                    size: 50,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -151,13 +167,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             children: [
                               // Gallery (Thumbnail placeholder)
                               if (property.gallery.isNotEmpty) ...[
-                                // const Text(
-                                //   'Gallery',
-                                //   style: TextStyle(
-                                //     fontSize: 18,
-                                //     fontWeight: FontWeight.bold,
-                                //   ),
-                                // ),
                                 const SizedBox(height: 16),
                                 SizedBox(
                                   height: 80,
@@ -167,27 +176,34 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                     separatorBuilder: (_, __) =>
                                         const SizedBox(width: 12),
                                     itemBuilder: (context, index) {
-                                      return ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: CachedNetworkImage(
-                                          imageUrl: property.gallery[index],
-                                          width: 90,
-                                          height: 80,
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) =>
-                                              Container(
-                                                color: Colors.grey[200],
-                                              ),
-                                          errorWidget: (context, url, error) =>
-                                              Container(
-                                                width: 90,
-                                                height: 80,
-                                                color: Colors.grey[200],
-                                                child: const Icon(
-                                                  Icons.broken_image,
-                                                  color: Colors.grey,
+                                      return GestureDetector(
+                                        onTap: () =>
+                                            _openGallery(context, index),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: CachedNetworkImage(
+                                            imageUrl: property.gallery[index],
+                                            width: 90,
+                                            height: 80,
+                                            fit: BoxFit.cover,
+                                            placeholder: (context, url) =>
+                                                Container(
+                                                  color: Colors.grey[200],
                                                 ),
-                                              ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Container(
+                                                      width: 90,
+                                                      height: 80,
+                                                      color: Colors.grey[200],
+                                                      child: const Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                          ),
                                         ),
                                       );
                                     },
@@ -229,33 +245,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             ],
                           ),
                         ),
-                        // Container(
-                        //   padding: const EdgeInsets.symmetric(
-                        //     horizontal: 12,
-                        //     vertical: 6,
-                        //   ),
-                        //   decoration: BoxDecoration(
-                        //     color: const Color(0xFFFFF0F5), // Light pink
-                        //     borderRadius: BorderRadius.circular(20),
-                        //   ),
-                        //   child: const Row(
-                        //     children: [
-                        //       Icon(
-                        //         Icons.star,
-                        //         size: 16,
-                        //         color: Color(0xFFFF80AB),
-                        //       ),
-                        //       SizedBox(width: 4),
-                        //       Text(
-                        //         '4.8',
-                        //         style: TextStyle(
-                        //           fontWeight: FontWeight.bold,
-                        //           color: Color(0xFFFF80AB),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
                     const SizedBox(height: 24),
