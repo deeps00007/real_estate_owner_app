@@ -4,6 +4,7 @@ import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
+import 'widgets/nearest_property_card.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -13,31 +14,26 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFA), // High contrast off-white
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Header
               _buildHeader(context),
               const SizedBox(height: 24),
-
-              // 2. Search Bar
               _buildSearchBar(context),
+              const SizedBox(height: 24),
+              _buildCategories(),
               const SizedBox(height: 32),
-
-              // 3. Featured Properties
-              _buildSectionHeader('Featured Properties', onSeeMore: () {}),
+              _buildSectionHeader('Best Offers', onSeeMore: () {}),
               const SizedBox(height: 16),
-              _buildFeaturedList(context),
+              _buildBestOffersList(context),
               const SizedBox(height: 32),
-
-              // 4. Recommended Properties
-              _buildSectionHeader('Recommended for You', onSeeMore: () {}),
+              _buildSectionHeader('Nearest You', onSeeMore: () {}),
               const SizedBox(height: 16),
-              _buildRecommendedList(context),
+              _buildNearestList(context),
             ],
           ),
         ),
@@ -54,46 +50,54 @@ class HomeScreen extends StatelessWidget {
           children: [
             Text(
               'Location',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
             ),
             const SizedBox(height: 4),
-            Row(
+            const Row(
               children: [
-                const Icon(
-                  Icons.location_on,
-                  color: Color(0xFFFF80AB),
-                  size: 16,
-                ),
-                const SizedBox(width: 4),
-                const Text(
-                  'Silverlake, Los Angeles',
+                Icon(Icons.location_on, color: Color(0xFF673AB7), size: 18),
+                SizedBox(width: 4),
+                Text(
+                  'Brisbane, Queensland', // Mock Location matching image
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Color(0xFF1A1A1A),
                   ),
                 ),
-                const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
               ],
             ),
           ],
         ),
-        GestureDetector(
-          onTap: onProfileTap,
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey[300],
-              image: const DecorationImage(
-                image: NetworkImage(
+        Row(
+          children: [
+            Stack(
+              children: [
+                const Icon(Icons.notifications_outlined, size: 28),
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            GestureDetector(
+              onTap: onProfileTap,
+              child: const CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
                   'https://i.pravatar.cc/150?img=32',
-                ), // Mock Avatar
-                fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ],
     );
@@ -110,40 +114,68 @@ class HomeScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+            child: const Row(
               children: [
-                const Icon(Icons.search, color: Colors.grey),
-                const SizedBox(width: 12),
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 12),
                 Expanded(
                   child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Search',
+                    decoration: InputDecoration(
+                      hintText: 'Search your home...',
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
-                    onSubmitted: (value) {
-                      // Handle Search on Home? Or navigate to Map?
-                      // For now, let's just log or no-op
-                    },
                   ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Container(
           height: 50,
           width: 50,
           decoration: BoxDecoration(
-            color: const Color(
-              0xFFF5F5F5,
-            ), // Or Pink? Design has pink icon on grey bg
-            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(25),
           ),
-          child: const Icon(Icons.tune, color: Color(0xFFFF80AB)),
+          child: const Icon(Icons.tune, color: Colors.black87),
         ),
       ],
+    );
+  }
+
+  Widget _buildCategories() {
+    final categories = ['All', 'Rent', 'Buy', 'House', 'Apartment'];
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final isSelected = index == 0; // Mock selection
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFF673AB7)
+                  : const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              categories[index],
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -156,13 +188,13 @@ class HomeScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Color(0xFF1A1A1A),
           ),
         ),
-        TextButton(
-          onPressed: onSeeMore,
+        GestureDetector(
+          onTap: onSeeMore,
           child: const Text(
-            'See More',
+            'See all',
             style: TextStyle(color: Colors.grey, fontSize: 14),
           ),
         ),
@@ -170,9 +202,9 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedList(BuildContext context) {
+  Widget _buildBestOffersList(BuildContext context) {
     return SizedBox(
-      height: 320, // Height for the card
+      height: 320,
       child: BlocBuilder<PropertyBloc, PropertyState>(
         builder: (context, state) {
           if (state.properties.isEmpty) {
@@ -186,7 +218,6 @@ class HomeScreen extends StatelessWidget {
               final property = state.properties[index];
               return PropertyCard(
                 property: property,
-                isFeatured: true, // Use the large vertical card style
                 onTap: () {
                   Navigator.push(
                     context,
@@ -203,25 +234,23 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendedList(BuildContext context) {
+  Widget _buildNearestList(BuildContext context) {
     return BlocBuilder<PropertyBloc, PropertyState>(
       builder: (context, state) {
         if (state.properties.isEmpty) {
           return const SizedBox.shrink();
         }
-        // Just taking the last few as "Recommended" for variety
-        final recommended = state.properties.reversed.toList();
+        final reversed = state.properties.reversed.toList();
 
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: recommended.length,
+          itemCount: reversed.length,
           padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
-            final property = recommended[index];
-            return PropertyCard(
+            final property = reversed[index];
+            return NearestPropertyCard(
               property: property,
-              isFeatured: false, // Use standard horizontal style
               onTap: () {
                 Navigator.push(
                   context,

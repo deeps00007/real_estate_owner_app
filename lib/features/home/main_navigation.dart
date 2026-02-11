@@ -15,8 +15,9 @@ class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
   late final List<Widget> _screens = [
-    HomeScreen(onProfileTap: () => _onItemTapped(3)),
+    HomeScreen(onProfileTap: () => _onItemTapped(4)),
     const MapScreen(),
+    const Center(child: Text('Wishlist - Coming Soon')),
     const Center(child: Text('Messages - Coming Soon')),
     const ProfileScreen(),
   ];
@@ -70,24 +71,33 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             backgroundColor: Colors.white,
-            selectedItemColor: const Color(0xFFFF80AB), // Pink active
+            selectedItemColor: const Color(0xFF673AB7), // Deep Purple
             unselectedItemColor: Colors.grey[400],
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             elevation: 0,
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
+            unselectedLabelStyle: const TextStyle(fontSize: 10),
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_filled),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.search), // Map/Search
-                label: 'Search',
+                icon: Icon(Icons.map_outlined),
+                label: 'Maps',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite_border),
+                label: 'Wishlist',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.chat_bubble_outline),
-                label: 'Messages',
+                label: 'Message',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),

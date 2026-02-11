@@ -1,109 +1,78 @@
 import 'package:flutter/material.dart';
 import '../../../models/property.dart';
 
-class PropertyCard extends StatelessWidget {
+class NearestPropertyCard extends StatelessWidget {
   final Property property;
   final VoidCallback onTap;
 
-  const PropertyCard({super.key, required this.property, required this.onTap});
+  const NearestPropertyCard({
+    super.key,
+    required this.property,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 250,
-        margin: const EdgeInsets.only(right: 16),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // Image Section
+            // Image
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
+                  borderRadius: BorderRadius.circular(16),
                   child: Image.network(
                     property.imageUrl,
-                    height: 150,
-                    width: double.infinity,
+                    width: 100,
+                    height: 100,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
-                      height: 150,
+                      width: 100,
+                      height: 100,
                       color: Colors.grey[200],
                       child: const Icon(Icons.broken_image, color: Colors.grey),
                     ),
                   ),
                 ),
                 Positioned(
-                  top: 12,
-                  left: 12,
+                  top: 8,
+                  left: 8,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                      horizontal: 8,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(
-                        0xFF673AB7,
-                      ).withOpacity(0.8), // Deep purple tag
+                      color: Colors.grey.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       property.type,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          '4.9', // Mock rating
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+                      style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
                   ),
                 ),
               ],
             ),
+            const SizedBox(width: 16),
 
-            // Details Section
-            Padding(
-              padding: const EdgeInsets.all(16),
+            // Details
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -112,7 +81,7 @@ class PropertyCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1A1A1A),
                     ),
@@ -122,36 +91,53 @@ class PropertyCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on,
-                        size: 16,
+                        size: 14,
                         color: Colors.grey[400],
                       ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          property.address ?? 'Unknown Location',
+                          property.address ?? 'Unknown',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.grey[400],
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        property.formattedPrice,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1A1A),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: property.formattedPrice,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' /wk', // Mock period
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const Icon(Icons.favorite_border, color: Colors.grey),
+                      const Icon(
+                        Icons.favorite_border,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
                     ],
                   ),
                 ],

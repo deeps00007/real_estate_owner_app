@@ -407,7 +407,7 @@ class PropertyDetailScreen extends StatelessWidget {
                         elevation: 0,
                       ),
                       child: const Text(
-                        'Buy Now',
+                        'Rent Now',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
