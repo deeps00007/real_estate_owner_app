@@ -5,6 +5,8 @@ import '../../core/auth_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
 import '../admin/add_edit_property_screen.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class PropertyDetailScreen extends StatelessWidget {
   final Property property;
@@ -345,6 +347,51 @@ class PropertyDetailScreen extends StatelessWidget {
                     Text(
                       property.description,
                       style: TextStyle(color: Colors.grey[600], height: 1.5),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Location Map
+                    const Text(
+                      'Location',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 200,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter: LatLng(property.lat, property.lng),
+                            initialZoom: 15.0,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName:
+                                  'com.realestate.owner.app.v1',
+                            ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: LatLng(property.lat, property.lng),
+                                  width: 40,
+                                  height: 40,
+                                  child: const Icon(
+                                    Icons.location_on,
+                                    color: Color(0xFFFF80AB),
+                                    size: 40,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 32),
                   ],
