@@ -308,6 +308,62 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
             _buildTextField('Image URL', _imageUrlController),
 
             const SizedBox(height: 24),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Gallery',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                TextButton.icon(
+                  onPressed: _pickGalleryImages,
+                  icon: const Icon(Icons.add_photo_alternate),
+                  label: const Text('Add Photos'),
+                ),
+              ],
+            ),
+            if (_galleryUrls.isNotEmpty || _galleryFiles.isNotEmpty)
+              Container(
+                height: 100,
+                margin: const EdgeInsets.only(top: 8),
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ..._galleryUrls.map(
+                      (url) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            url,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                    ..._galleryFiles.map(
+                      (file) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            file,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 24),
+
             const Text(
               'Amenities & Details',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -369,60 +425,7 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
             ),
 
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Gallery',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                TextButton.icon(
-                  onPressed: _pickGalleryImages,
-                  icon: const Icon(Icons.add_photo_alternate),
-                  label: const Text('Add Photos'),
-                ),
-              ],
-            ),
-            if (_galleryUrls.isNotEmpty || _galleryFiles.isNotEmpty)
-              Container(
-                height: 100,
-                margin: const EdgeInsets.only(top: 8),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    ..._galleryUrls.map(
-                      (url) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            url,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                    ..._galleryFiles.map(
-                      (file) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            file,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 24),
+            
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('Location Coordinates'),
