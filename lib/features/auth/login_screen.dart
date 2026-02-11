@@ -68,10 +68,10 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(
-                        Icons.apartment,
-                        color: Colors.white,
-                        size: 32,
+                      child: Image.asset(
+                        'assets/real_estate.png',
+                        width: 64,
+                        height: 64,
                       ),
                     ),
                     const Spacer(),
