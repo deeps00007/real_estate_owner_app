@@ -154,7 +154,7 @@ class PropertyDetailScreen extends StatelessWidget {
                                   const SizedBox(width: 4),
                                   Expanded(
                                     child: Text(
-                                      'Ghaziabad, Uttar Pradesh', // Placeholder usually, or verify if address exists
+                                      property.address ?? 'No Address Provided',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[600],
