@@ -5,16 +5,27 @@ import '../../core/auth_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
 import '../admin/add_edit_property_screen.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_smart/flutter_map_smart.dart';
+import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
 import 'package:latlong2/latlong.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-class PropertyDetailScreen extends StatelessWidget {
+class PropertyDetailScreen extends StatefulWidget {
   final Property property;
 
   const PropertyDetailScreen({super.key, required this.property});
 
   @override
+  State<PropertyDetailScreen> createState() => _PropertyDetailScreenState();
+}
+
+class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
+  final MapController _mapController = MapController();
+  // Maintain local state for current zoom if needed, but controller handles it.
+
+  @override
   Widget build(BuildContext context) {
+    final property = widget.property;
     return Scaffold(
       body: Stack(
         children: [
@@ -24,10 +35,11 @@ class PropertyDetailScreen extends StatelessWidget {
             left: 0,
             right: 0,
             height: MediaQuery.of(context).size.height * 0.45,
-            child: Image.network(
-              property.imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: property.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              placeholder: (context, url) => Container(color: Colors.grey[200]),
+              errorWidget: (context, url, error) => Container(
                 color: Colors.grey[200],
                 child: const Icon(
                   Icons.broken_image,
@@ -155,18 +167,27 @@ class PropertyDetailScreen extends StatelessWidget {
                                     separatorBuilder: (_, __) =>
                                         const SizedBox(width: 12),
                                     itemBuilder: (context, index) {
-                                      return Container(
-                                        width: 90,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          image: DecorationImage(
-                                            image: NetworkImage(
-                                              property.gallery[index],
-                                            ),
-                                            fit: BoxFit.cover,
-                                          ),
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: CachedNetworkImage(
+                                          imageUrl: property.gallery[index],
+                                          width: 90,
+                                          height: 80,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                color: Colors.grey[200],
+                                              ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                                width: 90,
+                                                height: 80,
+                                                color: Colors.grey[200],
+                                                child: const Icon(
+                                                  Icons.broken_image,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
                                         ),
                                       );
                                     },
@@ -363,31 +384,28 @@ class PropertyDetailScreen extends StatelessWidget {
                       height: 200,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: FlutterMap(
-                          options: MapOptions(
-                            initialCenter: LatLng(property.lat, property.lng),
-                            initialZoom: 15.0,
-                          ),
+                        child: FlutterMapSmart.simple(
+                          items: [property],
+                          mapController: _mapController,
+                          initialCenter: LatLng(property.lat, property.lng),
+                          initialZoom: 15.0, // Start slightly zoomed out
+                          latitude: (p) => p.lat,
+                          longitude: (p) => p.lng,
+                          markerImage: (p) => p.imageUrl,
+                          onTap: (p) {
+                            // Zoom in on marker click
+                            final currentZoom = _mapController.camera.zoom;
+                            _mapController.move(
+                              LatLng(property.lat, property.lng),
+                              currentZoom + 1,
+                            );
+                          },
                           children: [
                             TileLayer(
                               urlTemplate:
                                   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                               userAgentPackageName:
                                   'com.realestate.owner.app.v1',
-                            ),
-                            MarkerLayer(
-                              markers: [
-                                Marker(
-                                  point: LatLng(property.lat, property.lng),
-                                  width: 40,
-                                  height: 40,
-                                  child: const Icon(
-                                    Icons.location_on,
-                                    color: Color(0xFFFF80AB),
-                                    size: 40,
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
@@ -540,6 +558,88 @@ class PropertyDetailScreen extends StatelessWidget {
         ],
       ),
       child: Icon(icon, color: Colors.white, size: 18),
+    );
+  }
+}
+
+class FullScreenGallery extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
+  const FullScreenGallery({
+    super.key,
+    required this.images,
+    required this.initialIndex,
+  });
+
+  @override
+  State<FullScreenGallery> createState() => _FullScreenGalleryState();
+}
+
+class _FullScreenGalleryState extends State<FullScreenGallery> {
+  late PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          '${_currentIndex + 1} / ${widget.images.length}',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+      body: PageView.builder(
+        controller: _pageController,
+        itemCount: widget.images.length,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return InteractiveViewer(
+            minScale: 0.5,
+            maxScale: 4.0,
+            child: Center(
+              child: CachedNetworkImage(
+                imageUrl: widget.images[index],
+                fit: BoxFit.contain,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+                errorWidget: (context, url, error) => const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.broken_image, color: Colors.white, size: 50),
+                    SizedBox(height: 8),
+                    Text(
+                      'Failed to load image',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
