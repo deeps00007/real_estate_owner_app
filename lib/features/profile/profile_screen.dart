@@ -44,17 +44,21 @@ class ProfileScreen extends StatelessWidget {
                               width: 2,
                             ),
                           ),
-                          child: const CircleAvatar(
+                          child: CircleAvatar(
                             radius: 50,
-                            backgroundImage: NetworkImage(
-                              'https://i.pravatar.cc/300?img=5',
-                            ), // Mock
+                            backgroundImage: state.user?.photoURL != null
+                                ? NetworkImage(state.user!.photoURL!)
+                                : const NetworkImage(
+                                    'https://i.pravatar.cc/300?img=5',
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 16),
                         // User Info
                         Text(
-                          state.isOwner ? 'Admin User' : 'Alex Vernandy',
+                          state.isOwner
+                              ? 'Admin User'
+                              : (state.user?.displayName ?? 'Guest User'),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 22,
@@ -65,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           state.isOwner
                               ? 'admin@realestate.com'
-                              : 'alex00vernandy@gmail.com',
+                              : (state.user?.email ?? 'No Email'),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 14,

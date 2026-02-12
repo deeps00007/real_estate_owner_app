@@ -11,6 +11,7 @@ class Property extends Equatable {
   final String type;
   final String? address; // Added
   final String? ownerId; // Added
+  final String? ownerPhotoUrl; // Added
 
   final int beds;
   final int baths;
@@ -30,6 +31,7 @@ class Property extends Equatable {
     required this.imageUrl,
     required this.type,
     this.ownerId,
+    this.ownerPhotoUrl, // Added
     this.address,
     this.beds = 0,
     this.baths = 0,
@@ -50,6 +52,7 @@ class Property extends Equatable {
     String? imageUrl,
     String? type,
     String? ownerId,
+    String? ownerPhotoUrl, // Added
     String? address,
     int? beds,
     int? baths,
@@ -68,6 +71,7 @@ class Property extends Equatable {
     imageUrl: imageUrl ?? this.imageUrl,
     type: type ?? this.type,
     ownerId: ownerId ?? this.ownerId,
+    ownerPhotoUrl: ownerPhotoUrl ?? this.ownerPhotoUrl, // Added
     address: address ?? this.address,
     beds: beds ?? this.beds,
     baths: baths ?? this.baths,
@@ -86,6 +90,7 @@ class Property extends Equatable {
     lat,
     lng,
     ownerId,
+    ownerPhotoUrl, // Added
     address,
     beds,
     baths,
@@ -118,6 +123,7 @@ class Property extends Equatable {
     'imageUrl': imageUrl,
     'type': type,
     'ownerId': ownerId,
+    'ownerPhotoUrl': ownerPhotoUrl, // Added
     'address': address,
     'beds': beds,
     'baths': baths,
@@ -146,5 +152,6 @@ class Property extends Equatable {
     agentName: json['agentName'] ?? '',
     agentPhone: json['agentPhone'] ?? '',
     gallery: List<String>.from(json['gallery'] ?? []),
+    ownerPhotoUrl: json['ownerPhotoUrl'], // Added
   );
 }

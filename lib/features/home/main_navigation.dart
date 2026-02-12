@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Added
+import '../map/bloc/property_bloc.dart'; // Added
+import '../map/bloc/property_event.dart'; // Added
 import 'home_screen.dart';
 import '../map/map_screen.dart';
 import '../profile/profile_screen.dart';
@@ -13,6 +16,13 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user location when app starts (and user is logged in)
+    context.read<PropertyBloc>().add(FetchUserLocation());
+  }
 
   late final List<Widget> _screens = [
     HomeScreen(onProfileTap: () => _onItemTapped(4)),

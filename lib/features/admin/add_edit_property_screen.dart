@@ -208,12 +208,16 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
         imageUrl: imageUrl,
         type: _typeController.text,
         ownerId: ownerId,
+        ownerPhotoUrl: context.read<AuthBloc>().state.user?.photoURL, // Added
         address: _addressController.text,
         beds: beds,
         baths: baths,
         sqft: sqft,
         hasKitchen: _hasKitchen,
-        agentName: _agentNameController.text,
+        agentName: _agentNameController.text.isNotEmpty
+            ? _agentNameController.text
+            : (context.read<AuthBloc>().state.user?.displayName ??
+                  'Listing Agent'), // Auto-fill name
         agentPhone: _agentPhoneController.text,
         gallery: finalGallery,
       );

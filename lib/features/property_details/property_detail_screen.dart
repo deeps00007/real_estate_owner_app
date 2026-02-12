@@ -302,11 +302,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       ),
                       child: Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 25,
-                            backgroundImage: NetworkImage(
-                              'https://i.pravatar.cc/300?img=12',
-                            ),
+                            backgroundImage: property.ownerPhotoUrl != null
+                                ? NetworkImage(property.ownerPhotoUrl!)
+                                : const NetworkImage(
+                                    'https://i.pravatar.cc/300?img=12', // Fallback
+                                  ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(

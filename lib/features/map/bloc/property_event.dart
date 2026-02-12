@@ -40,6 +40,8 @@ class UpdateUserLocation extends PropertyEvent {
   List<Object?> get props => [latitude, longitude];
 }
 
+class FetchUserLocation extends PropertyEvent {}
+
 class AddProperty extends PropertyEvent {
   final Property property;
   const AddProperty(this.property);

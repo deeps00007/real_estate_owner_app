@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
+import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
@@ -42,64 +43,86 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Location',
-              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-            ),
-            const SizedBox(height: 4),
-            const Row(
-              children: [
-                Icon(Icons.location_on, color: Color(0xFF673AB7), size: 18),
-                SizedBox(width: 4),
-                Text(
-                  'Brisbane, Queensland', // Mock Location matching image
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1A1A),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Location',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Stack(
-              children: [
-                const Icon(Icons.notifications_outlined, size: 28),
-                Positioned(
-                  right: 2,
-                  top: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        color: Color(0xFF673AB7),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: BlocBuilder<PropertyBloc, PropertyState>(
+                          buildWhen: (previous, current) =>
+                              previous.currentAddress != current.currentAddress,
+                          builder: (context, state) {
+                            return Text(
+                              state.currentAddress ?? 'Brisbane, Queensland',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            GestureDetector(
-              onTap: onProfileTap,
-              child: const CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage(
-                  'https://i.pravatar.cc/150?img=32',
-                ),
+                ],
               ),
             ),
+            Row(
+              children: [
+                Stack(
+                  children: [
+                    const Icon(Icons.notifications_outlined, size: 28),
+                    Positioned(
+                      right: 2,
+                      top: 2,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: onProfileTap,
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: state.user?.photoURL != null
+                        ? NetworkImage(state.user!.photoURL!)
+                        : const NetworkImage(
+                            'https://i.pravatar.cc/150?img=32',
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
