@@ -70,6 +70,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginWithGoogle>(_onLoginWithGoogle);
     on<LoginAsOwner>(_onLoginAsOwner);
     on<Logout>(_onLogout);
+
+    // Listen to Firebase Auth changes
+    _auth.authStateChanges().listen((user) {
+      add(CheckAuthStatus());
+    });
   }
 
   Future<void> _onCheckAuthStatus(
@@ -77,7 +82,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     final user = _auth.currentUser;
-    if (user != null) {
+    if (user == null) {
+      // If no user, reset state completely
+      emit(const AuthState());
+    } else {
       emit(state.copyWith(user: user));
     }
   }
@@ -101,10 +109,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(
-        credential,
-      );
-      emit(state.copyWith(user: userCredential.user, isLoading: false));
+      await _auth.signInWithCredential(credential);
+      // State updated via stream listener
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
@@ -119,8 +125,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogout(Logout event, Emitter<AuthState> emit) async {
+    try {
+      await _googleSignIn.signOut();
+    } catch (e) {
+      print("Google Sign Out Error: $e");
+    }
     await _auth.signOut();
-    await _googleSignIn.signOut();
     emit(const AuthState());
   }
 }
