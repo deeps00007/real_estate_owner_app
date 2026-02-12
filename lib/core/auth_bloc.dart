@@ -124,13 +124,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  @override
+  void onChange(Change<AuthState> change) {
+    super.onChange(change);
+    print(
+      "AuthBloc Change: Current: ${change.currentState.user?.uid} -> Next: ${change.nextState.user?.uid}",
+    );
+  }
+
   Future<void> _onLogout(Logout event, Emitter<AuthState> emit) async {
+    print("AuthBloc: Logout initiated");
+    // 1. Sign out from providers
     try {
-      await _googleSignIn.signOut();
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
     } catch (e) {
-      print("Google Sign Out Error: $e");
+      print("Google SignOut error: $e");
     }
     await _auth.signOut();
-    emit(const AuthState());
+
+    // 2. Clear state immediately
+    emit(const AuthState(isLoading: false, user: null));
   }
 }

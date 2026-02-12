@@ -103,16 +103,36 @@ class RealEstateApp extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.grey[500]),
           ),
         ),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state.user != null) {
-              return const MainNavigation();
-            }
-            return const LoginScreen();
-          },
-        ),
+        home: const AuthWrapper(),
         debugShowCheckedModeBanner: false,
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        print("AuthWrapper: Listener triggered. User: ${state.user?.uid}");
+        if (state.user == null) {
+          // Force navigation to Login and clear stack
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+          );
+        }
+      },
+      builder: (context, state) {
+        print("AuthWrapper: Builder triggered. User: ${state.user?.uid}");
+        if (state.user != null) {
+          return const MainNavigation();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }
