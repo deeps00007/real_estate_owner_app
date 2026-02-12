@@ -26,8 +26,8 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSearchBar(context),
               const SizedBox(height: 24),
-              _buildCategories(),
-              const SizedBox(height: 32),
+              // _buildCategories(),
+              // const SizedBox(height: 32),
               _buildSectionHeader('Best Offers', onSeeMore: () {}),
               const SizedBox(height: 16),
               _buildBestOffersList(context),
@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hi, $name 👋',
+                    'Hi, $name',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -202,53 +202,53 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories() {
-    final categories = [
-      {'icon': Icons.grid_view, 'label': 'All'},
-      {'icon': Icons.home_outlined, 'label': 'House'},
-      {'icon': Icons.apartment_outlined, 'label': 'Apartment'},
-    ];
+  // Widget _buildCategories() {
+  //   final categories = [
+  //     {'icon': Icons.grid_view, 'label': 'All'},
+  //     {'icon': Icons.home_outlined, 'label': 'House'},
+  //     {'icon': Icons.apartment_outlined, 'label': 'Apartment'},
+  //   ];
 
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final isSelected = index == 0; // Mock selection
-          final item = categories[index];
+  //   return SizedBox(
+  //     height: 48,
+  //     child: ListView.separated(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: categories.length,
+  //       separatorBuilder: (_, __) => const SizedBox(width: 12),
+  //       itemBuilder: (context, index) {
+  //         final isSelected = index == 0; // Mock selection
+  //         final item = categories[index];
 
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF673AB7) : Colors.transparent,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: isSelected ? Colors.transparent : Colors.grey.shade300,
-              ),
-            ),
-            child: Row(
-              children: [
-                if (isSelected) ...[
-                  Icon(item['icon'] as IconData, color: Colors.white, size: 18),
-                  const SizedBox(width: 8),
-                ],
-                Text(
-                  item['label'] as String,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey[600],
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  //         return Container(
+  //           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+  //           decoration: BoxDecoration(
+  //             color: isSelected ? const Color(0xFF673AB7) : Colors.transparent,
+  //             borderRadius: BorderRadius.circular(24),
+  //             border: Border.all(
+  //               color: isSelected ? Colors.transparent : Colors.grey.shade300,
+  //             ),
+  //           ),
+  //           child: Row(
+  //             children: [
+  //               if (isSelected) ...[
+  //                 Icon(item['icon'] as IconData, color: Colors.white, size: 18),
+  //                 const SizedBox(width: 8),
+  //               ],
+  //               Text(
+  //                 item['label'] as String,
+  //                 style: TextStyle(
+  //                   color: isSelected ? Colors.white : Colors.grey[600],
+  //                   fontWeight: FontWeight.w600,
+  //                   fontSize: 14,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildSectionHeader(String title, {required VoidCallback onSeeMore}) {
     return Row(
