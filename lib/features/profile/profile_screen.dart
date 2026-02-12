@@ -10,240 +10,247 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
+        final user = state.user;
+        final isOwner = state.isOwner;
+
         return Scaffold(
-          backgroundColor: const Color(0xFFFF80AB), // Pink background
-          body: Stack(
-            children: [
-              // 1. Header Content
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 300,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        // Top Bar
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildCircleIcon(Icons.menu),
-                            _buildCircleIcon(Icons.edit),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        // Avatar
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.blue.withOpacity(0.5),
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            title: const Text(
+              'Profile',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings_outlined, color: Colors.black),
+                onPressed: () {
+                  // TODO: Navigate to Settings
+                },
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. User Header
+                Center(
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          CircleAvatar(
                             radius: 50,
-                            backgroundImage: state.user?.photoURL != null
-                                ? NetworkImage(state.user!.photoURL!)
+                            backgroundImage: user?.photoURL != null
+                                ? NetworkImage(user!.photoURL!)
                                 : const NetworkImage(
                                     'https://i.pravatar.cc/300?img=5',
                                   ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        // User Info
-                        Text(
-                          state.isOwner
-                              ? 'Admin User'
-                              : (state.user?.displayName ?? 'Guest User'),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          state.isOwner
-                              ? 'admin@realestate.com'
-                              : (state.user?.email ?? 'No Email'),
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // 2. Main Content Sheet
-              Positioned.fill(
-                top: 280, // Overlap
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(32),
-                    ),
-                  ),
-                  child: ListView(
-                    padding: const EdgeInsets.all(24),
-                    children: [
-                      if (state.isOwner) ...[
-                        _buildMenuItem(
-                          context,
-                          Icons.home_work,
-                          'My Properties',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const MyPropertiesScreen(),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF673AB7), // Deep Purple
+                                shape: BoxShape.circle,
                               ),
-                            );
-                          },
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        isOwner
+                            ? 'Admin User'
+                            : (user?.displayName ?? 'Guest User'),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                      _buildMenuItem(
-                        context,
-                        Icons.person,
-                        'My Profile',
-                        onTap: () {},
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isOwner ? 'admin@realestate.com' : (user?.email ?? ''),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 16),
-                      _buildMenuItem(
-                        context,
-                        Icons.palette,
-                        'App Theme',
-                        onTap: () {},
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMenuItem(
-                        context,
-                        Icons.settings,
-                        'Settings',
-                        onTap: () {},
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMenuItem(
-                        context,
-                        Icons.notifications,
-                        'Notifications',
-                        onTap: () {},
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Actions
-                      _buildActionButton(
-                        context,
-                        label: state.isOwner
-                            ? 'Switch to User'
-                            : 'Switch Account',
-                        isPrimary: true,
-                        onTap: () {
-                          if (state.isOwner) {
-                            context.read<AuthBloc>().add(Logout());
-                          } else {
+                      if (!isOwner)
+                        ElevatedButton(
+                          onPressed: () {
                             _showAdminLoginDialog(context);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildActionButton(
-                        context,
-                        label: 'Logout',
-                        isPrimary: false,
-                        onTap: () {
-                          context.read<AuthBloc>().add(Logout());
-                        },
-                      ),
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Text('Switch to Host Mode'),
+                        ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 30),
+
+                // 2. Owner Tools (If Owner)
+                if (isOwner) ...[
+                  _buildSectionHeader('Owner Tools'),
+                  _buildListTile(
+                    icon: Icons.home_work_outlined,
+                    title: 'My Properties',
+                    subtitle: 'Manage your listings',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyPropertiesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildListTile(
+                    icon: Icons.swap_horiz_outlined,
+                    title: 'Switch to Buyer Mode',
+                    subtitle: 'View as a regular user',
+                    onTap: () {
+                      context.read<AuthBloc>().add(Logout());
+                    },
+                  ),
+                  const Divider(height: 32),
+                ],
+
+                // 3. My Activity
+                _buildSectionHeader('My Activity'),
+                _buildListTile(
+                  icon: Icons.favorite_border,
+                  title: 'Saved Properties',
+                  onTap: () {},
+                ),
+                _buildListTile(
+                  icon: Icons.history,
+                  title: 'Recently Viewed',
+                  onTap: () {},
+                ),
+                _buildListTile(
+                  icon: Icons.chat_bubble_outline,
+                  title: 'My Inquiries',
+                  onTap: () {},
+                ),
+                const Divider(height: 32),
+
+                // 4. Support & Legal
+                _buildSectionHeader('Support & Legal'),
+                _buildListTile(
+                  icon: Icons.help_outline,
+                  title: 'Help Center',
+                  onTap: () {},
+                ),
+                _buildListTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy Policy',
+                  onTap: () {},
+                ),
+                _buildListTile(
+                  icon: Icons.description_outlined,
+                  title: 'Terms of Service',
+                  onTap: () {},
+                ),
+
+                const SizedBox(height: 20),
+
+                // Logout Header
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      context.read<AuthBloc>().add(Logout());
+                    },
+                    child: const Text(
+                      'Log Out',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    'Version 1.0.0',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+                const SizedBox(height: 80), // Bottom padding
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildCircleIcon(IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
       ),
-      child: Icon(icon, color: const Color(0xFFFF80AB), size: 24),
     );
   }
 
-  Widget _buildMenuItem(
-    BuildContext context,
-    IconData icon,
-    String title, {
+  Widget _buildListTile({
+    required IconData icon,
+    required String title,
+    String? subtitle,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      leading: Container(
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFFFF80AB)),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const Spacer(),
-            const Icon(Icons.chevron_right, color: Colors.grey),
-          ],
-        ),
+        child: Icon(icon, color: Colors.black87, size: 22),
       ),
-    );
-  }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required String label,
-    required bool isPrimary,
-    required VoidCallback onTap,
-  }) {
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isPrimary ? const Color(0xFFFF80AB) : Colors.grey[200],
-        foregroundColor: isPrimary ? Colors.white : Colors.grey,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        minimumSize: const Size(double.infinity, 56), // Ensure standard height
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: isPrimary ? Colors.white : Colors.grey[600],
-        ),
-      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            )
+          : null,
+      trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
     );
   }
 
@@ -251,30 +258,107 @@ class ProfileScreen extends StatelessWidget {
     final TextEditingController controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Admin Login'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            hintText: 'Enter Admin ID (OWNER123)',
-            border: OutlineInputBorder(),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF673AB7).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Color(0xFF673AB7),
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Host Access',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Enter your credentials to access host features.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: controller,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Host Key',
+                  hintText: 'e.g., OWNER123',
+                  prefixIcon: const Icon(Icons.vpn_key_outlined),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF673AB7),
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        foregroundColor: Colors.grey[600],
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<AuthBloc>().add(
+                          LoginAsOwner(controller.text.trim()),
+                        );
+                        Navigator.pop(ctx);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF673AB7),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Unlock',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<AuthBloc>().add(
-                LoginAsOwner(controller.text.trim()),
-              );
-              Navigator.pop(ctx);
-            },
-            child: const Text('Login'),
-          ),
-        ],
       ),
     );
   }

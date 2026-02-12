@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
             // Background Image
             Positioned.fill(
               child: Image.network(
-                'https://images.unsplash.com/photo-1600596542815-e328986f7365?q=80&w=2573&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1558036117-15d82a90b9b1?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
@@ -65,13 +65,12 @@ class LoginScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        // color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Image.asset(
                         'assets/real_estate.png',
-                        width: 64,
-                        height: 64,
+                        width: 84,
+                        height: 84,
                       ),
                     ),
                     const Spacer(),
