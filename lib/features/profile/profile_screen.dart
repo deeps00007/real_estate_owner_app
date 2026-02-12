@@ -84,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isOwner ? 'admin@realestate.com' : (user?.email ?? ''),
+                        user?.email ?? 'admin@realestate.com',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 16),
@@ -132,7 +132,8 @@ class ProfileScreen extends StatelessWidget {
                     title: 'Switch to Buyer Mode',
                     subtitle: 'View as a regular user',
                     onTap: () {
-                      context.read<AuthBloc>().add(Logout());
+                      print("ProfileScreen: Switch to Buyer Mode tapped");
+                      context.read<AuthBloc>().add(SwitchToBuyer());
                     },
                   ),
                   const Divider(height: 32),
@@ -181,6 +182,7 @@ class ProfileScreen extends StatelessWidget {
                 Center(
                   child: TextButton(
                     onPressed: () {
+                      print("ProfileScreen: Logout tapped");
                       context.read<AuthBloc>().add(Logout());
                     },
                     child: const Text(

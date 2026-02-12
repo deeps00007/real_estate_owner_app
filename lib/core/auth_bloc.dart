@@ -21,6 +21,8 @@ class LoginAsOwner extends AuthEvent {
   List<Object?> get props => [ownerId];
 }
 
+class SwitchToBuyer extends AuthEvent {}
+
 class Logout extends AuthEvent {}
 
 // State
@@ -69,6 +71,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckAuthStatus>(_onCheckAuthStatus);
     on<LoginWithGoogle>(_onLoginWithGoogle);
     on<LoginAsOwner>(_onLoginAsOwner);
+    on<SwitchToBuyer>(_onSwitchToBuyer);
     on<Logout>(_onLogout);
 
     // Listen to Firebase Auth changes
@@ -122,6 +125,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(state.copyWith(error: "Invalid Owner ID"));
     }
+  }
+
+  void _onSwitchToBuyer(SwitchToBuyer event, Emitter<AuthState> emit) {
+    print("AuthBloc: _onSwitchToBuyer called");
+    emit(state.copyWith(isOwner: false, ownerId: null));
   }
 
   @override
