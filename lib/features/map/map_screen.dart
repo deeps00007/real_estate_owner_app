@@ -84,7 +84,7 @@ class _MapScreenState extends State<MapScreen> {
           right: 20,
         ), // Above dock
         backgroundColor: _isNearbyActive
-            ? const Color(0xFFFF80AB)
+            ? const Color(0xFF0F2C59)
             : Colors.grey[800],
       ),
     );
@@ -123,7 +123,7 @@ class _MapScreenState extends State<MapScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.restart_alt, color: Color(0xFFFF80AB)),
+              leading: const Icon(Icons.restart_alt, color: Color(0xFF0F2C59)),
               title: const Text('Reset Map View'),
               onTap: () {
                 Navigator.pop(context);
@@ -131,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.info_outline, color: Color(0xFFFF80AB)),
+              leading: const Icon(Icons.info_outline, color: Color(0xFF0F2C59)),
               title: const Text('About this Map'),
               subtitle: const Text('Using FlutterMapSmart & OpenStreetMap'),
               onTap: () => Navigator.pop(context),
@@ -246,7 +246,7 @@ class _MapScreenState extends State<MapScreen> {
                       bottom: 110,
                       right: 20,
                       child: FloatingActionButton(
-                        backgroundColor: const Color(0xFFFF80AB),
+                        backgroundColor: const Color(0xFF0F2C59),
                         onPressed: () => _showAddPropertyDialog(context),
                         child: const Icon(Icons.add, color: Colors.white),
                       ),
@@ -281,9 +281,9 @@ class _MapScreenState extends State<MapScreen> {
         decoration: InputDecoration(
           hintText: 'Silverpine Meadows, Warburton', // Example from image
           hintStyle: TextStyle(color: Colors.pink[100]),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFFFF80AB)),
+          prefixIcon: const Icon(Icons.search, color: Color(0xFF0F2C59)),
           suffixIcon: IconButton(
-            icon: const Icon(Icons.tune, color: Color(0xFFFF80AB)),
+            icon: const Icon(Icons.tune, color: Color(0xFF0F2C59)),
             onPressed: () {},
           ),
           filled: false,

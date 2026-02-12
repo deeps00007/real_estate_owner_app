@@ -99,7 +99,7 @@ class MapPropertyCard extends StatelessWidget {
                             const SizedBox(width: 12),
                             const Icon(
                               Icons.location_on_outlined,
-                              color: Colors.pinkAccent,
+                              color: Color(0xFF0F2C59),
                               size: 14,
                             ),
                             const SizedBox(width: 2),
@@ -127,7 +127,7 @@ class MapPropertyCard extends StatelessWidget {
                           child: Text(
                             property.formattedPrice,
                             style: const TextStyle(
-                              color: Color(0xFFFF4081),
+                              color: Color(0xFF0F2C59),
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                             ),

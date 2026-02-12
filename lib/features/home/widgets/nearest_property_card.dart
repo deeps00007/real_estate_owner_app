@@ -127,7 +127,7 @@ class NearestPropertyCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF673AB7),
+                            color: Color(0xFF0F2C59),
                           ),
                         ),
                         TextSpan(

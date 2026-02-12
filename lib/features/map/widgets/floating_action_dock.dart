@@ -34,17 +34,21 @@ class FloatingActionDock extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildIcon(Icons.navigation, onNavigate, color: Colors.pinkAccent),
+          _buildIcon(
+            Icons.navigation,
+            onNavigate,
+            color: const Color(0xFF0F2C59),
+          ),
           const SizedBox(width: 24),
-          _buildIcon(Icons.refresh, onRefresh, color: Colors.pinkAccent),
+          _buildIcon(Icons.refresh, onRefresh, color: const Color(0xFF0F2C59)),
           const SizedBox(width: 24),
           _buildIcon(
             Icons.radar,
             onFilter,
-            color: isNearbyActive ? const Color(0xFFFF80AB) : Colors.grey,
+            color: isNearbyActive ? const Color(0xFF0F2C59) : Colors.grey,
           ), // or filter icon
           const SizedBox(width: 24),
-          _buildIcon(Icons.more_horiz, onMore, color: Colors.pinkAccent),
+          _buildIcon(Icons.more_horiz, onMore, color: const Color(0xFF0F2C59)),
         ],
       ),
     );
@@ -53,7 +57,7 @@ class FloatingActionDock extends StatelessWidget {
   Widget _buildIcon(IconData icon, VoidCallback onTap, {Color? color}) {
     return GestureDetector(
       onTap: onTap,
-      child: Icon(icon, color: color ?? const Color(0xFFFF80AB), size: 24),
+      child: Icon(icon, color: color ?? const Color(0xFF0F2C59), size: 24),
     );
   }
 }
