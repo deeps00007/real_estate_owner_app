@@ -16,6 +16,8 @@ void main() async {
   runApp(const RealEstateApp());
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class RealEstateApp extends StatelessWidget {
   const RealEstateApp({super.key});
 
@@ -31,108 +33,102 @@ class RealEstateApp extends StatelessWidget {
                 ..add(LoadProperties()),
         ),
       ],
-      child: MaterialApp(
-        title: 'Real Estate App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF673AB7),
-            primary: const Color(0xFF673AB7),
-            secondary: const Color(0xFFFFC107),
-            surface: Colors.white,
-            error: const Color(0xFFD32F2F),
-          ),
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            centerTitle: false,
-            titleTextStyle: TextStyle(
-              color: Color(0xFF1A237E),
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          print("RootListener: Auth State Changed. User: ${state.user?.uid}");
+          if (state.user == null) {
+            print("RootListener: User is null, expecting navigation...");
+            // Use the global navigator key to clear the stack
+            navigatorKey.currentState?.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          }
+        },
+        child: MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'Real Estate App',
+          theme: ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF673AB7),
+              primary: const Color(0xFF673AB7),
+              secondary: const Color(0xFFFFC107),
+              surface: Colors.white,
+              error: const Color(0xFFD32F2F),
             ),
-            iconTheme: IconThemeData(color: Color(0xFF1A1A1A)),
-          ),
-          cardTheme: CardThemeData(
-            color: Colors.white,
-            elevation: 2,
-            shadowColor: Colors.black.withOpacity(0.1),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF673AB7),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 56),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white,
               elevation: 0,
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              centerTitle: false,
+              titleTextStyle: TextStyle(
+                color: Color(0xFF1A237E),
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+              iconTheme: IconThemeData(color: Color(0xFF1A1A1A)),
+            ),
+            cardTheme: CardThemeData(
+              color: Colors.white,
+              elevation: 2,
+              shadowColor: Colors.black.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: const Color(0xFFF5F5F5),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFF673AB7),
-                width: 1.5,
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF673AB7),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: const Color(0xFFF5F5F5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: Color(0xFF673AB7),
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18,
+              ),
+              hintStyle: TextStyle(color: Colors.grey[500]),
             ),
-            hintStyle: TextStyle(color: Colors.grey[500]),
           ),
+          home: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state.user != null) {
+                return const MainNavigation();
+              }
+              return const LoginScreen();
+            },
+          ),
+          debugShowCheckedModeBanner: false,
         ),
-        home: const AuthWrapper(),
-        debugShowCheckedModeBanner: false,
       ),
-    );
-  }
-}
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        print("AuthWrapper: Listener triggered. User: ${state.user?.uid}");
-        if (state.user == null) {
-          // Force navigation to Login and clear stack
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
-          );
-        }
-      },
-      builder: (context, state) {
-        print("AuthWrapper: Builder triggered. User: ${state.user?.uid}");
-        if (state.user != null) {
-          return const MainNavigation();
-        }
-        return const LoginScreen();
-      },
     );
   }
 }
