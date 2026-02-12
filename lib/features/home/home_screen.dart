@@ -26,8 +26,8 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSearchBar(context),
               const SizedBox(height: 24),
-              // _buildCategories(),
-              // const SizedBox(height: 32),
+              _buildCategories(),
+              const SizedBox(height: 32),
               _buildSectionHeader('Best Offers', onSeeMore: () {}),
               const SizedBox(height: 16),
               _buildBestOffersList(context),
@@ -45,59 +45,98 @@ class HomeScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
+        final user = state.user;
+        final name = user?.displayName?.split(' ').first ?? 'User';
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Location',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    'Good Morning,',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Color(0xFF673AB7),
-                        size: 18,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: BlocBuilder<PropertyBloc, PropertyState>(
-                          buildWhen: (previous, current) =>
-                              previous.currentAddress != current.currentAddress,
-                          builder: (context, state) {
-                            return Text(
-                              state.currentAddress ?? 'Brisbane, Queensland',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A1A1A),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 8),
             Row(
               children: [
+                BlocBuilder<PropertyBloc, PropertyState>(
+                  buildWhen: (previous, current) =>
+                      previous.currentAddress != current.currentAddress,
+                  builder: (context, state) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            color: Color(0xFF673AB7),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 80),
+                            child: Text(
+                              state.currentAddress ?? 'Brisbane',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
                 Stack(
                   children: [
-                    const Icon(Icons.notifications_outlined, size: 28),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_outlined,
+                        size: 24,
+                        color: Colors.black87,
+                      ),
+                    ),
                     Positioned(
-                      right: 2,
-                      top: 2,
+                      right: 10,
+                      top: 10,
                       child: Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(3),
                         decoration: const BoxDecoration(
                           color: Colors.red,
                           shape: BoxShape.circle,
@@ -105,18 +144,6 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(width: 16),
-                GestureDetector(
-                  onTap: onProfileTap,
-                  child: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: state.user?.photoURL != null
-                        ? NetworkImage(state.user!.photoURL!)
-                        : const NetworkImage(
-                            'https://i.pravatar.cc/150?img=32',
-                          ),
-                  ),
                 ),
               ],
             ),
@@ -131,10 +158,17 @@ class HomeScreen extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            height: 50,
+            height: 52,
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(25),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Row(
@@ -144,7 +178,7 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Search your home...',
+                      hintText: 'Search for house, apartment...',
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -159,48 +193,81 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Container(
-          height: 50,
-          width: 50,
+          height: 52,
+          width: 52,
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F5),
-            borderRadius: BorderRadius.circular(25),
+            color: const Color(0xFF673AB7),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF673AB7).withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          child: const Icon(Icons.tune, color: Colors.black87),
+          child: const Icon(Icons.tune, color: Colors.white),
         ),
       ],
     );
   }
 
-  // Widget _buildCategories() {
-  //   final categories = ['All', 'Rent', 'Buy', 'House', 'Apartment'];
-  //   return SizedBox(
-  //     height: 40,
-  //     child: ListView.separated(
-  //       scrollDirection: Axis.horizontal,
-  //       itemCount: categories.length,
-  //       separatorBuilder: (_, __) => const SizedBox(width: 12),
-  //       itemBuilder: (context, index) {
-  //         final isSelected = index == 0; // Mock selection
-  //         return Container(
-  //           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-  //           decoration: BoxDecoration(
-  //             color: isSelected
-  //                 ? const Color(0xFF673AB7)
-  //                 : const Color(0xFFF5F5F5),
-  //             borderRadius: BorderRadius.circular(20),
-  //           ),
-  //           child: Text(
-  //             categories[index],
-  //             style: TextStyle(
-  //               color: isSelected ? Colors.white : Colors.grey[600],
-  //               fontWeight: FontWeight.w500,
-  //             ),
-  //           ),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
+  Widget _buildCategories() {
+    final categories = [
+      {'icon': Icons.grid_view, 'label': 'All'},
+      {'icon': Icons.home_outlined, 'label': 'House'},
+      {'icon': Icons.apartment_outlined, 'label': 'Apartment'},
+    ];
+
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final isSelected = index == 0; // Mock selection
+          final item = categories[index];
+
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFF673AB7) : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: isSelected
+                  ? null
+                  : Border.all(color: Colors.grey.shade200),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFF673AB7).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              children: [
+                if (isSelected) ...[
+                  Icon(item['icon'] as IconData, color: Colors.white, size: 18),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  item['label'] as String,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.grey[600],
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildSectionHeader(String title, {required VoidCallback onSeeMore}) {
     return Row(
@@ -209,8 +276,9 @@ class HomeScreen extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
             color: Color(0xFF1A1A1A),
           ),
         ),
