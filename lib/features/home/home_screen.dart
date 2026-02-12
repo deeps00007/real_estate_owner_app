@@ -47,103 +47,106 @@ class HomeScreen extends StatelessWidget {
       builder: (context, state) {
         final user = state.user;
         final name = user?.displayName?.split(' ').first ?? 'User';
+        final photoUrl = user?.photoURL;
 
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // 1. Avatar
+            GestureDetector(
+              onTap: onProfileTap,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade200, width: 2),
+                  image: DecorationImage(
+                    image: photoUrl != null
+                        ? NetworkImage(photoUrl)
+                        : const NetworkImage(
+                            'https://i.pravatar.cc/150?img=32',
+                          ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            // 2. Name & Location
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Good Morning,',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    name,
+                    'Hi, $name 👋',
                     style: const TextStyle(
-                      fontSize: 24,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF1A1A1A),
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Row(
-              children: [
-                BlocBuilder<PropertyBloc, PropertyState>(
-                  buildWhen: (previous, current) =>
-                      previous.currentAddress != current.currentAddress,
-                  builder: (context, state) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
+                  const SizedBox(height: 4),
+                  BlocBuilder<PropertyBloc, PropertyState>(
+                    buildWhen: (previous, current) =>
+                        previous.currentAddress != current.currentAddress,
+                    builder: (context, state) {
+                      return Row(
                         children: [
                           const Icon(
                             Icons.location_on,
-                            color: Color(0xFF673AB7),
-                            size: 16,
+                            color: Colors.grey,
+                            size: 14,
                           ),
                           const SizedBox(width: 4),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 80),
+                          Flexible(
                             child: Text(
-                              state.currentAddress ?? 'Brisbane',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF1A1A1A),
+                              state.currentAddress ?? 'Brisbane, Australia',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // 3. Notification Bell
+            const SizedBox(width: 12),
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                    size: 24,
+                    color: Colors.black87,
+                  ),
                 ),
-                const SizedBox(width: 8),
-                Stack(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
-                        size: 24,
-                        color: Colors.black87,
-                      ),
+                Positioned(
+                  right: 12,
+                  top: 12,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
                     ),
-                    Positioned(
-                      right: 10,
-                      top: 10,
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -162,13 +165,7 @@ class HomeScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+              border: Border.all(color: Colors.grey.shade200),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const Row(
@@ -198,13 +195,6 @@ class HomeScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF673AB7),
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF673AB7).withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: const Icon(Icons.tune, color: Colors.white),
         ),
@@ -232,20 +222,11 @@ class HomeScreen extends StatelessWidget {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF673AB7) : Colors.white,
+              color: isSelected ? const Color(0xFF673AB7) : Colors.transparent,
               borderRadius: BorderRadius.circular(24),
-              border: isSelected
-                  ? null
-                  : Border.all(color: Colors.grey.shade200),
-              boxShadow: isSelected
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFF673AB7).withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : null,
+              border: Border.all(
+                color: isSelected ? Colors.transparent : Colors.grey.shade300,
+              ),
             ),
             child: Row(
               children: [

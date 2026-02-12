@@ -391,14 +391,14 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               currentZoom + 1,
                             );
                           },
-                          children: [
-                            TileLayer(
-                              urlTemplate:
-                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName:
-                                  'com.realestate.owner.app.v1',
-                            ),
-                          ],
+                          // children: [
+                          //   TileLayer(
+                          //     urlTemplate:
+                          //         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          //     userAgentPackageName:
+                          //         'com.realestate.owner.app.v1',
+                          //   ),
+                          // ],
                         ),
                       ),
                     ),

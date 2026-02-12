@@ -169,14 +169,14 @@ class _MapScreenState extends State<MapScreen> {
                       enableNearby: _isNearbyActive,
                       nearbyRadiusKm: 5.0, // Default 5km radius
                       radiusColor: const Color(0xFF6366F1).withOpacity(0.12),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName:
-                              'com.realestate.owner.app.v1', // Fix for OSM policy
-                        ),
-                      ],
+                      //   children: [
+                      //     TileLayer(
+                      //       urlTemplate:
+                      //           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      //       userAgentPackageName:
+                      //           'com.realestate.owner.app.v1', // Fix for OSM policy
+                      //     ),
+                      //   ],
                     ),
                   ),
 
