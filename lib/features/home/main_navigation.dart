@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Added
-import '../map/bloc/property_bloc.dart'; // Added
-import '../map/bloc/property_event.dart'; // Added
+import '../chat/chat_list_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../map/bloc/property_bloc.dart';
+import '../map/bloc/property_event.dart';
 import 'home_screen.dart';
 import '../map/map_screen.dart';
 import '../profile/profile_screen.dart';
@@ -16,21 +17,22 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
+  List<Widget> _screens = [];
 
   @override
   void initState() {
     super.initState();
     // Fetch user location when app starts (and user is logged in)
     context.read<PropertyBloc>().add(FetchUserLocation());
-  }
 
-  late final List<Widget> _screens = [
-    HomeScreen(onProfileTap: () => _onItemTapped(4)),
-    const MapScreen(),
-    const Center(child: Text('Wishlist - Coming Soon')),
-    const Center(child: Text('Messages - Coming Soon')),
-    const ProfileScreen(),
-  ];
+    _screens = [
+      HomeScreen(onProfileTap: () => _onItemTapped(4)),
+      const MapScreen(),
+      const Center(child: Text('Wishlist - Coming Soon')),
+      const ChatListScreen(),
+      const ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -81,7 +83,7 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             backgroundColor: Colors.white,
-            selectedItemColor: const Color(0xFF673AB7), // Deep Purple
+            selectedItemColor: const Color(0xFF0F2C59), // Navy Blue
             unselectedItemColor: Colors.grey[400],
             showSelectedLabels: true,
             showUnselectedLabels: true,

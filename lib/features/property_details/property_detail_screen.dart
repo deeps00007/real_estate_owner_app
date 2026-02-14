@@ -5,6 +5,8 @@ import '../../core/auth_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
 import '../admin/add_edit_property_screen.dart';
+import '../chat/chat_screen.dart'; // Added
+import '../chat/chat_service.dart'; // Added
 import 'package:flutter_map_smart/flutter_map_smart.dart';
 import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
 import 'package:latlong2/latlong.dart';
@@ -304,11 +306,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         children: [
                           CircleAvatar(
                             radius: 25,
+                            backgroundColor: Colors.grey[200],
                             backgroundImage: property.ownerPhotoUrl != null
                                 ? NetworkImage(property.ownerPhotoUrl!)
-                                : const NetworkImage(
-                                    'https://i.pravatar.cc/300?img=12', // Fallback
-                                  ),
+                                : null,
+                            child: property.ownerPhotoUrl == null
+                                ? const Icon(Icons.person, color: Colors.grey)
+                                : null,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -337,9 +341,24 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                           ),
                           Row(
                             children: [
-                              _buildContactButton(Icons.chat_bubble_outline),
+                              _buildContactButton(
+                                icon: Icons.chat_bubble_outline,
+                                onTap: () => _handleChat(context),
+                              ),
                               const SizedBox(width: 12),
-                              _buildContactButton(Icons.phone_outlined),
+                              _buildContactButton(
+                                icon: Icons.phone_outlined,
+                                onTap: () {
+                                  // TODO: Implement phone call
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Phone call not implemented',
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ],
@@ -534,22 +553,98 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     );
   }
 
-  Widget _buildContactButton(IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2D2D2D),
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  Widget _buildContactButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFF2D2D2D),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: Colors.white, size: 18),
       ),
-      child: Icon(icon, color: Colors.white, size: 18),
     );
+  }
+
+  Future<void> _handleChat(BuildContext context) async {
+    final authState = context.read<AuthBloc>().state;
+    final user = authState.user;
+
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please login to chat')));
+      return;
+    }
+
+    if (user.uid == widget.property.ownerId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You cannot chat with yourself')),
+      );
+      return;
+    }
+
+    final ownerId = widget.property.ownerId;
+    if (ownerId == null || ownerId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Owner information not available')),
+      );
+      return;
+    }
+
+    try {
+      final chatService = ChatService();
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final chatId = await chatService.getOrCreateChat(
+        user.uid,
+        ownerId,
+        widget.property.id,
+      );
+
+      // Dismiss loading
+      if (context.mounted) Navigator.pop(context);
+
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              chatId: chatId,
+              currentUserId: user.uid,
+              otherUserName: widget.property.agentName.isNotEmpty
+                  ? widget.property.agentName
+                  : 'Listing Agent',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      // Dismiss loading if showing
+      if (context.mounted) Navigator.pop(context);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error starting chat: $e')));
+      }
+    }
   }
 }
 

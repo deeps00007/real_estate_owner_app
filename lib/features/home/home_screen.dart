@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            height: 52,
+            height: 48,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -176,6 +176,8 @@ class HomeScreen extends StatelessWidget {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search for house, apartment...',
+                      filled: true,
+                      fillColor: Colors.transparent,
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -190,8 +192,8 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Container(
-          height: 52,
-          width: 52,
+          height: 48,
+          width: 48,
           decoration: BoxDecoration(
             color: const Color(0xFF0F2C59),
             borderRadius: BorderRadius.circular(16),
