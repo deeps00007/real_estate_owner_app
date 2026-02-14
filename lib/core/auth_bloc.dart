@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:real_estate_owner_app/core/firebase_service.dart';
+import 'package:real_estate_owner_app/core/notification_service.dart';
 
 // Events
 abstract class AuthEvent extends Equatable {
@@ -66,6 +68,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   static const String defaultOwnerId = 'OWNER123';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseService _firebaseService = FirebaseService();
+  final NotificationService _notificationService = NotificationService();
 
   AuthBloc() : super(const AuthState()) {
     on<CheckAuthStatus>(_onCheckAuthStatus);
@@ -90,6 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthState());
     } else {
       emit(state.copyWith(user: user));
+      await _saveToken();
     }
   }
 
@@ -154,5 +159,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     // 2. Clear state immediately
     emit(const AuthState(isLoading: false, user: null));
+  }
+
+  Future<void> _saveToken() async {
+    try {
+      final token = await _notificationService.getToken();
+      if (token != null) {
+        await _firebaseService.saveUserToken(token);
+        print("AuthBloc: FCM Token saved for user");
+      }
+    } catch (e) {
+      print("AuthBloc: Failed to save FCM token: $e");
+    }
   }
 }

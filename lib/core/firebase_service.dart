@@ -51,5 +51,16 @@ class FirebaseService {
     }
   }
 
+  Future<void> saveUserToken(String token) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId != null) {
+      await _firestore.collection('users').doc(userId).set({
+        'fcmToken': token,
+        'email': _auth.currentUser?.email, // Optional: useful for debugging
+        'lastLogin': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    }
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }

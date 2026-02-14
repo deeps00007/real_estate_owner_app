@@ -10,9 +10,12 @@ import 'features/home/main_navigation.dart';
 import 'features/auth/login_screen.dart';
 import 'firebase_options.dart';
 
+import 'core/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService().initialize();
   runApp(const RealEstateApp());
 }
 
