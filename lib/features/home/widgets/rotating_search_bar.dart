@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'voice_search_modal.dart'; // 👈 import the separate file
 
 class RotatingSearchBar extends StatefulWidget {
   const RotatingSearchBar({super.key});
@@ -11,7 +12,6 @@ class RotatingSearchBar extends StatefulWidget {
 
 class _RotatingSearchBarState extends State<RotatingSearchBar> {
   final List<String> _keywords = ["Apartment", "Villa", "Office", "Flats"];
-
   late final List<String> _loopList;
 
   final TextEditingController _controller = TextEditingController();
@@ -29,7 +29,6 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
 
     _loopList = [..._keywords, ..._keywords];
     _pageController = PageController(initialPage: 0);
-
     _speech = stt.SpeechToText();
 
     _timer = Timer.periodic(const Duration(seconds: 2), (_) {
@@ -53,24 +52,82 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
   }
 
   Future<void> _listen() async {
+    bool available = await _speech.initialize();
+    if (!available) return;
+
     if (!_isListening) {
-      bool available = await _speech.initialize();
+      setState(() => _isListening = true);
 
-      if (available) {
-        setState(() => _isListening = true);
+      _showVoiceBottomSheet();
 
-        _speech.listen(
-          onResult: (result) {
-            setState(() {
-              _controller.text = result.recognizedWords;
-            });
-          },
-        );
-      }
+      _speech.listen(
+        listenFor: const Duration(seconds: 10),
+        pauseFor: const Duration(seconds: 3),
+        onResult: (result) {
+          setState(() {
+            _controller.text = result.recognizedWords;
+          });
+
+          if (result.finalResult) {
+            _stopListening();
+          }
+        },
+      );
     } else {
-      _speech.stop();
-      setState(() => _isListening = false);
+      _stopListening();
     }
+  }
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() => _isListening = false);
+    Navigator.of(context).pop();
+  }
+
+  void _showVoiceBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          height: 300,
+          decoration: const BoxDecoration(
+            color: Color(0xFF1E1E1E),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Listening...",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              const SizedBox(height: 30),
+
+              /// 👇 Wave imported from separate file
+              const VoiceWave(),
+
+              const SizedBox(height: 30),
+              Text(
+                _controller.text.isEmpty ? "Start speaking" : _controller.text,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              GestureDetector(
+                onTap: _stopListening,
+                child: const CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -100,7 +157,6 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
             child: Stack(
               alignment: Alignment.centerLeft,
               children: [
-                /// 🔥 STATIC "Search" + ROTATING KEYWORD
                 IgnorePointer(
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 200),
@@ -137,8 +193,6 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
                     ),
                   ),
                 ),
-
-                /// 🔥 TEXT FIELD
                 TextField(
                   controller: _controller,
                   cursorColor: Colors.white,
@@ -157,12 +211,9 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
           ),
 
           const SizedBox(width: 8),
-
           Container(height: 24, width: 1, color: Colors.grey),
-
           const SizedBox(width: 8),
 
-          /// 🎤 MIC BUTTON
           GestureDetector(
             onTap: _listen,
             child: Icon(
