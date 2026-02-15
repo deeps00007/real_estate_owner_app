@@ -43,3 +43,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/release
+
+# Firebase Confidential
+google-services.json
+GoogleService-Info.plist
+serviceAccountKey.json
+firebase_options.dart # Optional: if you want to keep API keys private
+*.jks
+*.keystore
+.env
+backend/.env
+backend/serviceAccountKey.json
