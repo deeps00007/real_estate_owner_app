@@ -7,7 +7,6 @@ import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
-import 'widgets/animated_search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -165,24 +164,50 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return SizedBox(
-      height: 50, // Match AnimatedSearchBar height
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Expanded(child: AnimatedSearchBar()),
-          const SizedBox(width: 12),
-          Container(
-            height: 50, // Same height
-            width: 50,
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF0F2C59),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade200),
             ),
-            child: const Icon(Icons.tune, color: Colors.white),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: const Row(
+              children: [
+                Icon(Icons.search, color: Colors.grey),
+                SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search for house, apartment...',
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          height: 48,
+          width: 48,
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F2C59),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(Icons.tune, color: Colors.white),
+        ),
+      ],
     );
   }
 
