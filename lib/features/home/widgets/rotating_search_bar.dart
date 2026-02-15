@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class RotatingSearchBar extends StatefulWidget {
   const RotatingSearchBar({super.key});
@@ -16,6 +17,9 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
   final TextEditingController _controller = TextEditingController();
   late final PageController _pageController;
 
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+
   Timer? _timer;
   int _currentIndex = 0;
 
@@ -23,13 +27,13 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
   void initState() {
     super.initState();
 
-    /// Duplicate list for smooth looping
     _loopList = [..._keywords, ..._keywords];
-
     _pageController = PageController(initialPage: 0);
 
+    _speech = stt.SpeechToText();
+
     _timer = Timer.periodic(const Duration(seconds: 2), (_) {
-      if (_controller.text.isEmpty) {
+      if (_controller.text.isEmpty && !_isListening) {
         _currentIndex++;
 
         _pageController.animateToPage(
@@ -38,7 +42,6 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
           curve: Curves.easeInOut,
         );
 
-        /// 🔥 When reaching duplicate end, reset silently
         if (_currentIndex == _keywords.length) {
           Future.delayed(const Duration(milliseconds: 600), () {
             _currentIndex = 0;
@@ -49,11 +52,33 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
     });
   }
 
+  Future<void> _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize();
+
+      if (available) {
+        setState(() => _isListening = true);
+
+        _speech.listen(
+          onResult: (result) {
+            setState(() {
+              _controller.text = result.recognizedWords;
+            });
+          },
+        );
+      }
+    } else {
+      _speech.stop();
+      setState(() => _isListening = false);
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
     _controller.dispose();
     _pageController.dispose();
+    _speech.stop();
     super.dispose();
   }
 
@@ -75,6 +100,7 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
             child: Stack(
               alignment: Alignment.centerLeft,
               children: [
+                /// 🔥 STATIC "Search" + ROTATING KEYWORD
                 IgnorePointer(
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 200),
@@ -112,6 +138,7 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
                   ),
                 ),
 
+                /// 🔥 TEXT FIELD
                 TextField(
                   controller: _controller,
                   cursorColor: Colors.white,
@@ -130,9 +157,20 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
           ),
 
           const SizedBox(width: 8),
+
           Container(height: 24, width: 1, color: Colors.grey),
+
           const SizedBox(width: 8),
-          const Icon(Icons.mic, color: Colors.grey, size: 22),
+
+          /// 🎤 MIC BUTTON
+          GestureDetector(
+            onTap: _listen,
+            child: Icon(
+              _isListening ? Icons.mic : Icons.mic_none,
+              color: _isListening ? Colors.green : Colors.grey,
+              size: 22,
+            ),
+          ),
         ],
       ),
     );
