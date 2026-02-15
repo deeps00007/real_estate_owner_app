@@ -53,6 +53,8 @@ dependencies:
   firebase_messaging: ^16.1.1
   flutter_local_notifications: ^20.1.0
   flutter_animate: ^4.5.2
+  speech_to_text: ^6.6.0
+
 
 dev_dependencies:
   flutter_test:

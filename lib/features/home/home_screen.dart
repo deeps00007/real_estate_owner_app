@@ -8,6 +8,7 @@ import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
+import 'widgets/rotating_search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -29,10 +30,7 @@ class HomeScreen extends StatelessWidget {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
               const SizedBox(height: 24),
-              _buildSearchBar(context)
-                  .animate()
-                  .fadeIn(delay: 200.ms, duration: 600.ms)
-                  .scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOut),
+              const RotatingSearchBar(),
               const SizedBox(height: 24),
               // _buildCategories(),
               // const SizedBox(height: 32),
@@ -164,49 +162,49 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.search, color: Colors.grey, size: 22),
-          const SizedBox(width: 12),
+  // Widget _buildSearchBar(BuildContext context) {
+  //   return Container(
+  //     height: 52,
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     decoration: BoxDecoration(
+  //       color: const Color(0xFF2A2A2A),
+  //       borderRadius: BorderRadius.circular(14),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         const Icon(Icons.search, color: Colors.grey, size: 22),
+  //         const SizedBox(width: 12),
 
-          Expanded(
-            child: TextField(
-              decoration: const InputDecoration(
-                hintText: 'Search "shivling"',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                filled: false, // 🔥 Important
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.zero, // 🔥 removes extra grey padding
-              ),
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-              cursorColor: Colors.white,
-            ),
-          ),
+  //         Expanded(
+  //           child: TextField(
+  //             decoration: const InputDecoration(
+  //               hintText: 'Search "shivling"',
+  //               hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+  //               border: InputBorder.none,
+  //               enabledBorder: InputBorder.none,
+  //               focusedBorder: InputBorder.none,
+  //               disabledBorder: InputBorder.none,
+  //               filled: false, // 🔥 Important
+  //               isDense: true,
+  //               contentPadding:
+  //                   EdgeInsets.zero, // 🔥 removes extra grey padding
+  //             ),
+  //             style: const TextStyle(color: Colors.white, fontSize: 16),
+  //             cursorColor: Colors.white,
+  //           ),
+  //         ),
 
-          const SizedBox(width: 8),
+  //         const SizedBox(width: 8),
 
-          Container(height: 24, width: 1, color: Colors.grey.withOpacity(0.4)),
+  //         Container(height: 24, width: 1, color: Colors.grey.withOpacity(0.4)),
 
-          const SizedBox(width: 8),
+  //         const SizedBox(width: 8),
 
-          const Icon(Icons.mic, color: Colors.grey, size: 22),
-        ],
-      ),
-    );
-  }
+  //         const Icon(Icons.mic, color: Colors.grey, size: 22),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Widget _buildCategories() {
   //   final categories = [
