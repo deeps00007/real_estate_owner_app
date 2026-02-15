@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+// import 'package:real_estate_owner_app/features/home/widgets/search_bar.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
 import '../../core/auth_bloc.dart'; // Added
@@ -164,50 +165,46 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search for house, apartment...',
-                      filled: true,
-                      fillColor: Colors.transparent,
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ],
+    return Container(
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search, color: Colors.grey, size: 22),
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search "shivling"',
+                hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                filled: false, // 🔥 Important
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.zero, // 🔥 removes extra grey padding
+              ),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+              cursorColor: Colors.white,
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F2C59),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Icon(Icons.tune, color: Colors.white),
-        ),
-      ],
+
+          const SizedBox(width: 8),
+
+          Container(height: 24, width: 1, color: Colors.grey.withOpacity(0.4)),
+
+          const SizedBox(width: 8),
+
+          const Icon(Icons.mic, color: Colors.grey, size: 22),
+        ],
+      ),
     );
   }
 
