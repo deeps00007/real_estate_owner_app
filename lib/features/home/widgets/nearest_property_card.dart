@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/property.dart';
 
 class NearestPropertyCard extends StatelessWidget {
@@ -35,12 +36,20 @@ class NearestPropertyCard extends StatelessWidget {
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 100,
-                      height: 100,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.broken_image, color: Colors.grey),
-                    ),
+                    errorBuilder: (_, __, ___) =>
+                        Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.grey[200],
+                              // child: const Icon(Icons.broken_image, color: Colors.grey), // Optional: hide icon for clean shimmer
+                            )
+                            .animate(
+                              onPlay: (controller) => controller.repeat(),
+                            )
+                            .shimmer(
+                              duration: 1200.ms,
+                              color: const Color(0xFFEEEEEE),
+                            ),
                   ),
                 ),
                 Positioned(

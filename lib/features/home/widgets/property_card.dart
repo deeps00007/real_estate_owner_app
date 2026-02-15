@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../models/property.dart';
 
 class PropertyCard extends StatelessWidget {
@@ -42,18 +43,12 @@ class PropertyCard extends StatelessWidget {
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
-                      return Container(
-                        height: 150,
-                        color: Colors.grey[200],
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        ),
-                      );
+                      return Container(height: 150, color: Colors.grey[200])
+                          .animate(onPlay: (controller) => controller.repeat())
+                          .shimmer(
+                            duration: 1200.ms,
+                            color: const Color(0xFFEEEEEE),
+                          );
                     },
                     errorBuilder: (context, error, stackTrace) {
                       debugPrint('Error loading image: ${property.imageUrl}');

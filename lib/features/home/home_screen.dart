@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
 import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
+import 'widgets/animated_search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -22,9 +24,15 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(context),
+              _buildHeader(context)
+                  .animate()
+                  .fadeIn(duration: 600.ms)
+                  .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
               const SizedBox(height: 24),
-              _buildSearchBar(context),
+              _buildSearchBar(context)
+                  .animate()
+                  .fadeIn(delay: 200.ms, duration: 600.ms)
+                  .scale(begin: const Offset(0.9, 0.9), curve: Curves.easeOut),
               const SizedBox(height: 24),
               // _buildCategories(),
               // const SizedBox(height: 32),
@@ -157,50 +165,24 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildSearchBar(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 48,
+    return SizedBox(
+      height: 50, // Match AnimatedSearchBar height
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Expanded(child: AnimatedSearchBar()),
+          const SizedBox(width: 12),
+          Container(
+            height: 50, // Same height
+            width: 50,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0xFF0F2C59),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Row(
-              children: [
-                Icon(Icons.search, color: Colors.grey),
-                SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search for house, apartment...',
-                      filled: true,
-                      fillColor: Colors.transparent,
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                      hintStyle: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            child: const Icon(Icons.tune, color: Colors.white),
           ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          height: 48,
-          width: 48,
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F2C59),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Icon(Icons.tune, color: Colors.white),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -291,16 +273,20 @@ class HomeScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final property = state.properties[index];
               return PropertyCard(
-                property: property,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PropertyDetailScreen(property: property),
-                    ),
-                  );
-                },
-              );
+                    property: property,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              PropertyDetailScreen(property: property),
+                        ),
+                      );
+                    },
+                  )
+                  .animate()
+                  .fadeIn(duration: 600.ms, delay: (200 + (index * 100)).ms)
+                  .slideX(begin: 0.2, end: 0, curve: Curves.easeOut);
             },
           );
         },
@@ -324,16 +310,20 @@ class HomeScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final property = reversed[index];
             return NearestPropertyCard(
-              property: property,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PropertyDetailScreen(property: property),
-                  ),
-                );
-              },
-            );
+                  property: property,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PropertyDetailScreen(property: property),
+                      ),
+                    );
+                  },
+                )
+                .animate()
+                .fadeIn(duration: 600.ms, delay: (400 + (index * 100)).ms)
+                .slideY(begin: 0.2, end: 0, curve: Curves.easeOut);
           },
         );
       },
