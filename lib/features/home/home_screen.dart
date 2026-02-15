@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 // import 'package:real_estate_owner_app/features/home/widgets/search_bar.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_state.dart';
+import '../map/bloc/property_event.dart'; // Added
 import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/property_card.dart';
@@ -30,7 +31,11 @@ class HomeScreen extends StatelessWidget {
                   .fadeIn(duration: 600.ms)
                   .slideY(begin: -0.2, end: 0, curve: Curves.easeOut),
               const SizedBox(height: 24),
-              const RotatingSearchBar(),
+              RotatingSearchBar(
+                onChanged: (value) {
+                  context.read<PropertyBloc>().add(SearchProperties(value));
+                },
+              ),
               const SizedBox(height: 24),
               // _buildCategories(),
               // const SizedBox(height: 32),
@@ -283,12 +288,13 @@ class HomeScreen extends StatelessWidget {
       height: 280,
       child: BlocBuilder<PropertyBloc, PropertyState>(
         builder: (context, state) {
-          if (state.properties.isEmpty) {
+          final properties = state.filteredProperties;
+          if (properties.isEmpty) {
             return const Center(child: Text('No properties found'));
           }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: state.properties.length,
+            itemCount: properties.length,
             clipBehavior: Clip.none,
             itemBuilder: (context, index) {
               final property = state.properties[index];
@@ -317,10 +323,11 @@ class HomeScreen extends StatelessWidget {
   Widget _buildNearestList(BuildContext context) {
     return BlocBuilder<PropertyBloc, PropertyState>(
       builder: (context, state) {
-        if (state.properties.isEmpty) {
+        final properties = state.filteredProperties;
+        if (properties.isEmpty) {
           return const SizedBox.shrink();
         }
-        final reversed = state.properties.reversed.toList();
+        final reversed = properties.reversed.toList();
 
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),

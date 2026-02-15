@@ -4,22 +4,24 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'voice_search_modal.dart'; // 👈 import the separate file
 
 class RotatingSearchBar extends StatefulWidget {
-  const RotatingSearchBar({super.key});
+  final ValueChanged<String>? onChanged;
+
+  const RotatingSearchBar({super.key, this.onChanged});
 
   @override
   State<RotatingSearchBar> createState() => _RotatingSearchBarState();
 }
 
-class _RotatingSearchBarState extends State<RotatingSearchBar> {
+class _RotatingSearchBarState extends State<RotatingSearchBar>
+    with SingleTickerProviderStateMixin {
   final List<String> _keywords = ["Apartment", "Villa", "Office", "Flats"];
   late final List<String> _loopList;
 
   final TextEditingController _controller = TextEditingController();
   late final PageController _pageController;
-
   late stt.SpeechToText _speech;
-  bool _isListening = false;
 
+  bool _isListening = false;
   Timer? _timer;
   int _currentIndex = 0;
 
@@ -67,6 +69,7 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
           setState(() {
             _controller.text = result.recognizedWords;
           });
+          widget.onChanged?.call(result.recognizedWords); // Trigger callback
 
           if (result.finalResult) {
             _stopListening();
@@ -195,6 +198,7 @@ class _RotatingSearchBarState extends State<RotatingSearchBar> {
                 ),
                 TextField(
                   controller: _controller,
+                  onChanged: widget.onChanged, // Trigger callback
                   cursorColor: Colors.white,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   decoration: const InputDecoration(
