@@ -125,24 +125,34 @@ class NotificationService {
   }
 
   Future<void> sendNotification({
-    required String receiverId,
+    String? receiverId, // Optional, if null implies broadcast
     required String title,
     required String body,
   }) async {
     try {
       final url = Uri.parse(
-        'https://real-estate-owner-app.onrender.com/send-notification',
+        'https://real-estate-notifications.onrender.com/send-notification',
       );
+
+      final Map<String, dynamic> payload = {'title': title, 'body': body};
+
+      if (receiverId != null) {
+        payload['userId'] = receiverId;
+      }
+      // If receiverId is null, we assume the backend handles it as a broadcast
+      // or we might need a specific flag like 'topic': 'all'.
+      // For now, sending without userId implies broadcast based on user description.
+
+      debugPrint('Sending notification payload: $payload to $url');
+
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'userId': receiverId, 'title': title, 'body': body}),
+        body: jsonEncode(payload),
       );
 
-      if (response.statusCode == 200) {
-        debugPrint('Notification sent successfully');
-      } else {
-        debugPrint('Failed to send notification: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('Notification sent successfully: ${response.body}');
       }
     } catch (e) {
       debugPrint('Error sending notification: $e');

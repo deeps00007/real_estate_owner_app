@@ -7,6 +7,7 @@ import '../map/bloc/property_state.dart';
 import 'my_properties_screen.dart';
 import 'activity_list_screen.dart';
 import 'static_content_screen.dart'; // Added
+import '../admin/send_notification_screen.dart'; // Added
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -109,23 +110,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 30),
                 // 2. Owner Tools (If Owner)
-                if (isOwner) ...[
-                  _buildSectionHeader('Owner Tools'),
-                  _buildListTile(
-                    icon: Icons.home_work_outlined,
-                    title: 'My Properties',
-                    subtitle: 'Manage your listings',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MyPropertiesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(height: 32),
-                ],
+                // if (isOwner) ...[ // Commented out for testing/visibility
+                _buildSectionHeader('Owner Tools'),
+                _buildListTile(
+                  icon: Icons.home_work_outlined,
+                  title: 'My Properties',
+                  subtitle: 'Manage your listings',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MyPropertiesScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildListTile(
+                  icon: Icons.notifications_active_outlined,
+                  title: 'Send Notification',
+                  subtitle: 'Broadcast to all users',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            SendNotificationScreen(ownerId: user?.uid ?? ''),
+                      ),
+                    );
+                  },
+                ),
+                const Divider(height: 32),
+                // ], // Commented out closing bracket
 
                 // 3. My Activity
                 BlocBuilder<PropertyBloc, PropertyState>(
