@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../map/bloc/property_bloc.dart';
+import '../../map/bloc/property_state.dart';
+import '../../map/bloc/property_event.dart';
 import '../../../models/property.dart';
 
 class NearestPropertyCard extends StatelessWidget {
@@ -41,7 +45,6 @@ class NearestPropertyCard extends StatelessWidget {
                               width: 100,
                               height: 100,
                               color: Colors.grey[200],
-                              // child: const Icon(Icons.broken_image, color: Colors.grey), // Optional: hide icon for clean shimmer
                             )
                             .animate(
                               onPlay: (controller) => controller.repeat(),
@@ -98,10 +101,24 @@ class NearestPropertyCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Icon(
-                        Icons.favorite_border,
-                        size: 20,
-                        color: Colors.grey,
+                      BlocBuilder<PropertyBloc, PropertyState>(
+                        builder: (context, state) {
+                          final isSaved = state.savedPropertyIds.contains(
+                            property.id,
+                          );
+                          return GestureDetector(
+                            onTap: () {
+                              context.read<PropertyBloc>().add(
+                                ToggleSaved(property.id),
+                              );
+                            },
+                            child: Icon(
+                              isSaved ? Icons.favorite : Icons.favorite_border,
+                              size: 20,
+                              color: isSaved ? Colors.red : Colors.grey,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

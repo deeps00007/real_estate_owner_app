@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../map/bloc/property_bloc.dart';
+import '../../map/bloc/property_state.dart';
+import '../../map/bloc/property_event.dart';
 import '../../../models/property.dart';
 
 class PropertyCard extends StatelessWidget {
@@ -96,6 +100,37 @@ class PropertyCard extends StatelessWidget {
                         fontSize: 12,
                       ),
                     ),
+                  ),
+                ),
+                // Heart Icon
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: BlocBuilder<PropertyBloc, PropertyState>(
+                    builder: (context, state) {
+                      final isSaved = state.savedPropertyIds.contains(
+                        property.id,
+                      );
+                      return GestureDetector(
+                        onTap: () {
+                          context.read<PropertyBloc>().add(
+                            ToggleSaved(property.id),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isSaved ? Icons.favorite : Icons.favorite_border,
+                            size: 18,
+                            color: isSaved ? Colors.red : Colors.grey,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Positioned(
