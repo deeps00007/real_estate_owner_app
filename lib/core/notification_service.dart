@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -120,5 +122,30 @@ class NotificationService {
 
   Future<String?> getToken() async {
     return await _firebaseMessaging.getToken();
+  }
+
+  Future<void> sendNotification({
+    required String receiverId,
+    required String title,
+    required String body,
+  }) async {
+    try {
+      final url = Uri.parse(
+        'https://real-estate-owner-app.onrender.com/send-notification',
+      );
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userId': receiverId, 'title': title, 'body': body}),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Notification sent successfully');
+      } else {
+        debugPrint('Failed to send notification: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error sending notification: $e');
+    }
   }
 }

@@ -631,6 +631,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               otherUserName: widget.property.agentName.isNotEmpty
                   ? widget.property.agentName
                   : 'Listing Agent',
+              otherUserId: ownerId,
+              currentUserName: user.displayName ?? 'User',
             ),
           ),
         );

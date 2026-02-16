@@ -16,14 +16,14 @@ class CheckAuthStatus extends AuthEvent {}
 
 class LoginWithGoogle extends AuthEvent {}
 
-class LoginAsOwner extends AuthEvent {
-  final String ownerId;
-  const LoginAsOwner(this.ownerId);
-  @override
-  List<Object?> get props => [ownerId];
-}
+// class LoginAsOwner extends AuthEvent {
+//   final String ownerId;
+//   const LoginAsOwner(this.ownerId);
+//   @override
+//   List<Object?> get props => [ownerId];
+// }
 
-class SwitchToBuyer extends AuthEvent {}
+// class SwitchToBuyer extends AuthEvent {}
 
 class Logout extends AuthEvent {}
 
@@ -74,8 +74,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(const AuthState()) {
     on<CheckAuthStatus>(_onCheckAuthStatus);
     on<LoginWithGoogle>(_onLoginWithGoogle);
-    on<LoginAsOwner>(_onLoginAsOwner);
-    on<SwitchToBuyer>(_onSwitchToBuyer);
+    // on<LoginAsOwner>(_onLoginAsOwner);
+    // on<SwitchToBuyer>(_onSwitchToBuyer);
     on<Logout>(_onLogout);
 
     // Listen to Firebase Auth changes
@@ -93,7 +93,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // If no user, reset state completely
       emit(const AuthState());
     } else {
-      emit(state.copyWith(user: user));
+      emit(state.copyWith(isLoading: true));
+      // Fetch user role from Firestore
+      final role = await _firebaseService.getUserRole(user.uid);
+      final isOwner = role == 'owner';
+
+      emit(
+        state.copyWith(
+          user: user,
+          isOwner: isOwner,
+          ownerId: isOwner ? user.uid : null,
+          isLoading: false,
+        ),
+      );
       await _saveToken();
     }
   }
@@ -124,24 +136,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onLoginAsOwner(LoginAsOwner event, Emitter<AuthState> emit) {
-    if (event.ownerId == defaultOwnerId) {
-      emit(state.copyWith(isOwner: true, ownerId: event.ownerId));
-    } else {
-      emit(state.copyWith(error: "Invalid Owner ID"));
-    }
-  }
-
-  void _onSwitchToBuyer(SwitchToBuyer event, Emitter<AuthState> emit) {
-    print("AuthBloc: _onSwitchToBuyer called");
-    emit(state.copyWith(isOwner: false, ownerId: null));
-  }
-
   @override
   void onChange(Change<AuthState> change) {
     super.onChange(change);
     print(
-      "AuthBloc Change: Current: ${change.currentState.user?.uid} -> Next: ${change.nextState.user?.uid}",
+      "AuthBloc Change: User: ${change.nextState.user?.uid}, Role: ${change.nextState.isOwner ? 'Owner' : 'User'}",
     );
   }
 

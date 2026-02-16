@@ -91,6 +91,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             chatId: chat.id,
                             currentUserId: user.uid,
                             otherUserName: 'Chat', // TODO: Fetch user name
+                            otherUserId: otherUserId,
+                            currentUserName: user.displayName ?? 'User',
                           ),
                         ),
                       );

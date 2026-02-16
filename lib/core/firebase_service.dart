@@ -62,5 +62,23 @@ class FirebaseService {
     }
   }
 
+  Future<String?> getUserRole(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
+        return doc.data()!['role'] as String?;
+      }
+    } catch (e) {
+      print('Error fetching user role: $e');
+    }
+    return null;
+  }
+
+  Future<void> upgradeUserToOwner(String uid) async {
+    await _firestore.collection('users').doc(uid).set({
+      'role': 'owner',
+    }, SetOptions(merge: true));
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }

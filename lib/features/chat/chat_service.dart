@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/chat_model.dart';
+import '../../core/notification_service.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -41,7 +42,13 @@ class ChatService {
   }
 
   // Send a message
-  Future<void> sendMessage(String chatId, String text, String senderId) async {
+  Future<void> sendMessage({
+    required String chatId,
+    required String text,
+    required String senderId,
+    required String receiverId,
+    required String senderName,
+  }) async {
     await _firestore
         .collection('chats')
         .doc(chatId)
@@ -58,6 +65,13 @@ class ChatService {
       'lastMessage': text,
       'lastMessageTime': FieldValue.serverTimestamp(),
     });
+
+    // Send Notification
+    await NotificationService().sendNotification(
+      receiverId: receiverId,
+      title: 'New Message from $senderName',
+      body: text,
+    );
   }
 
   // Stream messages for a chat

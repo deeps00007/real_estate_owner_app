@@ -6,12 +6,16 @@ class ChatScreen extends StatefulWidget {
   final String chatId;
   final String currentUserId;
   final String otherUserName;
+  final String otherUserId; // Added
+  final String currentUserName; // Added
 
   const ChatScreen({
     super.key,
     required this.chatId,
     required this.currentUserId,
     required this.otherUserName,
+    required this.otherUserId, // Added
+    required this.currentUserName, // Added
   });
 
   @override
@@ -27,9 +31,11 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_messageController.text.trim().isEmpty) return;
 
     _chatService.sendMessage(
-      widget.chatId,
-      _messageController.text.trim(),
-      widget.currentUserId,
+      chatId: widget.chatId,
+      text: _messageController.text.trim(),
+      senderId: widget.currentUserId,
+      receiverId: widget.otherUserId,
+      senderName: widget.currentUserName,
     );
 
     _messageController.clear();

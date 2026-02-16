@@ -88,29 +88,10 @@ class ProfileScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 16),
-                      if (!isOwner)
-                        ElevatedButton(
-                          onPressed: () {
-                            _showAdminLoginDialog(context);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                          ),
-                          child: const Text('Switch to Host Mode'),
-                        ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 30),
-
                 // 2. Owner Tools (If Owner)
                 if (isOwner) ...[
                   _buildSectionHeader('Owner Tools'),
@@ -125,15 +106,6 @@ class ProfileScreen extends StatelessWidget {
                           builder: (context) => const MyPropertiesScreen(),
                         ),
                       );
-                    },
-                  ),
-                  _buildListTile(
-                    icon: Icons.swap_horiz_outlined,
-                    title: 'Switch to Buyer Mode',
-                    subtitle: 'View as a regular user',
-                    onTap: () {
-                      print("ProfileScreen: Switch to Buyer Mode tapped");
-                      context.read<AuthBloc>().add(SwitchToBuyer());
                     },
                   ),
                   const Divider(height: 32),
@@ -253,115 +225,6 @@ class ProfileScreen extends StatelessWidget {
             )
           : null,
       trailing: const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
-    );
-  }
-
-  void _showAdminLoginDialog(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF673AB7).withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.admin_panel_settings,
-                  color: Color(0xFF673AB7),
-                  size: 32,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Host Access',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Enter your credentials to access host features.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: controller,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Host Key',
-                  hintText: 'e.g., OWNER123',
-                  prefixIcon: const Icon(Icons.vpn_key_outlined),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF673AB7),
-                      width: 2,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        foregroundColor: Colors.grey[600],
-                      ),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.read<AuthBloc>().add(
-                          LoginAsOwner(controller.text.trim()),
-                        );
-                        Navigator.pop(ctx);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF673AB7),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'Unlock',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
