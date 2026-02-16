@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map_smart/flutter_map_smart.dart' hide debugPrint;
-import 'package:flutter_map/flutter_map.dart' show MapController, TileLayer;
+import 'package:flutter_map/flutter_map.dart' show MapController;
 
 import 'package:latlong2/latlong.dart'; // Transitive from flutter_map_smart
 import '../../../models/property.dart';
@@ -13,6 +13,7 @@ import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import 'widgets/floating_action_dock.dart';
 import 'widgets/map_property_card.dart';
+import '../home/widgets/rotating_search_bar.dart'; // Added
 import '../admin/add_edit_property_screen.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 // import 'package:geolocator/geolocator.dart'; // Handled by package
@@ -26,7 +27,6 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
-  final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   // Keep _isNearbyActive as _toggleNearby is still called
@@ -34,7 +34,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     _scrollController.dispose();
     _mapController.dispose();
     super.dispose();
@@ -185,7 +184,12 @@ class _MapScreenState extends State<MapScreen> {
                     top: 50,
                     left: 20,
                     right: 20,
-                    child: _buildFloatingSearchBar(context),
+                    child: RotatingSearchBar(
+                      onChanged: (val) => context.read<PropertyBloc>().add(
+                        SearchProperties(val),
+                      ),
+                      onSubmitted: _performSearch,
+                    ),
                   ),
 
                   // 3. Properties Carousel (Bottom)
@@ -257,45 +261,6 @@ class _MapScreenState extends State<MapScreen> {
           },
         );
       },
-    );
-  }
-
-  Widget _buildFloatingSearchBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (val) =>
-            context.read<PropertyBloc>().add(SearchProperties(val)),
-        onSubmitted: _performSearch, // Restore search functionality
-        decoration: InputDecoration(
-          hintText: 'Silverpine Meadows, Warburton', // Example from image
-          hintStyle: TextStyle(color: Colors.pink[100]),
-          prefixIcon: const Icon(Icons.search, color: Color(0xFF0F2C59)),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.tune, color: Color(0xFF0F2C59)),
-            onPressed: () {},
-          ),
-          filled: false,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 14,
-          ),
-        ),
-      ),
     );
   }
 

@@ -5,8 +5,9 @@ import 'voice_search_modal.dart'; // 👈 import the separate file
 
 class RotatingSearchBar extends StatefulWidget {
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
 
-  const RotatingSearchBar({super.key, this.onChanged});
+  const RotatingSearchBar({super.key, this.onChanged, this.onSubmitted});
 
   @override
   State<RotatingSearchBar> createState() => _RotatingSearchBarState();
@@ -198,7 +199,8 @@ class _RotatingSearchBarState extends State<RotatingSearchBar>
                 ),
                 TextField(
                   controller: _controller,
-                  onChanged: widget.onChanged, // Trigger callback
+                  onChanged: widget.onChanged,
+                  onSubmitted: widget.onSubmitted,
                   cursorColor: Colors.white,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                   decoration: const InputDecoration(

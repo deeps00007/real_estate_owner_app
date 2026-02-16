@@ -190,16 +190,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MaterialPageRoute(
                         builder: (context) => const StaticContentScreen(
                           title: 'Help Center',
-                          content:
-                              'Welcome to the Real Estate App Help Center.\n\n'
-                              'Frequently Asked Questions:\n\n'
-                              '1. How do I contact a listing agent?\n'
-                              '   - Go to the property details page and click the "Chat" icon to start a conversation.\n\n'
-                              '2. How can I save a property?\n'
-                              '   - Tap the heart icon on any property card or detail page to add it to your Saved Properties.\n\n'
-                              '3. Can I list my own property?\n'
-                              '   - Yes! If you are an owner, you can use the "Add Property" feature in the main menu.\n\n'
-                              'For further assistance, please contact support@realestateapp.com.',
+                          sections: [
+                            ContentSection(
+                              title: 'Buying & Renting',
+                              body:
+                                  'Q: How do I schedule a viewing?\n'
+                                  'A: Navigate to the property details page and tap the "Chat" button to connect directly with the agent or owner to arrange a visit.\n\n'
+                                  'Q: Are the prices negotiable?\n'
+                                  'A: Prices listed are asking prices. You can negotiate directly with the seller via our chat feature.',
+                            ),
+                            ContentSection(
+                              title: 'Account Management',
+                              body:
+                                  'Q: How do I update my profile?\n'
+                                  'A: Tap the edit icon on your profile picture to update your personal details.\n\n'
+                                  'Q: Can I switch to an owner account?\n'
+                                  'A: Yes, please contact support to upgrade your account status to list properties.',
+                            ),
+                            ContentSection(
+                              title: 'Contact Support',
+                              body:
+                                  'Need more help? Reach out to our 24/7 support team at support@realestateapp.com or call +1-800-REAL-EST.',
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -214,19 +227,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MaterialPageRoute(
                         builder: (context) => const StaticContentScreen(
                           title: 'Privacy Policy',
-                          content:
-                              'Privacy Policy\n\n'
-                              'Last updated: February 2026\n\n'
-                              '1. Information We Collect\n'
-                              '   - We collect personal information you provide, such as name, email, and user preferences.\n\n'
-                              '2. How We Use Your Information\n'
-                              '   - To provide and improve our services.\n'
-                              '   - To communicate with you regarding your account or listings.\n\n'
-                              '3. Data Security\n'
-                              '   - We implement security measures to protect your data.\n\n'
-                              '4. Your Rights\n'
-                              '   - You can access, update, or delete your personal information through your profile settings.\n\n'
-                              'By using this app, you agree to the collection and use of information in accordance with this policy.',
+                          lastUpdated: 'February 15, 2026',
+                          sections: [
+                            ContentSection(
+                              title: '1. Information Collection',
+                              body:
+                                  'We collect information you provide directly to us, such as when you create an account, update your profile, or communicate with other users. This may include your name, email address, phone number, and profile picture.',
+                            ),
+                            ContentSection(
+                              title: '2. Usage of Information',
+                              body:
+                                  'We use the information we collect to operate and improve our services, facilitate communication between buyers and sellers, and detect and prevent fraud.',
+                            ),
+                            ContentSection(
+                              title: '3. Data Sharing',
+                              body:
+                                  'We do not sell your personal data. We may share information with third-party service providers (e.g., cloud hosting, analytics) solely to support our application functionality.',
+                            ),
+                            ContentSection(
+                              title: '4. Data Security',
+                              body:
+                                  'We implement industry-standard security measures to protect your personal information. However, no method of transmission over the internet is 100% secure.',
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -241,18 +264,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MaterialPageRoute(
                         builder: (context) => const StaticContentScreen(
                           title: 'Terms of Service',
-                          content:
-                              'Terms of Service\n\n'
-                              '1. Acceptance of Terms\n'
-                              '   - By accessing usage of this app, you agree to be bound by these Terms.\n\n'
-                              '2. User Accounts\n'
-                              '   - You are responsible for maintaining the confidentiality of your account credentials.\n\n'
-                              '3. Prohibited Conduct\n'
-                              '   - You agree not to use the app for any unlawful purpose or to harass others.\n\n'
-                              '4. Liability\n'
-                              '   - We are not liable for any damages arising from your use of this app.\n\n'
-                              '5. Changes to Terms\n'
-                              '   - We reserve the right to modify these terms at any time.',
+                          lastUpdated: 'January 1, 2026',
+                          sections: [
+                            ContentSection(
+                              title: '1. Acceptance of Terms',
+                              body:
+                                  'By accessing or using our application, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the service.',
+                            ),
+                            ContentSection(
+                              title: '2. User Conduct',
+                              body:
+                                  'You agree strictly not to use the service for any unlawful purpose. You are responsible for all content you post and interactions you have with other users.',
+                            ),
+                            ContentSection(
+                              title: '3. Property Listings',
+                              body:
+                                  'We strive for accuracy but do not guarantee that property descriptions or prices are error-free. We verify listings to the best of our ability but recommend personal due diligence.',
+                            ),
+                            ContentSection(
+                              title: '4. Termination',
+                              body:
+                                  'We reserve the right to terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.',
+                            ),
+                          ],
                         ),
                       ),
                     );
