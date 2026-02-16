@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/notification_service.dart';
+import '../../core/firebase_service.dart';
 
 class SendNotificationScreen extends StatefulWidget {
   final String ownerId;
@@ -15,6 +16,9 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   bool _isLoading = false;
+  double _progress = 0.0;
+  String _statusMessage = '';
+  bool _isSending = false;
 
   @override
   void dispose() {
@@ -23,52 +27,116 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
     super.dispose();
   }
 
-  Future<void> _sendBroadcast() async {
+  Future<void> _sendBatchBroadcast() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    // Hide keyboard
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+      _isSending = true;
+      _progress = 0.0;
+      _statusMessage = 'Fetching users...';
+    });
 
     try {
-      // Send notification and get result
-      final result = await NotificationService().sendNotification(
-        title: _titleController.text.trim(),
-        body: _bodyController.text.trim(),
-        receiverId:
-            widget.ownerId, // Passing ownerId to satisfy backend requirement
+      // 1. Fetch all users
+      final users = await FirebaseService().getAllUsers();
+      final totalUsers = users.length;
+
+      if (totalUsers == 0) {
+        throw 'No users found to broadcast to.';
+      }
+
+      setState(
+        () => _statusMessage = 'Found $totalUsers users. Starting broadcast...',
       );
 
-      if (mounted) {
-        final isSuccess = result.startsWith('Success');
+      int sentCount = 0;
+      int successCount = 0;
+      int failureCount = 0;
 
-        // Show Dialog for detailed feedback
+      // 2. Process in batches of 20
+      const int batchSize = 20;
+      for (var i = 0; i < totalUsers; i += batchSize) {
+        if (!mounted) break;
+
+        final end = (i + batchSize < totalUsers) ? i + batchSize : totalUsers;
+        final batch = users.sublist(i, end);
+
+        // Process batch concurrently
+        final futures = batch.map((user) async {
+          final uid = user['uid'];
+          if (uid == null) return;
+
+          try {
+            final result = await NotificationService().sendNotification(
+              title: _titleController.text.trim(),
+              body: _bodyController.text.trim(),
+              receiverId: uid,
+            );
+            if (result.startsWith('Success')) {
+              successCount++;
+            } else {
+              failureCount++;
+            }
+          } catch (e) {
+            failureCount++;
+            print('Error sending to $uid: $e');
+          }
+        });
+
+        await Future.wait(futures);
+
+        sentCount += batch.length;
+
+        setState(() {
+          _progress = sentCount / totalUsers;
+          _statusMessage =
+              'Sent $sentCount of $totalUsers (Success: $successCount, Failed: $failureCount)';
+        });
+
+        // Small delay to be gentle on the backend/network
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
+      if (mounted) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text(isSuccess ? 'Success' : 'Failed'),
-            content: Text(result),
+            title: const Text('Broadcast Complete'),
+            content: Text(
+              'Successfully sent: $successCount\nFailed: $failureCount',
+            ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _titleController.clear();
+                  _bodyController.clear();
+                  setState(() {
+                    _isLoading = false;
+                    _isSending = false;
+                    _progress = 0.0;
+                    _statusMessage = '';
+                  });
+                },
                 child: const Text('OK'),
               ),
             ],
           ),
         );
-
-        if (isSuccess) {
-          _titleController.clear();
-          _bodyController.clear();
-        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+          _isSending = false;
+        });
       }
     }
   }
@@ -94,12 +162,12 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Send to Everyone',
+                'Batch Broadcast',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                'This message will be sent to all users of the app.',
+                'Sends to all users in batches of 20 to ensure reliability.',
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               const SizedBox(height: 32),
@@ -107,6 +175,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
               // Title Field
               TextFormField(
                 controller: _titleController,
+                enabled: !_isSending,
                 decoration: InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(
@@ -124,6 +193,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
               // Body Field
               TextFormField(
                 controller: _bodyController,
+                enabled: !_isSending,
                 maxLines: 5,
                 decoration: InputDecoration(
                   labelText: 'Message Body',
@@ -140,12 +210,34 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
               ),
               const SizedBox(height: 40),
 
+              // Progress Bar
+              if (_isSending) ...[
+                LinearProgressIndicator(
+                  value: _progress,
+                  backgroundColor: Colors.grey[200],
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFF0F2C59),
+                  ),
+                  minHeight: 10,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  _statusMessage,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+
               // Send Button
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _sendBroadcast,
+                  onPressed: _isSending ? null : _sendBatchBroadcast,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0F2C59),
                     shape: RoundedRectangleBorder(
@@ -153,7 +245,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
                     ),
                     elevation: 2,
                   ),
-                  child: _isLoading
+                  child: _isSending
                       ? const SizedBox(
                           height: 24,
                           width: 24,
@@ -168,7 +260,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
                             Icon(Icons.send, color: Colors.white),
                             SizedBox(width: 12),
                             Text(
-                              'Send Broadcast',
+                              'Start Batch Broadcast',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,

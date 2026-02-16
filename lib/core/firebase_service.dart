@@ -122,5 +122,22 @@ class FirebaseService {
     return {'saved': [], 'recent': []};
   }
 
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    try {
+      final query = await _firestore.collection('users').get();
+      return query.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'uid': doc.id,
+          'fcmToken': data['fcmToken'],
+          'email': data['email'],
+        };
+      }).toList();
+    } catch (e) {
+      print('Error fetching all users: $e');
+      return [];
+    }
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }
