@@ -139,5 +139,58 @@ class FirebaseService {
     }
   }
 
+  Future<void> saveNotification({
+    required String title,
+    required String body,
+  }) async {
+    try {
+      await _firestore.collection('notifications').add({
+        'title': title,
+        'body': body,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error saving notification: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getNotifications() async {
+    try {
+      // Get current user creation time to filter locally if needed
+      // But for now, we'll fetch all and filter in UI or here
+      final user = _auth.currentUser;
+      if (user == null) return [];
+
+      final creationTime = user.metadata.creationTime ?? DateTime(2000);
+
+      final query = await _firestore
+          .collection('notifications')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      return query.docs
+          .map((doc) {
+            final data = doc.data();
+            final timestamp = (data['timestamp'] as Timestamp?)?.toDate();
+            return {
+              'id': doc.id,
+              'title': data['title'],
+              'body': data['body'],
+              'timestamp': timestamp,
+            };
+          })
+          .where((notification) {
+            // Filter: Only show notifications sent AFTER user created account
+            final timestamp = notification['timestamp'] as DateTime?;
+            if (timestamp == null) return false;
+            return timestamp.isAfter(creationTime);
+          })
+          .toList();
+    } catch (e) {
+      print('Error fetching notifications: $e');
+      return [];
+    }
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }

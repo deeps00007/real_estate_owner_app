@@ -101,6 +101,14 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
         await Future.delayed(const Duration(milliseconds: 500));
       }
 
+      if (successCount > 0) {
+        // Save notification to Firestore history
+        await FirebaseService().saveNotification(
+          title: _titleController.text.trim(),
+          body: _bodyController.text.trim(),
+        );
+      }
+
       if (mounted) {
         showDialog(
           context: context,

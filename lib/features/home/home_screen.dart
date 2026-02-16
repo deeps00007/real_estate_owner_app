@@ -7,6 +7,7 @@ import '../map/bloc/property_state.dart';
 import '../map/bloc/property_event.dart'; // Added
 import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
+import '../../features/notifications/notifications_screen.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
 import 'widgets/rotating_search_bar.dart';
@@ -132,34 +133,44 @@ class HomeScreen extends StatelessWidget {
 
             // 3. Notification Bell
             const SizedBox(width: 12),
-            Stack(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade200),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationsScreen(),
                   ),
-                  child: const Icon(
-                    Icons.notifications_outlined,
-                    size: 24,
-                    color: Colors.black87,
-                  ),
-                ),
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
+                );
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: const Icon(
+                      Icons.notifications_outlined,
+                      size: 24,
+                      color: Colors.black87,
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    right: 12,
+                    top: 12,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         );
