@@ -124,7 +124,7 @@ class NotificationService {
     return await _firebaseMessaging.getToken();
   }
 
-  Future<void> sendNotification({
+  Future<String> sendNotification({
     String? receiverId, // Optional, if null implies broadcast
     required String title,
     required String body,
@@ -153,9 +153,13 @@ class NotificationService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('Notification sent successfully: ${response.body}');
+        return 'Success: ${response.body}';
+      } else {
+        return 'Failed: ${response.statusCode} - ${response.body}';
       }
     } catch (e) {
       debugPrint('Error sending notification: $e');
+      return 'Error: $e';
     }
   }
 }

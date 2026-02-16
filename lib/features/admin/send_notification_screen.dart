@@ -29,23 +29,36 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Send notification via singleton service
-      // Ensure sendNotification handles null receiverId as broadcast
-      await NotificationService().sendNotification(
+      // Send notification and get result
+      final result = await NotificationService().sendNotification(
         title: _titleController.text.trim(),
         body: _bodyController.text.trim(),
-        receiverId: null, // Broadcast
+        receiverId:
+            widget.ownerId, // Passing ownerId to satisfy backend requirement
       );
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notification sent to everyone!'),
-            backgroundColor: Colors.green,
+        final isSuccess = result.startsWith('Success');
+
+        // Show Dialog for detailed feedback
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(isSuccess ? 'Success' : 'Failed'),
+            content: Text(result),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
           ),
         );
-        _titleController.clear();
-        _bodyController.clear();
+
+        if (isSuccess) {
+          _titleController.clear();
+          _bodyController.clear();
+        }
       }
     } catch (e) {
       if (mounted) {
