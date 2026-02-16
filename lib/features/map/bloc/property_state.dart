@@ -12,7 +12,9 @@ class PropertyState extends Equatable {
   final bool isNearbyActive;
   final double? userLatitude;
   final double? userLongitude;
-  final String? currentAddress; // Added
+  final String? currentAddress;
+  final List<String> savedPropertyIds;
+  final List<String> recentPropertyIds;
 
   const PropertyState({
     this.status = PropertyStatus.initial,
@@ -22,7 +24,9 @@ class PropertyState extends Equatable {
     this.isNearbyActive = false,
     this.userLatitude,
     this.userLongitude,
-    this.currentAddress, // Added
+    this.currentAddress,
+    this.savedPropertyIds = const [],
+    this.recentPropertyIds = const [],
   });
 
   List<Property> get filteredProperties {
@@ -62,7 +66,9 @@ class PropertyState extends Equatable {
     bool? isNearbyActive,
     double? userLatitude,
     double? userLongitude,
-    String? currentAddress, // Added
+    String? currentAddress,
+    List<String>? savedPropertyIds,
+    List<String>? recentPropertyIds,
   }) {
     return PropertyState(
       status: status ?? this.status,
@@ -72,7 +78,9 @@ class PropertyState extends Equatable {
       isNearbyActive: isNearbyActive ?? this.isNearbyActive,
       userLatitude: userLatitude ?? this.userLatitude,
       userLongitude: userLongitude ?? this.userLongitude,
-      currentAddress: currentAddress ?? this.currentAddress, // Added
+      currentAddress: currentAddress ?? this.currentAddress,
+      savedPropertyIds: savedPropertyIds ?? this.savedPropertyIds,
+      recentPropertyIds: recentPropertyIds ?? this.recentPropertyIds,
     );
   }
 
@@ -85,6 +93,8 @@ class PropertyState extends Equatable {
     isNearbyActive,
     userLatitude,
     userLongitude,
-    currentAddress, // Added
+    currentAddress,
+    savedPropertyIds,
+    recentPropertyIds,
   ];
 }

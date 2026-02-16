@@ -42,6 +42,22 @@ class UpdateUserLocation extends PropertyEvent {
 
 class FetchUserLocation extends PropertyEvent {}
 
+class LoadUserActivity extends PropertyEvent {}
+
+class ToggleSaved extends PropertyEvent {
+  final String propertyId;
+  const ToggleSaved(this.propertyId);
+  @override
+  List<Object> get props => [propertyId];
+}
+
+class AddToRecent extends PropertyEvent {
+  final String propertyId;
+  const AddToRecent(this.propertyId);
+  @override
+  List<Object> get props => [propertyId];
+}
+
 class AddProperty extends PropertyEvent {
   final Property property;
   const AddProperty(this.property);

@@ -80,5 +80,47 @@ class FirebaseService {
     }, SetOptions(merge: true));
   }
 
+  Future<void> toggleSavedProperty(
+    String uid,
+    String propertyId,
+    bool isSaved,
+  ) async {
+    final docRef = _firestore.collection('users').doc(uid);
+    if (isSaved) {
+      await docRef.update({
+        'savedPropertyIds': FieldValue.arrayUnion([propertyId]),
+      });
+    } else {
+      await docRef.update({
+        'savedPropertyIds': FieldValue.arrayRemove([propertyId]),
+      });
+    }
+  }
+
+  Future<void> addToRecentlyViewed(String uid, String propertyId) async {
+    final docRef = _firestore.collection('users').doc(uid);
+    // Use a transaction or specific logic if we want to limit array size,
+    // but for simplicity, allow arrayUnion. Ideally, we should pull, filter, limit, and push back.
+    // For MVP: Just add it.
+    await docRef.set({
+      'recentPropertyIds': FieldValue.arrayUnion([propertyId]),
+    }, SetOptions(merge: true));
+  }
+
+  Future<Map<String, List<String>>> getUserActivity(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data()!;
+        final saved = List<String>.from(data['savedPropertyIds'] ?? []);
+        final recent = List<String>.from(data['recentPropertyIds'] ?? []);
+        return {'saved': saved, 'recent': recent};
+      }
+    } catch (e) {
+      print('Error fetching user activity: $e');
+    }
+    return {'saved': [], 'recent': []};
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }

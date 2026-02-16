@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/auth_bloc.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
+import '../map/bloc/property_state.dart';
 import '../admin/add_edit_property_screen.dart';
 import '../chat/chat_screen.dart'; // Added
 import '../chat/chat_service.dart'; // Added
@@ -24,6 +25,13 @@ class PropertyDetailScreen extends StatefulWidget {
 class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   final MapController _mapController = MapController();
   // Maintain local state for current zoom if needed, but controller handles it.
+
+  @override
+  void initState() {
+    super.initState();
+    // Track as recently viewed
+    context.read<PropertyBloc>().add(AddToRecent(widget.property.id));
+  }
 
   void _openGallery(BuildContext context, int index) {
     Navigator.push(
@@ -119,10 +127,23 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         ],
                       );
                     } else {
-                      return _buildCircleIcon(
-                        context,
-                        icon: Icons.favorite_border,
-                        onTap: () {}, // TODO: Favorite toggle
+                      return BlocBuilder<PropertyBloc, PropertyState>(
+                        builder: (context, propertyState) {
+                          final isSaved = propertyState.savedPropertyIds
+                              .contains(property.id);
+                          return _buildCircleIcon(
+                            context,
+                            icon: isSaved
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: isSaved ? Colors.red : null,
+                            onTap: () {
+                              context.read<PropertyBloc>().add(
+                                ToggleSaved(property.id),
+                              );
+                            },
+                          );
+                        },
                       );
                     }
                   },
@@ -507,6 +528,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   Widget _buildCircleIcon(
     BuildContext context, {
     required IconData icon,
+    Color? color,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -524,7 +546,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
             ),
           ],
         ),
-        child: Icon(icon, size: 20, color: const Color(0xFF2D2D2D)),
+        child: Icon(icon, size: 20, color: color ?? const Color(0xFF2D2D2D)),
       ),
     );
   }

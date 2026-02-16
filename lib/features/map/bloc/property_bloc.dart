@@ -38,6 +38,64 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
     on<UpdateProperty>((event, emit) async {
       await firebaseService.updateProperty(event.property);
     });
+    on<LoadUserActivity>(_onLoadUserActivity);
+    on<ToggleSaved>(_onToggleSaved);
+    on<AddToRecent>(_onAddToRecent);
+  }
+
+  Future<void> _onLoadUserActivity(
+    LoadUserActivity event,
+    Emitter<PropertyState> emit,
+  ) async {
+    final uid = firebaseService.currentUserId;
+    if (uid != null) {
+      final activity = await firebaseService.getUserActivity(uid);
+      emit(
+        state.copyWith(
+          savedPropertyIds: activity['saved'],
+          recentPropertyIds: activity['recent'],
+        ),
+      );
+    }
+  }
+
+  Future<void> _onToggleSaved(
+    ToggleSaved event,
+    Emitter<PropertyState> emit,
+  ) async {
+    final uid = firebaseService.currentUserId;
+    if (uid == null) return;
+
+    final isSaved = state.savedPropertyIds.contains(event.propertyId);
+    // Optimistic update
+    final newSavedList = List<String>.from(state.savedPropertyIds);
+    if (isSaved) {
+      newSavedList.remove(event.propertyId);
+    } else {
+      newSavedList.add(event.propertyId);
+    }
+
+    emit(state.copyWith(savedPropertyIds: newSavedList));
+
+    // Backend update (inverse logic because we toggled)
+    await firebaseService.toggleSavedProperty(uid, event.propertyId, !isSaved);
+  }
+
+  Future<void> _onAddToRecent(
+    AddToRecent event,
+    Emitter<PropertyState> emit,
+  ) async {
+    final uid = firebaseService.currentUserId;
+    if (uid == null) return;
+
+    // Optimistic update
+    if (!state.recentPropertyIds.contains(event.propertyId)) {
+      final newRecentList = List<String>.from(state.recentPropertyIds)
+        ..add(event.propertyId);
+      // Optional: limit list size here if strictly needed for UI, but DB mainly handles history
+      emit(state.copyWith(recentPropertyIds: newRecentList));
+      await firebaseService.addToRecentlyViewed(uid, event.propertyId);
+    }
   }
 
   Future<void> _onFetchUserLocation(
