@@ -33,9 +33,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           'Notifications',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: FirebaseService().getNotifications(),
@@ -70,99 +74,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             );
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: notifications.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
-            itemBuilder: (context, index) {
-              final notification = notifications[index];
-              final timestamp = notification['timestamp'] as DateTime?;
+          // Group notifications by date
+          final groupedNotifications = _groupNotifications(notifications);
 
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            notification['title'] ?? 'No Title',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1A1A1A),
-                            ),
-                          ),
-                        ),
-                        if (timestamp != null)
-                          Text(
-                            _formatDate(timestamp),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    if (notification['imageUrl'] != null) ...[
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          notification['imageUrl'],
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 150,
-                              width: double.infinity,
-                              color: Colors.grey[200],
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.broken_image, color: Colors.grey),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Image not available',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    Text(
-                      notification['body'] ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            itemCount: groupedNotifications.length,
+            itemBuilder: (context, index) {
+              final item = groupedNotifications[index];
+              if (item is String) {
+                return _buildDateHeader(item);
+              } else {
+                return _buildNotificationItem(item as Map<String, dynamic>);
+              }
             },
           );
         },
@@ -170,16 +94,118 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
+  List<dynamic> _groupNotifications(List<Map<String, dynamic>> notifications) {
+    final grouped = <dynamic>[];
+    String? lastDate;
 
-    if (difference.inDays == 0) {
-      return DateFormat('h:mm a').format(date);
-    } else if (difference.inDays < 7) {
-      return DateFormat('E, h:mm a').format(date);
-    } else {
-      return DateFormat('MMM d, y').format(date);
+    for (var notification in notifications) {
+      final timestamp = notification['timestamp'] as DateTime?;
+      if (timestamp == null) continue;
+
+      final dateStr = DateFormat('MMMM d, y').format(timestamp);
+
+      if (lastDate != dateStr) {
+        grouped.add(dateStr);
+        lastDate = dateStr;
+      }
+      grouped.add(notification);
     }
+    return grouped;
+  }
+
+  Widget _buildDateHeader(String date) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 12),
+      child: Text(
+        date,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.grey[600],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationItem(Map<String, dynamic> notification) {
+    final timestamp = notification['timestamp'] as DateTime?;
+    final timeStr = timestamp != null
+        ? DateFormat('h:mm a').format(timestamp)
+        : '';
+    final imageUrl = notification['imageUrl'];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Avatar
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(shape: BoxShape.circle),
+            clipBehavior: Clip.antiAlias,
+            child: imageUrl != null
+                ? Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildPlaceholderAvatar(),
+                  )
+                : _buildPlaceholderAvatar(),
+          ),
+          const SizedBox(width: 16),
+          // Content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        notification['title'] ?? 'No Title',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A1A),
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      timeStr,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[400],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  notification['body'] ?? '',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderAvatar() {
+    return Container(
+      color: const Color(0xFF0F2C59), // Dark blue brand color
+      child: const Icon(Icons.notifications, color: Colors.white, size: 24),
+    );
   }
 }
