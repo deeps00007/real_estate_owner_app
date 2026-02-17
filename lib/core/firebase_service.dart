@@ -192,5 +192,35 @@ class FirebaseService {
     }
   }
 
+  Stream<DateTime?> getLastNotificationReadTime(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map((doc) {
+      if (!doc.exists) return null;
+      final data = doc.data();
+      if (data == null || !data.containsKey('lastNotificationReadTime')) {
+        return null;
+      }
+      return (data['lastNotificationReadTime'] as Timestamp).toDate();
+    });
+  }
+
+  Stream<DateTime?> getLatestNotificationTimestamp() {
+    return _firestore
+        .collection('notifications')
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((snapshot) {
+          if (snapshot.docs.isEmpty) return null;
+          final data = snapshot.docs.first.data();
+          return (data['timestamp'] as Timestamp?)?.toDate();
+        });
+  }
+
+  Future<void> markNotificationsAsRead(String uid) async {
+    await _firestore.collection('users').doc(uid).set({
+      'lastNotificationReadTime': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
   String? get currentUserId => _auth.currentUser?.uid;
 }

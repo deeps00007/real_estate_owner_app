@@ -8,6 +8,7 @@ import '../map/bloc/property_event.dart'; // Added
 import '../../core/auth_bloc.dart'; // Added
 import '../property_details/property_detail_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
+import '../../core/firebase_service.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
 import 'widgets/rotating_search_bar.dart';
@@ -142,35 +143,14 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: Stack(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade200),
+              child: user?.uid == null
+                  ? _buildNotificationIcon()
+                  : NotificationBadge(
+                      userId: user!.uid,
+                      userCreationTime:
+                          user.metadata.creationTime ?? DateTime(2000),
+                      child: _buildNotificationIcon(),
                     ),
-                    child: const Icon(
-                      Icons.notifications_outlined,
-                      size: 24,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  Positioned(
-                    right: 12,
-                    top: 12,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
           ],
         );
@@ -362,6 +342,83 @@ class HomeScreen extends StatelessWidget {
                 .animate()
                 .fadeIn(duration: 600.ms, delay: (400 + (index * 100)).ms)
                 .slideY(begin: 0.2, end: 0, curve: Curves.easeOut);
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildNotificationIcon() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: const Icon(
+        Icons.notifications_outlined,
+        size: 24,
+        color: Colors.black87,
+      ),
+    );
+  }
+}
+
+class NotificationBadge extends StatelessWidget {
+  final String userId;
+  final DateTime userCreationTime;
+  final Widget child;
+
+  const NotificationBadge({
+    super.key,
+    required this.userId,
+    required this.userCreationTime,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DateTime?>(
+      stream: FirebaseService().getLatestNotificationTimestamp(),
+      builder: (context, latestSnapshot) {
+        if (!latestSnapshot.hasData) return child;
+        final latest = latestSnapshot.data!;
+
+        // If latest notification is OLDER than user creation time, ignore it
+        if (latest.isBefore(userCreationTime)) return child;
+
+        return StreamBuilder<DateTime?>(
+          stream: FirebaseService().getLastNotificationReadTime(userId),
+          builder: (context, readSnapshot) {
+            final lastRead = readSnapshot.data;
+            bool showBadge = false;
+
+            // Show badge if never read OR latest is newer than last read
+            if (lastRead == null || latest.isAfter(lastRead)) {
+              showBadge = true;
+            }
+
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                child,
+                if (showBadge)
+                  Positioned(
+                    right: 0,
+                    top: 0, // Adjusted to sit on the edge
+                    child: Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
+            );
           },
         );
       },

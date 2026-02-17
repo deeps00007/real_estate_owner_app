@@ -2,8 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../core/firebase_service.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _markAsRead();
+  }
+
+  Future<void> _markAsRead() async {
+    final service = FirebaseService();
+    final uid = service.currentUserId;
+    if (uid != null) {
+      await service.markNotificationsAsRead(uid);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
