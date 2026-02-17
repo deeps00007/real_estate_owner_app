@@ -12,6 +12,7 @@ import '../../core/firebase_service.dart';
 import 'widgets/property_card.dart';
 import 'widgets/nearest_property_card.dart';
 import 'widgets/rotating_search_bar.dart';
+import '../map/add_property_screen.dart'; // Added
 
 class HomeScreen extends StatelessWidget {
   final VoidCallback? onProfileTap;
@@ -22,6 +23,21 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (!state.isOwner) return const SizedBox.shrink();
+          return FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AddPropertyScreen()),
+              );
+            },
+            backgroundColor: const Color(0xFF0F2C59),
+            child: const Icon(Icons.add, color: Colors.white),
+          );
+        },
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),

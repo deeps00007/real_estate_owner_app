@@ -110,37 +110,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 30),
                 // 2. Owner Tools (If Owner)
-                // if (isOwner) ...[ // Commented out for testing/visibility
-                _buildSectionHeader('Owner Tools'),
-                _buildListTile(
-                  icon: Icons.home_work_outlined,
-                  title: 'My Properties',
-                  subtitle: 'Manage your listings',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MyPropertiesScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildListTile(
-                  icon: Icons.notifications_active_outlined,
-                  title: 'Send Notification',
-                  subtitle: 'Broadcast to all users',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            SendNotificationScreen(ownerId: user?.uid ?? ''),
-                      ),
-                    );
-                  },
-                ),
-                const Divider(height: 32),
-                // ], // Commented out closing bracket
+                if (isOwner) ...[
+                  _buildSectionHeader('Owner Tools'),
+                  _buildListTile(
+                    icon: Icons.home_work_outlined,
+                    title: 'My Properties',
+                    subtitle: 'Manage your listings',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyPropertiesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildListTile(
+                    icon: Icons.notifications_active_outlined,
+                    title: 'Send Notification',
+                    subtitle: 'Broadcast to all users',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SendNotificationScreen(ownerId: user?.uid ?? ''),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 32),
+                ],
 
                 // 3. My Activity
                 BlocBuilder<PropertyBloc, PropertyState>(
