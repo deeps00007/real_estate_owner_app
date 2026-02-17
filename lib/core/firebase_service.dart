@@ -181,6 +181,7 @@ class FirebaseService {
               'id': doc.id,
               'title': data['title'],
               'body': data['body'],
+              'imageUrl': data['imageUrl'],
               'timestamp': timestamp,
             };
           })

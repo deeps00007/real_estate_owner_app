@@ -98,18 +98,49 @@ class NotificationService {
   }
 
   Future<void> _showNotification(RemoteMessage message) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-          'high_importance_channel', // id
-          'High Importance Notifications', // title
-          channelDescription:
-              'This channel is used for important notifications.',
-          importance: Importance.max,
-          priority: Priority.high,
-        );
+    final imageUrl =
+        message.data['imageUrl'] ?? message.notification?.android?.imageUrl;
 
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
+    AndroidNotificationDetails? androidDetails;
+
+    if (imageUrl != null) {
+      try {
+        final http.Response response = await http.get(Uri.parse(imageUrl));
+        if (response.statusCode == 200) {
+          final BigPictureStyleInformation bigPictureStyleInformation =
+              BigPictureStyleInformation(
+                ByteArrayAndroidBitmap(response.bodyBytes),
+                largeIcon: ByteArrayAndroidBitmap(response.bodyBytes),
+                contentTitle: message.notification?.title,
+                summaryText: message.notification?.body,
+              );
+
+          androidDetails = AndroidNotificationDetails(
+            'high_importance_channel',
+            'High Importance Notifications',
+            channelDescription:
+                'This channel is used for important notifications.',
+            importance: Importance.max,
+            priority: Priority.high,
+            styleInformation: bigPictureStyleInformation,
+          );
+        }
+      } catch (e) {
+        debugPrint('Error downloading illustration: $e');
+      }
+    }
+
+    // Fallback if no image or download failed
+    androidDetails ??= const AndroidNotificationDetails(
+      'high_importance_channel',
+      'High Importance Notifications',
+      channelDescription: 'This channel is used for important notifications.',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
     );
 
     await _localNotifications.show(
