@@ -142,13 +142,18 @@ class FirebaseService {
   Future<void> saveNotification({
     required String title,
     required String body,
+    String? imageUrl,
   }) async {
     try {
-      await _firestore.collection('notifications').add({
+      final data = {
         'title': title,
         'body': body,
         'timestamp': FieldValue.serverTimestamp(),
-      });
+      };
+      if (imageUrl != null) {
+        data['imageUrl'] = imageUrl;
+      }
+      await _firestore.collection('notifications').add(data);
     } catch (e) {
       print('Error saving notification: $e');
     }

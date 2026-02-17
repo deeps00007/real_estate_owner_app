@@ -128,6 +128,7 @@ class NotificationService {
     String? receiverId, // Optional, if null implies broadcast
     required String title,
     required String body,
+    String? imageUrl,
   }) async {
     try {
       final url = Uri.parse(
@@ -135,6 +136,10 @@ class NotificationService {
       );
 
       final Map<String, dynamic> payload = {'title': title, 'body': body};
+
+      if (imageUrl != null) {
+        payload['imageUrl'] = imageUrl;
+      }
 
       if (receiverId != null) {
         payload['userId'] = receiverId;
