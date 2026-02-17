@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/notification_service.dart';
 import '../../core/firebase_service.dart';
+import '../../core/imagekit_service.dart';
 
 class SendNotificationScreen extends StatefulWidget {
   final String ownerId;
@@ -15,6 +18,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  File? _imageFile;
   bool _isLoading = false;
   double _progress = 0.0;
   String _statusMessage = '';
@@ -27,6 +31,30 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final file = File(picked.path);
+      final sizeInBytes = await file.length();
+      final sizeInMB = sizeInBytes / (1024 * 1024);
+
+      if (sizeInMB > 1.5) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Image size must be less than 1.5MB'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+
+      setState(() => _imageFile = file);
+    }
+  }
+
   Future<void> _sendBatchBroadcast() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -37,11 +65,21 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
       _isLoading = true;
       _isSending = true;
       _progress = 0.0;
-      _statusMessage = 'Fetching users...';
+      _statusMessage = 'Preparing broadcast...';
     });
 
     try {
-      // 1. Fetch all users
+      String? imageUrl;
+      // 1. Upload Image if selected
+      if (_imageFile != null) {
+        setState(() => _statusMessage = 'Uploading image...');
+        final imageKitService = ImageKitService();
+        imageUrl = await imageKitService.uploadImage(_imageFile!);
+      }
+
+      setState(() => _statusMessage = 'Fetching users...');
+
+      // 2. Fetch all users
       final users = await FirebaseService().getAllUsers();
       final totalUsers = users.length;
 
@@ -57,7 +95,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
       int successCount = 0;
       int failureCount = 0;
 
-      // 2. Process in batches of 20
+      // 3. Process in batches of 20
       const int batchSize = 20;
       for (var i = 0; i < totalUsers; i += batchSize) {
         if (!mounted) break;
@@ -74,6 +112,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
             final result = await NotificationService().sendNotification(
               title: _titleController.text.trim(),
               body: _bodyController.text.trim(),
+              imageUrl: imageUrl,
               receiverId: uid,
             );
             if (result.startsWith('Success')) {
@@ -106,6 +145,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
         await FirebaseService().saveNotification(
           title: _titleController.text.trim(),
           body: _bodyController.text.trim(),
+          imageUrl: imageUrl,
         );
       }
 
@@ -124,6 +164,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
                   _titleController.clear();
                   _bodyController.clear();
                   setState(() {
+                    _imageFile = null;
                     _isLoading = false;
                     _isSending = false;
                     _progress = 0.0;
@@ -215,6 +256,76 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
                 validator: (value) => value == null || value.isEmpty
                     ? 'Please enter a message'
                     : null,
+              ),
+              const SizedBox(height: 20),
+
+              // Image Picker
+              GestureDetector(
+                onTap: _isSending ? null : _pickImage,
+                child: Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: _imageFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.file(_imageFile!, fit: BoxFit.cover),
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: InkWell(
+                                  onTap: () =>
+                                      setState(() => _imageFile = null),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.add_photo_alternate_outlined,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Add Image (Optional)',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              'Max 1.5MB',
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
               const SizedBox(height: 40),
 
