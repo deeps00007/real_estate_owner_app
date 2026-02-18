@@ -90,9 +90,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           builder: (context) => ChatScreen(
                             chatId: chat.id,
                             currentUserId: user.uid,
-                            otherUserName: 'Chat', // TODO: Fetch user name
+                            otherUserName:
+                                'User ${otherUserId.substring(0, 5)}...', // Placeholder
                             otherUserId: otherUserId,
                             currentUserName: user.displayName ?? 'User',
+                            otherUserProfileImage:
+                                null, // Placeholder for image
                           ),
                         ),
                       );
