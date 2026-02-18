@@ -108,7 +108,7 @@ class NotificationService {
         );
 
     await _localNotifications.initialize(
-      initializationSettings,
+      settings: initializationSettings,
       onDidReceiveNotificationResponse:
           (NotificationResponse notificationResponse) {
             // Handle notification tap
@@ -179,7 +179,6 @@ class NotificationService {
             channelDescription:
                 'This channel is used for important notifications.',
             importance: Importance.max,
-            priority: Priority.high,
             styleInformation: bigPictureStyleInformation,
           );
         }
@@ -194,7 +193,6 @@ class NotificationService {
       'High Importance Notifications',
       channelDescription: 'This channel is used for important notifications.',
       importance: Importance.max,
-      priority: Priority.high,
     );
 
     NotificationDetails notificationDetails = NotificationDetails(
@@ -202,9 +200,9 @@ class NotificationService {
     );
 
     await _localNotifications.show(
-      message.notification.hashCode,
-      message.notification?.title,
-      message.notification?.body,
+      id: message.notification.hashCode,
+      title: message.notification?.title,
+      body: message.notification?.body,
       notificationDetails: notificationDetails,
     );
   }
