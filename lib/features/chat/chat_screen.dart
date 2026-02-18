@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/chat_model.dart';
 import 'chat_service.dart';
+import '../../core/notification_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String chatId;
@@ -30,8 +31,20 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    // Set current chat ID to suppress notifications
+    NotificationService.currentChatId = widget.chatId;
+
     // Mark chat as read when opening
     _chatService.markChatAsRead(widget.chatId, widget.currentUserId);
+  }
+
+  @override
+  void dispose() {
+    // Clear current chat ID
+    NotificationService.currentChatId = null;
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _sendMessage() {
