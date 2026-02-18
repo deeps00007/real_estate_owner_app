@@ -15,6 +15,7 @@ import 'core/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Initialize Notification Service (handles background/foreground)
   await NotificationService().initialize();
   runApp(const RealEstateApp());
 }

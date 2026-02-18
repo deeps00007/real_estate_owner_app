@@ -141,7 +141,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             fontSize: 12,
                           ),
                         ),
-                        // Unread indicator could go here
+                        const SizedBox(height: 4),
+                        if (chat.unreadCounts[user.uid] != null &&
+                            chat.unreadCounts[user.uid]! > 0)
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              chat.unreadCounts[user.uid].toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   );

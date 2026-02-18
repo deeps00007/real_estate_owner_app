@@ -27,6 +27,13 @@ class _ChatScreenState extends State<ChatScreen> {
   final ChatService _chatService = ChatService();
   final ScrollController _scrollController = ScrollController();
 
+  @override
+  void initState() {
+    super.initState();
+    // Mark chat as read when opening
+    _chatService.markChatAsRead(widget.chatId, widget.currentUserId);
+  }
+
   void _sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
 
@@ -76,6 +83,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
                 final messages = snapshot.data!;
 
+                // Check for unread messages from the other user and mark them as read
+                final unreadMessages = messages.where(
+                  (msg) =>
+                      msg.senderId != widget.currentUserId && msg.status != 2,
+                );
+
+                if (unreadMessages.isNotEmpty) {
+                  // Use Future.microtask to avoid calling setState during build
+                  Future.microtask(() {
+                    _chatService.markChatAsRead(
+                      widget.chatId,
+                      widget.currentUserId,
+                    );
+                  });
+                }
+
                 return ListView.builder(
                   controller: _scrollController,
                   reverse: true,
@@ -110,11 +133,33 @@ class _ChatScreenState extends State<ChatScreen> {
                                 : const Radius.circular(16),
                           ),
                         ),
-                        child: Text(
-                          message.text,
-                          style: TextStyle(
-                            color: isMe ? Colors.white : Colors.black87,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message.text,
+                              style: TextStyle(
+                                color: isMe ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                            if (isMe) ...[
+                              const SizedBox(height: 4),
+                              Icon(
+                                Icons.done_all,
+                                size: 16,
+                                color: message.status == 2
+                                    ? Colors
+                                          .blueAccent // Read
+                                    : (message.status == 1
+                                          ? Colors
+                                                .grey // Delivered
+                                          : Colors
+                                                .grey[400]), // Sent (Light Grey)
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                     );

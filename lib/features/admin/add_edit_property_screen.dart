@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/auth_bloc.dart';
-import '../../core/image_upload_service.dart';
+import '../../core/imagekit_service.dart';
 import '../../models/property.dart';
 import '../map/bloc/property_bloc.dart';
 import '../map/bloc/property_event.dart';
@@ -160,10 +160,10 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
 
       String imageUrl = _imageUrlController.text;
       if (_selectedImage != null) {
-        final uploadedUrl = await ImageUploadService().uploadImage(
+        final uploadedUrl = await ImageKitService().uploadImage(
           _selectedImage!,
         );
-        if (uploadedUrl != null) {
+        if (uploadedUrl.isNotEmpty) {
           imageUrl = uploadedUrl;
         } else {
           if (mounted) {
@@ -184,8 +184,8 @@ class _AddEditPropertyScreenState extends State<AddEditPropertyScreen> {
       List<String> finalGallery = List.from(_galleryUrls);
       if (_galleryFiles.isNotEmpty) {
         for (var file in _galleryFiles) {
-          final url = await ImageUploadService().uploadImage(file);
-          if (url != null) {
+          final url = await ImageKitService().uploadImage(file);
+          if (url.isNotEmpty) {
             finalGallery.add(url);
           }
         }

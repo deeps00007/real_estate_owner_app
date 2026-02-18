@@ -49,29 +49,72 @@ class ChatService {
     required String receiverId,
     required String senderName,
   }) async {
-    await _firestore
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .add({
-          'senderId': senderId,
-          'text': text,
-          'timestamp': FieldValue.serverTimestamp(),
-          'isRead': false,
-        });
+    await _firestore.collection('chats').doc(chatId).collection('messages').add(
+      {
+        'senderId': senderId,
+        'text': text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 0, // Sent
+      },
+    );
 
-    // Update last message in chat document
+    // Update last message and increment unread count
     await _firestore.collection('chats').doc(chatId).update({
       'lastMessage': text,
       'lastMessageTime': FieldValue.serverTimestamp(),
+      'unreadCounts.$receiverId': FieldValue.increment(1),
     });
 
-    // Send Notification
+    // Send Silent Data Message for Delivery Receipt
+    // The recipient app will wake up and call markMessageAsDelivered
     await NotificationService().sendNotification(
       receiverId: receiverId,
       title: 'New Message from $senderName',
       body: text,
+      data: {
+        'type': 'new_message',
+        'chatId': chatId,
+        // We might need messageId to mark specific message as delivered.
+        // However, standard sendMessage doesn't return the ID easily unless we refactor.
+        // For now, we can just wake up the chat.
+      },
     );
+  }
+
+  // Mark specific message as Delivered (1)
+  Future<void> markMessageAsDelivered(String chatId, String messageId) async {
+    await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({'status': 1}); // Delivered
+  }
+
+  // Mark chat as Read (2)
+  Future<void> markChatAsRead(String chatId, String currentUserId) async {
+    // 1. Reset unread count for current user
+    await _firestore.collection('chats').doc(chatId).update({
+      'unreadCounts.$currentUserId': 0,
+    });
+
+    // 2. Mark UNREAD messages as READ (status = 2)
+    // Filter: senderId != currentUserId && status < 2
+    final unreadMessagesQuery = await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .where('status', isLessThan: 2)
+        .where('senderId', isNotEqualTo: currentUserId)
+        .get();
+
+    if (unreadMessagesQuery.docs.isNotEmpty) {
+      final batch = _firestore.batch();
+      for (var doc in unreadMessagesQuery.docs) {
+        batch.update(doc.reference, {'status': 2}); // Read
+      }
+      await batch.commit();
+    }
   }
 
   // Stream messages for a chat
