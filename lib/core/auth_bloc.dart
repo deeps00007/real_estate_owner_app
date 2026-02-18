@@ -16,15 +16,6 @@ class CheckAuthStatus extends AuthEvent {}
 
 class LoginWithGoogle extends AuthEvent {}
 
-// class LoginAsOwner extends AuthEvent {
-//   final String ownerId;
-//   const LoginAsOwner(this.ownerId);
-//   @override
-//   List<Object?> get props => [ownerId];
-// }
-
-// class SwitchToBuyer extends AuthEvent {}
-
 class Logout extends AuthEvent {}
 
 // State
@@ -65,7 +56,6 @@ class AuthState extends Equatable {
 
 // BLoC
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  static const String defaultOwnerId = 'OWNER123';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseService _firebaseService = FirebaseService();
@@ -74,8 +64,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(const AuthState()) {
     on<CheckAuthStatus>(_onCheckAuthStatus);
     on<LoginWithGoogle>(_onLoginWithGoogle);
-    // on<LoginAsOwner>(_onLoginAsOwner);
-    // on<SwitchToBuyer>(_onSwitchToBuyer);
     on<Logout>(_onLogout);
 
     // Listen to Firebase Auth changes
