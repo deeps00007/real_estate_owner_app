@@ -52,14 +52,28 @@ class FirebaseService {
   }
 
   Future<void> saveUserToken(String token) async {
-    final userId = _auth.currentUser?.uid;
-    if (userId != null) {
-      await _firestore.collection('users').doc(userId).set({
+    final user = _auth.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).set({
         'fcmToken': token,
-        'email': _auth.currentUser?.email, // Optional: useful for debugging
+        'email': user.email,
+        'displayName': user.displayName,
+        'photoURL': user.photoURL,
         'lastLogin': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     }
+  }
+
+  Future<Map<String, dynamic>?> getUserDetails(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        return doc.data();
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
+    return null;
   }
 
   Future<String?> getUserRole(String uid) async {

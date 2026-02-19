@@ -7,6 +7,7 @@ import '../map/bloc/property_event.dart';
 import 'home_screen.dart';
 import '../map/map_screen.dart';
 import '../profile/profile_screen.dart';
+import '../promotion/floating_promotion_video.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -67,7 +68,12 @@ class _MainNavigationState extends State<MainNavigation> {
         _onWillPop();
       },
       child: Scaffold(
-        body: IndexedStack(index: _selectedIndex, children: _screens),
+        body: Stack(
+          children: [
+            IndexedStack(index: _selectedIndex, children: _screens),
+            const FloatingPromotionVideo(),
+          ],
+        ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             color: Colors.white,
