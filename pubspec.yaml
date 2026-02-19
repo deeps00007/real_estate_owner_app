@@ -54,6 +54,8 @@ dependencies:
   flutter_local_notifications: ^20.1.0
   flutter_animate: ^4.5.2
   speech_to_text: ^7.0.0
+  chewie: ^1.13.0
+  video_player: ^2.10.1
 
 
 dev_dependencies:
