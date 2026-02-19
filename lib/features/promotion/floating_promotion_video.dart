@@ -37,7 +37,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   Future<void> _fetchInstagramToken() async {
     try {
       final response = await http.get(
-        Uri.parse('https://avisaexperts.com/instaapi.php'),
+        Uri.parse(''),
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
