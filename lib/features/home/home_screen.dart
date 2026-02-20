@@ -27,6 +27,7 @@ class HomeScreen extends StatelessWidget {
         builder: (context, state) {
           if (!state.isOwner) return const SizedBox.shrink();
           return FloatingActionButton(
+            heroTag: 'home_fab',
             onPressed: () {
               Navigator.push(
                 context,

@@ -26,6 +26,10 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   final double _expandedHeight = 350.0;
   String? _instagramToken;
 
+  // For Draggability
+  double? _left;
+  double? _bottom;
+
   @override
   void initState() {
     super.initState();
@@ -36,9 +40,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
 
   Future<void> _fetchInstagramToken() async {
     try {
-      final response = await http.get(
-        Uri.parse(''),
-      );
+      final response = await http.get(Uri.parse(''));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == true &&
@@ -138,6 +140,17 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   Future<void> _applyDefaultMute() async {
     // set the flag so UI shows muted icon by default
     _isMuted = true;
+
+    // Initialize position to bottom-left if not set
+    if (_left == null && _bottom == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          _left = 16.0;
+          _bottom = 16.0;
+        });
+      });
+    }
+
     // wait until the controller is created and initialized, then apply volume
     while (mounted) {
       if (_chewieController != null && _videoController.value.isInitialized) {
@@ -158,6 +171,27 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   void _toggleExpand() {
     setState(() {
       _isExpanded = !_isExpanded;
+
+      // Recalculate dimensions for boundary check
+      final double nextWidth = _isExpanded ? _expandedWidth : _frameWidth;
+      final double nextHeight = _isExpanded ? _expandedHeight : _frameHeight;
+
+      if (_left != null && _bottom != null) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        // Adjust _left if expanded width goes off-screen
+        if (_left! + nextWidth > screenWidth - 16) {
+          _left = screenWidth - nextWidth - 16;
+        }
+        if (_left! < 16) _left = 16;
+
+        // Adjust _bottom if expanded height goes off-screen
+        if (_bottom! + nextHeight > screenHeight - 16) {
+          _bottom = screenHeight - nextHeight - 16;
+        }
+        if (_bottom! < 16) _bottom = 16;
+      }
     });
   }
 
@@ -174,14 +208,55 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   Widget build(BuildContext context) {
     if (FloatingPromotionVideo.isClosedForSession ||
         _chewieController == null ||
-        !_videoController.value.isInitialized) {
-      return const SizedBox.shrink(); // Hide if closed for session
+        !_videoController.value.isInitialized ||
+        _left == null ||
+        _bottom == null) {
+      return const SizedBox.shrink(); // Hide if closed for session or pos not set
     }
 
+    final double currentWidth = _isExpanded ? _expandedWidth : _frameWidth;
+    final double currentHeight = _isExpanded ? _expandedHeight : _frameHeight;
+
     return Positioned(
-      left: 16,
-      bottom: 16,
+      left: _left,
+      bottom: _bottom,
       child: GestureDetector(
+        onPanUpdate: (details) {
+          setState(() {
+            _left = (_left ?? 0) + details.delta.dx;
+            // bottom increases as we move UP (negative dy)
+            _bottom = (_bottom ?? 0) - details.delta.dy;
+
+            // Boundary checks
+            final screenWidth = MediaQuery.of(context).size.width;
+            final screenHeight = MediaQuery.of(context).size.height;
+
+            if (_left! < 16) _left = 16;
+            if (_bottom! < 16) _bottom = 16;
+
+            if (_left! + currentWidth > screenWidth - 16) {
+              _left = screenWidth - currentWidth - 16;
+            }
+            if (_bottom! + currentHeight > screenHeight - 16) {
+              _bottom = screenHeight - currentHeight - 16;
+            }
+          });
+        },
+        onPanEnd: (_) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final double currentWidth = _isExpanded
+              ? _expandedWidth
+              : _frameWidth;
+
+          setState(() {
+            // Magnetic Snapping: snap to nearest side
+            if ((_left ?? 0) + (currentWidth / 2) < screenWidth / 2) {
+              _left = 16.0; // Snap to Left
+            } else {
+              _left = screenWidth - currentWidth - 16.0; // Snap to Right
+            }
+          });
+        },
         onTap: _toggleExpand,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),

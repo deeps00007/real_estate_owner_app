@@ -195,6 +195,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'location_picker_fab',
         onPressed: _isLoading ? null : _getCurrentLocation,
         backgroundColor: Colors.white,
         child: _isLoading

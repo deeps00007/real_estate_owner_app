@@ -165,6 +165,7 @@ class MyPropertiesScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'my_properties_fab',
         onPressed: () {
           Navigator.push(
             context,

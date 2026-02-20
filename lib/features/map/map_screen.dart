@@ -250,6 +250,7 @@ class _MapScreenState extends State<MapScreen> {
                       bottom: 110,
                       right: 20,
                       child: FloatingActionButton(
+                        heroTag: 'map_fab',
                         backgroundColor: const Color(0xFF0F2C59),
                         onPressed: () => _showAddPropertyDialog(context),
                         child: const Icon(Icons.add, color: Colors.white),
