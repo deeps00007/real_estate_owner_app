@@ -49,19 +49,19 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
         } else {
           // If API returns invalid data, use fallback video
           _initializeVideoPlayer(
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+            'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
           );
         }
       } else {
         // If API fails, use fallback video
         _initializeVideoPlayer(
-          'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+          'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
         );
       }
     } catch (e) {
       // If API fails, use fallback video
       _initializeVideoPlayer(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
       );
     }
   }
@@ -69,7 +69,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   Future<void> _fetchInstagramVideoUrl() async {
     if (_instagramToken == null || _instagramToken!.isEmpty) {
       _initializeVideoPlayer(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
       );
       return;
     }
@@ -91,11 +91,11 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
         }
       }
       _initializeVideoPlayer(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
       );
     } catch (e) {
       _initializeVideoPlayer(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
       );
     }
   }

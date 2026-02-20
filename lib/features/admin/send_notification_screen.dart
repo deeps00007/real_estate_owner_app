@@ -18,16 +18,20 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  final _imageUrlController = TextEditingController();
   File? _imageFile;
   bool _isLoading = false;
   double _progress = 0.0;
   String _statusMessage = '';
   bool _isSending = false;
+  // 'upload' = pick from gallery, 'url' = paste a URL
+  String _imageMode = 'upload';
 
   @override
   void dispose() {
     _titleController.dispose();
     _bodyController.dispose();
+    _imageUrlController.dispose();
     super.dispose();
   }
 
@@ -70,11 +74,14 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
 
     try {
       String? imageUrl;
-      // 1. Upload Image if selected
-      if (_imageFile != null) {
+      // 1. Resolve image: upload file OR use URL directly
+      if (_imageMode == 'upload' && _imageFile != null) {
         setState(() => _statusMessage = 'Uploading image...');
         final imageKitService = ImageKitService();
         imageUrl = await imageKitService.uploadImage(_imageFile!);
+      } else if (_imageMode == 'url') {
+        final url = _imageUrlController.text.trim();
+        if (url.isNotEmpty) imageUrl = url;
       }
 
       setState(() => _statusMessage = 'Fetching users...');
@@ -163,6 +170,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
                   Navigator.pop(context);
                   _titleController.clear();
                   _bodyController.clear();
+                  _imageUrlController.clear();
                   setState(() {
                     _imageFile = null;
                     _isLoading = false;
@@ -259,74 +267,150 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
               ),
               const SizedBox(height: 20),
 
-              // Image Picker
-              GestureDetector(
-                onTap: _isSending ? null : _pickImage,
-                child: Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
+              // --- Image Mode Toggle ---
+              Text(
+                'Notification Image (Optional)',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 10),
+              ToggleButtons(
+                isSelected: [_imageMode == 'upload', _imageMode == 'url'],
+                onPressed: _isSending
+                    ? null
+                    : (index) {
+                        setState(() {
+                          _imageMode = index == 0 ? 'upload' : 'url';
+                          _imageFile = null;
+                          _imageUrlController.clear();
+                        });
+                      },
+                borderRadius: BorderRadius.circular(10),
+                selectedColor: Colors.white,
+                fillColor: const Color(0xFF0F2C59),
+                color: Colors.grey[700],
+                constraints: const BoxConstraints(minHeight: 40),
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Icon(Icons.upload_file, size: 18),
+                        SizedBox(width: 6),
+                        Text('Upload Image'),
+                      ],
+                    ),
                   ),
-                  child: _imageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Image.file(_imageFile!, fit: BoxFit.cover),
-                              Positioned(
-                                right: 8,
-                                top: 8,
-                                child: InkWell(
-                                  onTap: () =>
-                                      setState(() => _imageFile = null),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 20,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Icon(Icons.link, size: 18),
+                        SizedBox(width: 6),
+                        Text('Use URL'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Upload Mode
+              if (_imageMode == 'upload')
+                GestureDetector(
+                  onTap: _isSending ? null : _pickImage,
+                  child: Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: _imageFile != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.file(_imageFile!, fit: BoxFit.cover),
+                                Positioned(
+                                  right: 8,
+                                  top: 8,
+                                  child: InkWell(
+                                    onTap: () =>
+                                        setState(() => _imageFile = null),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.add_photo_alternate_outlined,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Tap to pick from gallery',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                'Max 1.5MB',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
                           ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.add_photo_alternate_outlined,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Add Image (Optional)',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Text(
-                              'Max 1.5MB',
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                  ),
                 ),
-              ),
+
+              // URL Mode
+              if (_imageMode == 'url') ...[
+                TextFormField(
+                  controller: _imageUrlController,
+                  enabled: !_isSending,
+                  decoration: InputDecoration(
+                    labelText: 'Image URL',
+                    hintText: 'https://example.com/image.jpg',
+                    prefixIcon: const Icon(Icons.link),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                  ),
+                  keyboardType: TextInputType.url,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Paste a publicly accessible image URL. It must end in .jpg, .png, etc. and be reachable by FCM.',
+                  style: TextStyle(fontSize: 12, color: Colors.orange[700]),
+                ),
+              ],
+
               const SizedBox(height: 40),
 
               // Progress Bar

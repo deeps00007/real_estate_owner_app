@@ -31,7 +31,7 @@ const db = admin.firestore();
 
 // API Endpoint to send notification
 app.post('/send-notification', async (req, res) => {
-    const { userId, title, body, data } = req.body;
+    const { userId, title, body, imageUrl, data } = req.body;
 
     if (!userId || !title || !body) {
         return res.status(400).send('Missing userId, title, or body');
@@ -56,14 +56,37 @@ app.post('/send-notification', async (req, res) => {
         }
 
         // 2. Construct the message
+        // NOTE: For images to appear in the Android system tray, they must be
+        // set in android.notification.imageUrl (not just notification.imageUrl).
         const message = {
             notification: {
                 title: title,
                 body: body,
+                ...(imageUrl && { imageUrl: imageUrl }), // top-level (some clients use this)
             },
-            data: data || {}, // Optional data payload
+            android: {
+                notification: {
+                    imageUrl: imageUrl || undefined, // Android system tray image
+                },
+            },
+            apns: imageUrl ? {
+                payload: {
+                    aps: {
+                        'mutable-content': 1,
+                    },
+                },
+                fcmOptions: {
+                    imageUrl: imageUrl,
+                },
+            } : undefined,
+            data: {
+                ...(data || {}),
+                ...(imageUrl && { imageUrl: imageUrl }), // also pass in data for foreground handler
+            },
             token: token,
         };
+
+        console.log('Sending FCM message with imageUrl:', imageUrl || 'none');
 
         // 3. Send the message
         const response = await admin.messaging().send(message);
