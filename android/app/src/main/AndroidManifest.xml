@@ -10,7 +10,7 @@
 
 
     <application
-        android:label="real_estate_owner_app"
+        android:label="Oberoi Realty"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
