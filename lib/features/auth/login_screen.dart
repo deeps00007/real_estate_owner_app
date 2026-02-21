@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Start Your Real Estate Journey with Us',
+                      'Start Your Journey with Oberoi Realty',
                       style: TextStyle(color: Colors.white70, fontSize: 18),
                     ),
                     const SizedBox(height: 48),
