@@ -15,7 +15,7 @@ class FloatingPromotionVideo extends StatefulWidget {
 }
 
 class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
-  late VideoPlayerController _videoController;
+  VideoPlayerController? _videoController;
   ChewieController? _chewieController;
   bool _isMuted = false;
   bool _isExpanded = false;
@@ -25,6 +25,11 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   final double _expandedWidth = 210.0;
   final double _expandedHeight = 350.0;
   String? _instagramToken;
+
+  // Story-Style Playlist
+  List<String> _playlist = [];
+  int _currentIndex = 0;
+  double _currentProgress = 0.0;
 
   // For Draggability
   double? _left;
@@ -61,68 +66,142 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
         );
       }
     } catch (e) {
-      // If API fails, use fallback video
-      _initializeVideoPlayer(
+      // If API fails, use fallback videos
+      _initializePlaylist([
         'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
-      );
+        'https://ik.imagekit.io/projectss/Featuring%20Soon__interior%20_interiordesign%20_reel%20_design.mp4',
+      ]);
+    }
+  }
+
+  void _initializePlaylist(List<String> urls) {
+    setState(() {
+      _playlist = urls;
+      _currentIndex = 0;
+    });
+    if (_playlist.isNotEmpty) {
+      _initializeVideoPlayer(_playlist[_currentIndex]);
     }
   }
 
   Future<void> _fetchInstagramVideoUrl() async {
-    if (_instagramToken == null || _instagramToken!.isEmpty) {
-      _initializeVideoPlayer(
-        'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
-      );
-      return;
-    }
-
     try {
       final response = await http.get(
         Uri.parse(
-          'https://graph.instagram.com/me/media?fields=media_url,media_type&access_token=$_instagramToken&limit=1',
+          'https://graph.instagram.com/me/media?fields=media_url,media_type&access_token=$_instagramToken&limit=5',
         ),
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['data'] != null && data['data'].isNotEmpty) {
-          final media = data['data'][0];
-          if (media['media_type'] == 'VIDEO') {
-            _initializeVideoPlayer(media['media_url']);
+          final List<String> videoUrls = [];
+          for (var item in data['data']) {
+            if (item['media_type'] == 'VIDEO' && item['media_url'] != null) {
+              videoUrls.add(item['media_url']);
+            }
+          }
+
+          if (videoUrls.isNotEmpty) {
+            // Ensure at least 2 videos for demo
+            if (videoUrls.length == 1) {
+              videoUrls.add(videoUrls[0]);
+            }
+            _initializePlaylist(videoUrls);
             return;
           }
         }
       }
-      _initializeVideoPlayer(
+      _initializePlaylist([
         'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
-      );
+        'https://ik.imagekit.io/projectss/Featuring%20Soon__interior%20_interiordesign%20_reel%20_design.mp4',
+      ]);
     } catch (e) {
-      _initializeVideoPlayer(
+      _initializePlaylist([
         'https://ik.imagekit.io/projectss/Follow%20for%20more_.mp4',
-      );
+        'https://ik.imagekit.io/projectss/Featuring%20Soon__interior%20_interiordesign%20_reel%20_design.mp4',
+      ]);
     }
   }
 
   void _initializeVideoPlayer(String videoUrl) {
-    _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-      ..initialize().then((_) {
-        setState(() {
-          _chewieController = ChewieController(
-            videoPlayerController: _videoController,
-            autoPlay: true,
-            looping: true,
-            showControls: false,
-            aspectRatio: _frameWidth / _frameHeight,
-          );
+    // 1. Create new controller but don't swap yet to avoid flicker
+    final newVideoController = VideoPlayerController.networkUrl(
+      Uri.parse(videoUrl),
+    );
+
+    newVideoController
+        .initialize()
+        .then((_) {
+          if (!mounted) {
+            newVideoController.dispose();
+            return;
+          }
+
+          // 2. Cleanup old controllers
+          _videoController?.removeListener(_videoListener);
+          _videoController?.dispose();
+          _chewieController?.dispose();
+
+          // 3. Swap and build new Chewie
+          setState(() {
+            _videoController = newVideoController;
+            _videoController!.addListener(_videoListener);
+
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: true,
+              looping: false,
+              showControls: false,
+              aspectRatio: _frameWidth / _frameHeight,
+            );
+
+            _videoController!.setVolume(_isMuted ? 0.0 : 1.0);
+          });
+        })
+        .catchError((e) {
+          debugPrint("Video Init Error: $e");
+          newVideoController.dispose();
         });
+  }
+
+  void _videoListener() {
+    if (!mounted || _videoController == null) return;
+
+    final position = _videoController!.value.position;
+    final duration = _videoController!.value.duration;
+
+    if (duration.inMilliseconds > 0) {
+      setState(() {
+        _currentProgress = position.inMilliseconds / duration.inMilliseconds;
       });
+    }
+
+    // Auto-advance logic
+    if (_videoController!.value.isInitialized &&
+        position >= duration &&
+        !_videoController!.value.isPlaying) {
+      _videoController!.removeListener(_videoListener);
+      // Advance in next microtask to avoid building while listening
+      Future.microtask(() => _playNextVideo());
+    }
+  }
+
+  void _playNextVideo() {
+    if (_playlist.isEmpty) return;
+
+    setState(() {
+      _currentIndex = (_currentIndex + 1) % _playlist.length;
+      _currentProgress = 0.0;
+    });
+
+    _initializeVideoPlayer(_playlist[_currentIndex]);
   }
 
   @override
   void dispose() {
-    if (!FloatingPromotionVideo.isClosedForSession) {
-      _videoController.dispose();
-      _chewieController?.dispose();
-    }
+    _videoController?.removeListener(_videoListener);
+    _videoController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -153,8 +232,10 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
 
     // wait until the controller is created and initialized, then apply volume
     while (mounted) {
-      if (_chewieController != null && _videoController.value.isInitialized) {
-        await _videoController.setVolume(0.0);
+      if (_chewieController != null &&
+          _videoController != null &&
+          _videoController!.value.isInitialized) {
+        await _videoController!.setVolume(0.0);
         break;
       }
       await Future.delayed(const Duration(milliseconds: 100));
@@ -164,7 +245,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   void _toggleMute() {
     setState(() {
       _isMuted = !_isMuted;
-      _videoController.setVolume(_isMuted ? 0.0 : 1.0);
+      _videoController?.setVolume(_isMuted ? 0.0 : 1.0);
     });
   }
 
@@ -196,10 +277,12 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   }
 
   void _closeVideo() {
-    _videoController.pause();
+    _videoController?.pause();
     _chewieController?.dispose();
-    _videoController.dispose();
+    _videoController?.dispose();
     setState(() {
+      _chewieController = null;
+      _videoController = null;
       FloatingPromotionVideo.isClosedForSession = true; // Set flag for session
     });
   }
@@ -207,8 +290,6 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   @override
   Widget build(BuildContext context) {
     if (FloatingPromotionVideo.isClosedForSession ||
-        _chewieController == null ||
-        !_videoController.value.isInitialized ||
         _left == null ||
         _bottom == null) {
       return const SizedBox.shrink(); // Hide if closed for session or pos not set
@@ -275,10 +356,21 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
           ),
           child: Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Chewie(controller: _chewieController!),
-              ),
+              if (_chewieController != null &&
+                  _videoController != null &&
+                  _videoController!.value.isInitialized)
+                ClipRRect(
+                  key: ValueKey(_currentIndex), // Help track different videos
+                  borderRadius: BorderRadius.circular(8),
+                  child: Chewie(controller: _chewieController!),
+                )
+              else
+                const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white24,
+                  ),
+                ),
               Positioned(
                 top: 0,
                 left: 0,
@@ -301,6 +393,40 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
                   onPressed: _closeVideo, // Now closes permanently for session
                   padding: EdgeInsets.zero,
                   tooltip: 'Close',
+                ),
+              ),
+              // Story-Style Progress Bars
+              Positioned(
+                bottom: 1,
+                left: 2,
+                right: 2,
+                child: Row(
+                  children: List.generate(_playlist.length, (index) {
+                    return Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: FractionallySizedBox(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: index < _currentIndex
+                              ? 1.0
+                              : (index == _currentIndex
+                                    ? _currentProgress
+                                    : 0.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 246, 0, 0),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                 ),
               ),
             ],
