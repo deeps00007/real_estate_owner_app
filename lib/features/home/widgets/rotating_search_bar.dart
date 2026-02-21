@@ -34,6 +34,11 @@ class _RotatingSearchBarState extends State<RotatingSearchBar>
     _pageController = PageController(initialPage: 0);
     _speech = stt.SpeechToText();
 
+    // Trigger rebuild when typing to hide shifting background text
+    _controller.addListener(() {
+      if (mounted) setState(() {});
+    });
+
     _timer = Timer.periodic(const Duration(seconds: 2), (_) {
       if (_controller.text.isEmpty && !_isListening) {
         _currentIndex++;
