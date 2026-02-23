@@ -17,7 +17,7 @@ A high-end, feature-rich real estate application built with Flutter and Firebase
 *   **Animated Waveform**: A custom visualizer (`VoiceWave`) provides feedback while the app is actively listening.
 
 ### 📱 Story-Style Promotional Video Player
-*   **Live Instagram Integration**: Connects to `https://avisaexperts.com/instaapi.php` to fetch live API tokens and dynamically pull the latest Instagram Reels.
+*   **Live Instagram Integration**: Connects to `https://example.com/Your_intagram_token_webpage.html/what-ever-you-want-to-give-name-to-your-webpage.html` to fetch live API tokens and dynamically pull the latest Instagram Reels.
 *   **Sequential Playback**: Automatically advances through a playlist of videos, mimicking the Instagram Stories experience.
 *   **Flicker-Free Transitions**: Utilizes a custom "Pre-load & Swap" strategy ensuring the video container remains visible and seamless during background initialization.
 *   **Draggable & Magnetic**: A floating widget that users can drag across the screen, snapping to the left or right edges upon release.
