@@ -76,6 +76,30 @@ class FirebaseService {
     return null;
   }
 
+  Future<Map<String, dynamic>?> getPropertyDetails(String propertyId) async {
+    try {
+      final query = await _firestore
+          .collection('properties')
+          .where('id', isEqualTo: propertyId)
+          .get();
+      if (query.docs.isNotEmpty) {
+        return query.docs.first.data();
+      }
+
+      // Fallback just in case document ID is used
+      final doc = await _firestore
+          .collection('properties')
+          .doc(propertyId)
+          .get();
+      if (doc.exists) {
+        return doc.data();
+      }
+    } catch (e) {
+      print('Error fetching property details: $e');
+    }
+    return null;
+  }
+
   Future<String?> getUserRole(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();

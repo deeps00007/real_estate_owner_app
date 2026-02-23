@@ -16,6 +16,18 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
   final ChatService _chatService = ChatService();
+  Stream<List<Chat>>? _chatsStream;
+  String? _currentUserId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = context.read<AuthBloc>().state.user;
+    if (user != null && _currentUserId != user.uid) {
+      _currentUserId = user.uid;
+      _chatsStream = _chatService.getUserChats(user.uid);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +50,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
             return const Center(child: Text('Please login to view messages'));
           }
 
+          if (_chatsStream == null) {
+            return const Center(child: Text('Loading...'));
+          }
+
           return StreamBuilder<List<Chat>>(
-            stream: _chatService.getUserChats(user.uid),
+            stream: _chatsStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -104,38 +120,51 @@ class ChatTile extends StatefulWidget {
   State<ChatTile> createState() => _ChatTileState();
 }
 
-class _ChatTileState extends State<ChatTile> {
+class _ChatTileState extends State<ChatTile>
+    with AutomaticKeepAliveClientMixin {
   Map<String, dynamic>? _otherUserData;
+  Map<String, dynamic>? _propertyData;
+
+  @override
+  bool get wantKeepAlive => true; // Prevent re-fetching when scrolling/returning
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _fetchData();
   }
 
-  Future<void> _fetchUserData() async {
+  Future<void> _fetchData() async {
     final otherUserId = widget.chat.participants.firstWhere(
       (id) => id != widget.currentUserId,
       orElse: () => '',
     );
 
+    Future<Map<String, dynamic>?> userFuture = Future.value(null);
     if (otherUserId.isNotEmpty) {
-      // Import FirebaseService locally or use a provider/GetIt
-      // Assuming simple instantiation for now as per existing pattern
-      // You might need to add import 'package:real_estate_owner_app/core/firebase_service.dart'; if not present
-      // But ChatListScreen likely has access to it via AuthBloc context or direct import.
-      // Let's rely on adding the import if missing.
-      final userData = await FirebaseService().getUserDetails(otherUserId);
-      if (mounted) {
-        setState(() {
-          _otherUserData = userData;
-        });
-      }
+      userFuture = FirebaseService().getUserDetails(otherUserId);
+    }
+
+    Future<Map<String, dynamic>?> propertyFuture = Future.value(null);
+    if (widget.chat.propertyId.isNotEmpty) {
+      propertyFuture = FirebaseService().getPropertyDetails(
+        widget.chat.propertyId,
+      );
+    }
+
+    final results = await Future.wait([userFuture, propertyFuture]);
+
+    if (mounted) {
+      setState(() {
+        _otherUserData = results[0];
+        _propertyData = results[1];
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     final otherUserId = widget.chat.participants.firstWhere(
       (id) => id != widget.currentUserId,
       orElse: () => 'Unknown',
@@ -161,15 +190,40 @@ class _ChatTileState extends State<ChatTile> {
           ),
         );
       },
-      leading: CircleAvatar(
-        radius: 28,
-        backgroundColor: const Color(0xFF0F2C59),
-        backgroundImage: otherUserImage != null
-            ? NetworkImage(otherUserImage)
-            : null,
-        child: otherUserImage == null
-            ? const Icon(Icons.person, color: Colors.white, size: 28)
-            : null,
+      leading: SizedBox(
+        width: 60,
+        height: 60,
+        child: Stack(
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: const Color(0xFF0F2C59),
+              backgroundImage: otherUserImage != null
+                  ? NetworkImage(otherUserImage)
+                  : null,
+              child: otherUserImage == null
+                  ? const Icon(Icons.person, color: Colors.white, size: 28)
+                  : null,
+            ),
+            if (_propertyData != null && _propertyData!['imageUrl'] != null)
+              Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(2), // White border
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: NetworkImage(_propertyData!['imageUrl']),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
       title: Text(
         otherUserName,
