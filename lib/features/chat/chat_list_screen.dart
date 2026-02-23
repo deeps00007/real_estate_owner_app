@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/auth_bloc.dart';
 import '../../models/chat_model.dart';
+import '../../models/property.dart';
+import '../property_details/property_detail_screen.dart';
 import 'chat_service.dart';
 import 'chat_screen.dart';
 import '../../core/firebase_service.dart';
@@ -173,6 +175,185 @@ class _ChatTileState extends State<ChatTile>
     final otherUserName = _otherUserData?['displayName'] ?? 'User';
     final otherUserImage = _otherUserData?['photoURL'];
 
+    void showAvatarDialog() {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Stack(
+                    children: [
+                      // Main User Avatar
+                      Container(
+                        width: double.infinity,
+                        height: 300,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F2C59).withOpacity(0.05),
+                          image: otherUserImage != null
+                              ? DecorationImage(
+                                  image: NetworkImage(otherUserImage),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: otherUserImage == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 100,
+                                color: Color(0xFF0F2C59),
+                              )
+                            : null,
+                      ),
+                      // Semi-transparent Title Bar
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.7),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                          child: Text(
+                            otherUserName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(color: Colors.black54, blurRadius: 4),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Property Image Badge
+                      if (_propertyData != null &&
+                          _propertyData!['imageUrl'] != null)
+                        Positioned(
+                          bottom: 16,
+                          right: 16,
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 3),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                              image: DecorationImage(
+                                image: NetworkImage(_propertyData!['imageUrl']),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  // Action Buttons
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.chat,
+                            color: Color(0xFF0F2C59),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context); // Close dialog
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                  chatId: widget.chat.id,
+                                  currentUserId: widget.currentUserId,
+                                  otherUserName: otherUserName,
+                                  otherUserId: otherUserId,
+                                  currentUserName: widget.currentUserName,
+                                  otherUserProfileImage: otherUserImage,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.info_outline,
+                            color: Color(0xFF0F2C59),
+                          ),
+                          onPressed: () {
+                            if (_propertyData == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Property details not available',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            // Close dialog first
+                            Navigator.pop(context);
+                            // Parse data and navigate
+                            try {
+                              final property = Property.fromJson(
+                                _propertyData!,
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PropertyDetailScreen(property: property),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error loading property: $e'),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       onTap: () {
@@ -190,39 +371,42 @@ class _ChatTileState extends State<ChatTile>
           ),
         );
       },
-      leading: SizedBox(
-        width: 60,
-        height: 60,
-        child: Stack(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFF0F2C59),
-              backgroundImage: otherUserImage != null
-                  ? NetworkImage(otherUserImage)
-                  : null,
-              child: otherUserImage == null
-                  ? const Icon(Icons.person, color: Colors.white, size: 28)
-                  : null,
-            ),
-            if (_propertyData != null && _propertyData!['imageUrl'] != null)
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(2), // White border
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Colors.grey[200],
-                    backgroundImage: NetworkImage(_propertyData!['imageUrl']),
+      leading: GestureDetector(
+        onTap: showAvatarDialog,
+        child: SizedBox(
+          width: 60,
+          height: 60,
+          child: Stack(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: const Color(0xFF0F2C59),
+                backgroundImage: otherUserImage != null
+                    ? NetworkImage(otherUserImage)
+                    : null,
+                child: otherUserImage == null
+                    ? const Icon(Icons.person, color: Colors.white, size: 28)
+                    : null,
+              ),
+              if (_propertyData != null && _propertyData!['imageUrl'] != null)
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2), // White border
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: NetworkImage(_propertyData!['imageUrl']),
+                    ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
       title: Text(
