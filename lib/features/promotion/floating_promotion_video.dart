@@ -277,13 +277,33 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
   }
 
   void _closeVideo() {
+    // 1. Remove listeners immediately
+    _videoController?.removeListener(_videoListener);
+
+    // 2. Pause playback
     _videoController?.pause();
-    _chewieController?.dispose();
-    _videoController?.dispose();
+
+    // 3. Clear playlist to prevent any background auto-advance logic from firing
+    _playlist.clear();
+
+    // 4. Dispose safely
+    try {
+      _chewieController?.dispose();
+    } catch (e) {
+      debugPrint("Chewie dispose error: $e");
+    }
+
+    try {
+      _videoController?.dispose();
+    } catch (e) {
+      debugPrint("VideoPlayer dispose error: $e");
+    }
+
+    // 5. Update state
     setState(() {
       _chewieController = null;
       _videoController = null;
-      FloatingPromotionVideo.isClosedForSession = true; // Set flag for session
+      FloatingPromotionVideo.isClosedForSession = true;
     });
   }
 
