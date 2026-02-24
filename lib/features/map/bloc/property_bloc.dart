@@ -1,7 +1,8 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart'; // Added
 import 'package:geolocator/geolocator.dart'; // Added
 import '../../../core/firebase_service.dart';
+import '../../../core/home_widget_service.dart';
 import '../../../models/property.dart';
 import 'property_event.dart';
 import 'property_state.dart';
@@ -163,6 +164,12 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
       firebaseService.getPropertiesStream(null),
       onData: (properties) {
         print('Loaded ${properties.length} properties');
+
+        // Update the Android Scrollable Home Widget with the latest properties
+        if (properties.isNotEmpty) {
+          HomeWidgetService.updateWidgetWithProperties(properties);
+        }
+
         return state.copyWith(
           status: PropertyStatus.success,
           properties: properties,
