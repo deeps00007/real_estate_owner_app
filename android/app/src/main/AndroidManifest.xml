@@ -46,21 +46,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/launcher_icon" />
-
-        <!-- Home Screen Widget Receiver -->
-        <receiver android:name="com.realestate.owner.app.v1.PropertyWidgetProvider"
-                  android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_info" />
-        </receiver>
-
-        <!-- Home Screen Widget Service for ListView -->
-        <service android:name="com.realestate.owner.app.v1.PropertyWidgetService"
-                 android:permission="android.permission.BIND_REMOTEVIEWS"
-                 android:exported="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
