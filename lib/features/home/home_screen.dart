@@ -366,17 +366,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildNotificationIcon() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: const Icon(
-        Icons.notifications_outlined,
-        size: 24,
-        color: Colors.black87,
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Icon(
+        Icons.notifications_none, // Empty outlined bell
+        size: 22,
+        color: Color(0xFF1A1A1A), // Dark grey/black for the outline
       ),
     );
   }
@@ -422,8 +417,8 @@ class NotificationBadge extends StatelessWidget {
                 child,
                 if (showBadge)
                   Positioned(
-                    right: 0,
-                    top: 0, // Adjusted to sit on the edge
+                    right: 8,
+                    top: 8, // Adjusted to sit on the edge of the new bare icon
                     child: Container(
                       width: 12,
                       height: 12,
