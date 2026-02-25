@@ -131,6 +131,17 @@ body {
   animation: ticker 22s linear infinite;
 }
 
+/* ─── Carousel Scroll ─────────────────────────────── */
+@keyframes carouselScroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* ─── Float Phone ─────────────────────────────────── */
 @keyframes float {
 
