@@ -16,7 +16,7 @@ import userProfile from './assets/img/user-profile-page.jpeg';
 import myProperty from './assets/img/my-property.jpeg';
 import addProp1 from './assets/img/Add-property-owner1.jpeg';
 import pushNotif from './assets/img/push-notification-broadcast-ownerside.jpeg';
-
+import appLogo from './assets/img/real_estate-logo.png';
 /* ── Motion preset ────────────────────────────── */
 const fUp = (d = 0) => ({
   initial: { opacity: 0, y: 32 },
@@ -342,9 +342,9 @@ export default function App() {
         ${scrolled ? 'glass shadow-[0_1px_0_rgba(255,255,255,0.05)] py-3' : 'py-5'}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500
-              flex items-center justify-center shadow-[0_0_20px_rgba(255,200,0,.35)]">
-              <Building2 className="w-5 h-5 text-[#0F2C59]" />
+            <div className="w-10 h-10 rounded-xl bg-white
+              flex items-center justify-center shadow-[0_0_20px_rgba(255,200,0,.15)] overflow-hidden p-1">
+              <img src={appLogo} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <span className="text-lg font-extrabold tracking-tight">
               Real Estate <span className="gold-text">Application</span>
@@ -421,7 +421,7 @@ export default function App() {
           </motion.div>
 
           {/* 3-Phone cluster */}
-          <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-end justify-center gap-4">
             <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-3deg)' }} className="mb-[-20px]">
@@ -792,7 +792,7 @@ export default function App() {
           <motion.div {...fUp(0)} className="glass g-card rounded-3xl p-12 sm:p-16">
             <p className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">Ready to Launch?</p>
             <h2 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight leading-tight">
-              Your App.<br /><span className="gold-text">Live in 2 Weeks.</span>
+              Your App.<br /><span className="gold-text">Built for Scale.</span>
             </h2>
             <p className="text-gray-400 text-base mb-10 leading-relaxed">
               Book a free 30-minute demo. We walk you through every screen — from the home screen
@@ -812,10 +812,10 @@ export default function App() {
       <footer className="border-t border-white/5 py-8 px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-600">
           <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-yellow-400" />
-            <span className="text-gray-400 font-semibold">Oberoi Realty</span>
+            <img src={appLogo} alt="Logo" className="w-5 h-5 object-contain" />
+            <span className="text-gray-400 font-semibold">Real Estate Application</span>
           </div>
-          <p>© {new Date().getFullYear()} Oberoi Software Solutions. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Real Estate Application. All rights reserved.</p>
           <div className="flex gap-5">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>
