@@ -347,7 +347,7 @@ export default function App() {
               <Building2 className="w-5 h-5 text-[#0F2C59]" />
             </div>
             <span className="text-lg font-extrabold tracking-tight">
-              Oberoi <span className="gold-text">Realty</span>
+              Real Estate <span className="gold-text">Application</span>
             </span>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm text-gray-400 font-medium">
@@ -515,14 +515,14 @@ export default function App() {
           {/* ── Heading ── */}
           <div className="text-center mb-14">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
-              One App, Two Experiences
+              Role-Based Access Control
             </motion.p>
             <motion.h2 {...fUp(0.1)} className="text-4xl sm:text-5xl font-black tracking-tight mb-4">
-              Owner vs Buyer — <span className="gold-text">Same App.</span>
+              Owner vs Buyer — <span className="gold-text">Unified Architecture.</span>
             </motion.h2>
             <motion.p {...fUp(0.2)} className="text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">
-              No second app. No separate build. Simply register an owner's Google UID in Firebase
-              and the app automatically unlocks the full admin toolkit — for that user only.
+              No need to manage a separate admin dashboard. Simply assign owner privileges via Firebase,
+              and the application dynamically unlocks a comprehensive suite of management tools.
             </motion.p>
           </div>
 
@@ -554,8 +554,8 @@ export default function App() {
                     <button
                       onClick={() => setTab('owner')}
                       className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${isOwner
-                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
-                          : 'text-gray-400 hover:text-white'
+                        ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                     >
                       <Crown className="w-4 h-4" /> Owner / Admin
@@ -563,8 +563,8 @@ export default function App() {
                     <button
                       onClick={() => setTab('buyer')}
                       className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${!isOwner
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
-                          : 'text-gray-400 hover:text-white'
+                        ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                     >
                       <UserCircle2 className="w-4 h-4" /> Buyer / User
