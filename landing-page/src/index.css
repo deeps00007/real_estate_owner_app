@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Clash+Display:wght@600;700&display=swap');
+@import "tailwindcss";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #04091a;
+  color: white;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #04091a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1B4F93;
+  border-radius: 10px;
+}
+
+/* ─── Gold Text ───────────────────────────────────── */
+.gold-text {
+  background: linear-gradient(120deg, #FFD700 0%, #FFAB00 60%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Shine Sweep ─────────────────────────────────── */
+@keyframes shine {
+  0% {
+    background-position: -300% center;
+  }
+
+  100% {
+    background-position: 300% center;
+  }
+}
+
+.shine-text {
+  background: linear-gradient(90deg, #b0c4de 0%, #fff 40%, #FFD700 70%, #fff 100%);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shine 5s linear infinite;
+}
+
+/* ─── Gold Button ─────────────────────────────────── */
+.gold-btn {
+  background: linear-gradient(120deg, #FFD700, #FFAB00);
+  color: #0F2C59;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 35px rgba(255, 215, 0, 0.30), 0 4px 14px rgba(0, 0, 0, .4);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.gold-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 55px rgba(255, 215, 0, .55);
+}
+
+/* ─── Outline Button ──────────────────────────────── */
+.outline-btn {
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: border-color .22s, background .22s;
+}
+
+.outline-btn:hover {
+  border-color: rgba(255, 215, 0, .5);
+  background: rgba(255, 215, 0, .04);
+}
+
+/* ─── Glass Card ──────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ─── Glowing Orbs ────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+@keyframes drift {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(40px, -50px);
+  }
+}
+
+/* ─── Ticker ──────────────────────────────────────── */
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker 22s linear infinite;
+}
+
+/* ─── Float Phone ─────────────────────────────────── */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(-1.5deg);
+  }
+}
+
+.phone-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ─── Gradient Border Card ────────────────────────── */
+.g-card {
+  position: relative;
+  border-radius: 20px;
+}
+
+.g-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 215, 0, .35), rgba(27, 79, 147, .25), transparent 70%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ─── Stat Glow ───────────────────────────────────── */
+.stat-n {
+  text-shadow: 0 0 30px rgba(255, 215, 0, .45);
+}
+
+/* ─── Feature Icon Rings ──────────────────────────── */
+.icon-ring {
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .04), 0 0 0 12px rgba(255, 255, 255, .02);
+}
