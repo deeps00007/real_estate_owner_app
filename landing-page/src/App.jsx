@@ -335,7 +335,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="bg-[#04091a] min-h-screen text-white overflow-x-hidden">
+    <div className="bg-[#04091a] min-h-screen text-white overflow-x-hidden select-none">
 
       {/* ══════ NAV ══════════════════════════════════ */}
       <header className={`fixed top-0 w-full z-50 transition-all duration-300
