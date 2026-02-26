@@ -43,12 +43,12 @@ const Ticker = () => (
 
 /* ── Phone Frame ──────────────────────────────── */
 const Phone = ({ src, alt, className = '' }) => (
-  <div className={`relative shrink-0 ${className}`}>
-    <div className="w-[180px] md:w-[230px] rounded-[30px] md:rounded-[38px] border-[5px] md:border-[6px] border-white/10 overflow-hidden
+  <div className={`relative shrink-0 ${className || 'w-[180px] md:w-[230px]'}`}>
+    <div className="w-full rounded-[24px] md:rounded-[38px] border-[4px] md:border-[6px] border-white/10 overflow-hidden
       shadow-[0_20px_50px_rgba(0,0,0,0.65)] md:shadow-[0_30px_80px_rgba(0,0,0,0.65)]" style={{ background: '#111' }}>
       <img src={src} alt={alt} className="w-full object-cover" />
     </div>
-    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-32 h-10 bg-blue-500/15 blur-2xl rounded-full" />
+    <div className="absolute -bottom-4 md:-bottom-6 left-1/2 -translate-x-1/2 w-[80%] h-10 bg-blue-500/15 blur-2xl rounded-full" />
   </div>
 );
 
@@ -254,8 +254,8 @@ const FeatureRow = ({ tag, heading, sub, bullets, img, alt, reverse = false, del
         ))}
       </ul>
     </motion.div>
-    <motion.div {...fUp(delay + 0.1)} className="flex-shrink-0 flex justify-center">
-      <Phone src={img} alt={alt} className="phone-float !w-[200px] md:!w-[230px]" />
+    <motion.div {...fUp(delay + 0.1)} className="flex-shrink-0 flex justify-center w-full lg:w-auto mt-12 lg:mt-0">
+      <Phone src={img} alt={alt} className="w-[240px] sm:w-[280px] md:w-[260px] lg:w-[280px] phone-float drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" />
     </motion.div>
   </div>
 );
@@ -346,7 +346,7 @@ export default function App() {
 
   return (
     <div
-      className="bg-[#04091a] min-h-screen text-white overflow-x-hidden select-none"
+      className="bg-[#04091a] min-h-screen text-white w-full max-w-[100vw] overflow-x-hidden select-none"
       onMouseMove={handleMouseMove}
     >
       {/* ── GLOBAL INTERACTIVE GRID ── */}
@@ -438,16 +438,23 @@ export default function App() {
           {/* 3-Phone cluster */}
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-end justify-center gap-2 md:gap-4">
-            <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-3deg)' }} className="mb-[-10px] md:mb-[-20px]">
-              <Phone src={homeScreen} alt="Home Screen" className="!w-[130px] md:!w-[180px]" />
+            className="relative flex items-end justify-center mt-12 lg:mt-0 h-[400px] md:h-auto md:-space-x-6">
+
+            <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-5deg)' }}
+              className="absolute left-[-20px] sm:left-10 md:static md:mb-[-20px] z-0 opacity-50 md:opacity-100">
+              <Phone src={homeScreen} alt="Home Screen" className="w-[140px] md:w-[180px]" />
             </div>
-            <div style={{ animation: 'float 6s ease-in-out .5s infinite' }} >
-              <Phone src={mapScreen} alt="Map Screen" className="!w-[160px] md:!w-[210px]" />
+
+            <div style={{ animation: 'float 6s ease-in-out .5s infinite' }}
+              className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+              <Phone src={mapScreen} alt="Map Screen" className="w-[200px] sm:w-[220px] md:w-[210px]" />
             </div>
-            <div style={{ animation: 'float 8s ease-in-out 1s infinite', transform: 'rotate(3deg)' }} className="mb-[-10px] md:mb-[-20px]">
-              <Phone src={propDetail1} alt="Property Detail" className="!w-[130px] md:!w-[180px]" />
+
+            <div style={{ animation: 'float 8s ease-in-out 1s infinite', transform: 'rotate(5deg)' }}
+              className="absolute right-[-20px] sm:right-10 md:static md:mb-[-20px] z-0 opacity-50 md:opacity-100">
+              <Phone src={propDetail1} alt="Property Detail" className="w-[140px] md:w-[180px]" />
             </div>
+
           </motion.div>
         </div>
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 z-10
@@ -599,30 +606,36 @@ export default function App() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 30 }}
                       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="flex justify-center gap-2 md:gap-4 items-end"
+                      className="relative flex justify-center items-end mt-8 lg:mt-0 h-[380px] md:h-auto md:-space-x-6"
                     >
                       {isOwner ? (
                         <>
-                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-2.5deg)' }}>
-                            <Phone src={ownerProfile} alt="Owner Profile" className="!w-[130px] md:!w-[175px]" />
+                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
+                            className="absolute left-[-10px] sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={ownerProfile} alt="Owner Profile" className="w-[130px] md:w-[175px]" />
                           </div>
-                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}>
-                            <Phone src={myProperty} alt="My Properties" className="!w-[145px] md:!w-[195px]" />
+                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
+                            className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+                            <Phone src={myProperty} alt="My Properties" className="w-[180px] sm:w-[200px] md:w-[195px]" />
                           </div>
-                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(2.5deg)' }}>
-                            <Phone src={pushNotif} alt="Push Notification" className="!w-[130px] md:!w-[175px]" />
+                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
+                            className="absolute right-[-10px] sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={pushNotif} alt="Push Notification" className="w-[130px] md:w-[175px]" />
                           </div>
                         </>
                       ) : (
                         <>
-                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-2.5deg)' }}>
-                            <Phone src={homeScreen} alt="Home Screen" className="!w-[130px] md:!w-[175px]" />
+                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
+                            className="absolute left-[-10px] sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={homeScreen} alt="Home Screen" className="w-[130px] md:w-[175px]" />
                           </div>
-                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}>
-                            <Phone src={propDetail2} alt="Property Detail" className="!w-[145px] md:!w-[195px]" />
+                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
+                            className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+                            <Phone src={propDetail2} alt="Property Detail" className="w-[180px] sm:w-[200px] md:w-[195px]" />
                           </div>
-                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(2.5deg)' }}>
-                            <Phone src={userProfile} alt="User Profile" className="!w-[130px] md:!w-[175px]" />
+                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
+                            className="absolute right-[-10px] sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={userProfile} alt="User Profile" className="w-[130px] md:w-[175px]" />
                           </div>
                         </>
                       )}
@@ -683,34 +696,36 @@ export default function App() {
                 </div>
 
                 {/* ── Comparison Table ── */}
-                <motion.div {...fUp(0.15)} className="mt-14 glass g-card rounded-2xl overflow-hidden">
-                  <div className="grid grid-cols-3 bg-white/5 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gray-400">
-                    <span>Feature</span>
-                    <span className="text-center text-yellow-400">👑 Owner</span>
-                    <span className="text-center text-blue-400">🧑 Buyer</span>
-                  </div>
-                  {[
-                    ['Browse & Search Properties', true, true],
-                    ['Voice AI Search', true, true],
-                    ['Map with Property Pins', true, true],
-                    ['Chat with Agents', true, true],
-                    ['Save to Wishlist', true, true],
-                    ['Add / Edit / Delete Listings', true, false],
-                    ['Push Notification Broadcast', true, false],
-                    ['My Properties Dashboard', true, false],
-                    ['Owner Tools in Profile', true, false],
-                  ].map(([label, owner, buyer], i) => (
-                    <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/[0.04] ${i % 2 === 0 ? '' : 'bg-white/[0.02]'
-                      }`}>
-                      <span className="text-gray-300">{label}</span>
-                      <span className="flex justify-center text-center">
-                        {owner ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
-                      </span>
-                      <span className="flex justify-center text-center">
-                        {buyer ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
-                      </span>
+                <motion.div {...fUp(0.15)} className="mt-14 glass g-card rounded-2xl overflow-x-auto w-full max-w-full">
+                  <div className="min-w-[500px] md:min-w-0 md:w-full">
+                    <div className="grid grid-cols-3 bg-white/5 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gray-400">
+                      <span>Feature</span>
+                      <span className="text-center text-yellow-400">👑 Owner</span>
+                      <span className="text-center text-blue-400">🧑 Buyer</span>
                     </div>
-                  ))}
+                    {[
+                      ['Browse & Search Properties', true, true],
+                      ['Voice AI Search', true, true],
+                      ['Map with Property Pins', true, true],
+                      ['Chat with Agents', true, true],
+                      ['Save to Wishlist', true, true],
+                      ['Add / Edit / Delete Listings', true, false],
+                      ['Push Notification Broadcast', true, false],
+                      ['My Properties Dashboard', true, false],
+                      ['Owner Tools in Profile', true, false],
+                    ].map(([label, owner, buyer], i) => (
+                      <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/[0.04] ${i % 2 === 0 ? '' : 'bg-white/[0.02]'
+                        }`}>
+                        <span className="text-gray-300">{label}</span>
+                        <span className="flex justify-center text-center">
+                          {owner ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
+                        </span>
+                        <span className="flex justify-center text-center">
+                          {buyer ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </motion.div>
 
                 {/* ── How it works flow ── */}
