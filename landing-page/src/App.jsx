@@ -351,7 +351,7 @@ export default function App() {
             </span>
           </div>
           <nav className="hidden md:flex items-center gap-7 text-sm text-gray-400 font-medium">
-            {[['Features', '#features'], ['Owner', '#owner'], ['Pricing', '#pricing'], ['Testimonials', '#testimonials']].map(([l, h]) => (
+            {[['Features', '#features'], ['Owner', '#owner'], ['Pricing', '#pricing']].map(([l, h]) => (
               <a key={l} href={h} className="hover:text-white transition-colors">{l}</a>
             ))}
           </nav>
@@ -368,7 +368,7 @@ export default function App() {
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="glass border-t border-white/5 px-6 pb-5 flex flex-col gap-3 overflow-hidden">
-              {[['Features', '#features'], ['Owner', '#owner'], ['Pricing', '#pricing'], ['Testimonials', '#testimonials']].map(([l, h]) => (
+              {[['Features', '#features'], ['Owner', '#owner'], ['Pricing', '#pricing']].map(([l, h]) => (
                 <a key={l} href={h} onClick={() => setMenuOpen(false)}
                   className="text-gray-300 hover:text-white py-2 border-b border-white/5 text-sm">{l}</a>
               ))}
@@ -380,6 +380,8 @@ export default function App() {
 
       {/* ══════ HERO ═════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-6 overflow-hidden">
+        {/* Background Effects */}
+        <div className="grid-bg" />
         <div className="orb w-[700px] h-[700px] bg-blue-700/15 -top-48 -left-56" style={{ animation: 'drift 12s ease-in-out infinite' }} />
         <div className="orb w-[500px] h-[500px] bg-yellow-400/6  bottom-0 right-[-120px]" style={{ animation: 'drift 9s ease-in-out infinite alternate' }} />
 
@@ -766,25 +768,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* ══════ TESTIMONIALS ═════════════════════════ */}
-      <section id="testimonials" className="py-28 px-6 bg-[#060f1f]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14">
-            <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">Social Proof</motion.p>
-            <motion.h2 {...fUp(0.1)} className="text-4xl font-black tracking-tight">
-              Realtors <span className="gold-text">Love It.</span>
-            </motion.h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            <Testimonial name="Rahul Mehta" role="MD, Prestige Homes, Pune" av="bg-gradient-to-br from-blue-500 to-indigo-700" delay={0.05}
-              text="We launched in under 2 weeks. The voice search and WhatsApp-style chat closed 3 premium clients in the first month. Truly extraordinary code quality." />
-            <Testimonial name="Priya Sharma" role="Director, Elite Properties, Mumbai" av="bg-gradient-to-br from-pink-500 to-rose-700" delay={0.1}
-              text="The Instagram story video player is jaw-dropping. Our marketing reels now play inside the app. Buyers engage 3× longer than on our old website." />
-            <Testimonial name="Ankit Joshi" role="CTO, GoldKey Realty, Delhi" av="bg-gradient-to-br from-emerald-500 to-teal-700" delay={0.15}
-              text="Push notifications to 5,000+ users configured in 30 minutes. The role-based architecture is brilliant — no second app to maintain for our admin team." />
-          </div>
-        </div>
-      </section>
 
       {/* ══════ CTA ══════════════════════════════════ */}
       <section id="contact" className="py-24 px-6 relative overflow-hidden">
