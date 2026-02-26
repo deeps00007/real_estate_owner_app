@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mic, Play, MessageSquare, Map, Bell, ShieldCheck, ChevronRight,
   X, Star, Zap, Heart, Building2, Users, ArrowUpRight, Menu,
-  CheckCheck, Smartphone, Video, Lock, BarChart3, Globe, Crown, UserCircle2
+  CheckCheck, Smartphone, Video, Lock, BarChart3, Globe, Crown, UserCircle2,
+  Home, Plus, ScrollText, Settings, TrendingUp, Search, Bookmark, Clock, MapPin,
+  CheckCircle2, MinusCircle
 } from 'lucide-react';
 
 /* ── Images ──────────────────────────────────── */
@@ -546,18 +548,18 @@ export default function App() {
             const isOwner = tab === 'owner';
 
             const ownerFeatures = [
-              { icon: '🏠', label: 'My Properties', desc: 'Manage all listings with edit & delete controls' },
-              { icon: '➕', label: 'Add New Property', desc: 'Full form: image, price, type, amenities, location' },
-              { icon: '📣', label: 'Batch Push Broadcast', desc: 'Send rich notifications with images to all users in batches' },
-              { icon: '⚙️', label: 'Owner Tools Panel', desc: 'Exclusive section visible only in admin profile' },
-              { icon: '📊', label: 'Listing Insights', desc: 'See how many users saved or viewed your properties' },
+              { icon: <Home className="w-5 h-5 text-yellow-400" />, label: 'My Properties', desc: 'Manage all listings with edit & delete controls' },
+              { icon: <Plus className="w-5 h-5 text-yellow-400" />, label: 'Add New Property', desc: 'Full form: image, price, type, amenities, location' },
+              { icon: <ScrollText className="w-5 h-5 text-yellow-400" />, label: 'Batch Push Broadcast', desc: 'Send rich notifications with images to all users in batches' },
+              { icon: <Settings className="w-5 h-5 text-yellow-400" />, label: 'Owner Tools Panel', desc: 'Exclusive section visible only in admin profile' },
+              { icon: <TrendingUp className="w-5 h-5 text-yellow-400" />, label: 'Listing Insights', desc: 'See how many users saved or viewed your properties' },
             ];
             const userFeatures = [
-              { icon: '🏡', label: 'Browse Properties', desc: 'Discover best offers and nearest properties on home' },
-              { icon: '❤️', label: 'Save Properties', desc: 'Wishlist any property and revisit anytime' },
-              { icon: '💬', label: 'Chat with Agent', desc: 'Open WhatsApp-style real-time chat from property detail' },
-              { icon: '🕐', label: 'Recently Viewed', desc: 'Instantly revisit properties you\'ve explored' },
-              { icon: '🗺️', label: 'Explore on Map', desc: 'Tap markers to preview property cards on the map' },
+              { icon: <Search className="w-5 h-5 text-blue-400" />, label: 'Browse Properties', desc: 'Discover best offers and nearest properties on home' },
+              { icon: <Bookmark className="w-5 h-5 text-blue-400" />, label: 'Save Properties', desc: 'Wishlist any property and revisit anytime' },
+              { icon: <MessageSquare className="w-5 h-5 text-blue-400" />, label: 'Chat with Agent', desc: 'Open WhatsApp-style real-time chat from property detail' },
+              { icon: <Clock className="w-5 h-5 text-blue-400" />, label: 'Recently Viewed', desc: 'Instantly revisit properties you\'ve explored' },
+              { icon: <MapPin className="w-5 h-5 text-blue-400" />, label: 'Explore on Map', desc: 'Tap markers to preview property cards on the map' },
             ];
 
             return (
@@ -663,7 +665,12 @@ export default function App() {
                             className={`glass g-card rounded-xl p-4 flex items-start gap-4 border-l-[3px] ${isOwner ? 'border-yellow-400/40' : 'border-blue-400/40'
                               }`}
                           >
-                            <span className="text-2xl shrink-0 mt-0.5">{f.icon}</span>
+                            <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm ${isOwner
+                              ? 'bg-yellow-400/10 border-yellow-400/20 shadow-yellow-400/5'
+                              : 'bg-blue-400/10 border-blue-400/20 shadow-blue-400/5'
+                              }`}>
+                              {f.icon}
+                            </div>
                             <div>
                               <p className="text-white font-semibold text-sm">{f.label}</p>
                               <p className="text-gray-400 text-xs mt-0.5 leading-snug">{f.desc}</p>
@@ -696,11 +703,11 @@ export default function App() {
                     <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/[0.04] ${i % 2 === 0 ? '' : 'bg-white/[0.02]'
                       }`}>
                       <span className="text-gray-300">{label}</span>
-                      <span className="text-center">
-                        {owner ? <span className="text-green-400 text-base">✓</span> : <span className="text-gray-700 text-base">—</span>}
+                      <span className="flex justify-center text-center">
+                        {owner ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
                       </span>
-                      <span className="text-center">
-                        {buyer ? <span className="text-green-400 text-base">✓</span> : <span className="text-gray-700 text-base">—</span>}
+                      <span className="flex justify-center text-center">
+                        {buyer ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
                       </span>
                     </div>
                   ))}
@@ -714,13 +721,13 @@ export default function App() {
                   </div>
                   <div className="flex flex-col sm:flex-row items-center gap-2 text-sm">
                     {[
-                      { step: '1', text: 'User signs in with Google', color: 'bg-blue-500/20 border-blue-500/30 text-blue-300' },
+                      { step: '1', text: 'User opens the app', color: 'bg-blue-500/20 border-blue-500/30 text-blue-300' },
                       { step: '→', text: '', color: '' },
-                      { step: '2', text: `App reads users/{uid} in Firestore`, color: 'bg-purple-500/20 border-purple-500/30 text-purple-300', code: true },
+                      { step: '2', text: `App checks their account type`, color: 'bg-purple-500/20 border-purple-500/30 text-purple-300', code: false },
                       { step: '→', text: '', color: '' },
-                      { step: '3', text: `role: "owner" found?`, color: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300', code: true },
+                      { step: '3', text: `Are they an owner?`, color: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300', code: false },
                       { step: '→', text: '', color: '' },
-                      { step: '4', text: 'AuthBloc sets isOwner = true → all owner UI unlocks', color: 'bg-green-500/20 border-green-500/30 text-green-300' },
+                      { step: '4', text: 'If YES, unlock powerful management tools instantly', color: 'bg-green-500/20 border-green-500/30 text-green-300' },
                     ].map((s, i) => (
                       s.step === '→'
                         ? <span key={i} className="text-gray-600 font-bold hidden sm:block">→</span>
