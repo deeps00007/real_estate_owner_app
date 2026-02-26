@@ -84,15 +84,15 @@ const ScreenCarousel = ({ images }) => {
 
   return (
     <>
-      <section className="py-20 relative overflow-hidden">
+      <section className="py-12 md:py-20 relative overflow-hidden">
         <div className="orb w-[500px] h-[500px] bg-blue-700/10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
         {/* Heading */}
-        <div className="text-center mb-12 px-6 relative z-10">
+        <div className="text-center mb-8 md:mb-12 px-6 relative z-10">
           <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
             Live Previews
           </motion.p>
-          <motion.h2 {...fUp(0.1)} className="text-4xl font-black tracking-tight">
+          <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl font-black tracking-tight">
             Every Screen, <span className="gold-text">At a Glance.</span>
           </motion.h2>
           <motion.p {...fUp(0.2)} className="text-gray-400 text-sm mt-3">
@@ -394,7 +394,7 @@ export default function App() {
       </header>
 
       {/* ══════ HERO ═════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-6 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center pt-24 md:pt-32 pb-16 px-6 overflow-hidden">
         <div className="orb w-[700px] h-[700px] bg-blue-700/15 -top-48 -left-56" style={{ animation: 'drift 12s ease-in-out infinite' }} />
         <div className="orb w-[500px] h-[500px] bg-yellow-400/6  bottom-0 right-[-120px]" style={{ animation: 'drift 9s ease-in-out infinite alternate' }} />
 
@@ -403,15 +403,15 @@ export default function App() {
           <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
             <div className="inline-flex items-center gap-2 glass border border-yellow-500/20 rounded-full
-              px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-yellow-400 mb-7">
+              px-3 md:px-4 py-1.5 text-[9px] md:text-[11px] font-bold uppercase tracking-[0.14em] text-yellow-400 mb-7">
               <Zap className="w-3 h-3" /> White-Label Flutter Real Estate App
             </div>
-            <h1 className="text-5xl xl:text-6xl font-black leading-[1.06] tracking-[-0.02em] mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] md:leading-[1.06] tracking-[-0.02em] mb-6">
               Your Own Branded <br />
               <span className="shine-text">Property App</span><br />
               in Days.
             </h1>
-            <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
+            <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
               Skip 6 months of development. Get a production-ready Flutter real estate app —
               voice AI search, Instagram Reels, live chat, push notifications — and brand it as yours.
             </p>
@@ -461,15 +461,15 @@ export default function App() {
       <ScreenCarousel images={{ homeScreen, mapScreen, propDetail1, propDetail2, ownerProfile, userProfile, myProperty, addProp1, pushNotif }} />
 
       {/* ══════ FEATURES SHOWCASE ════════════════════ */}
-      <section id="features" className="py-28 px-6 relative">
+      <section id="features" className="py-16 md:py-28 px-6 relative">
         <div className="orb w-[500px] h-[500px] bg-blue-800/10 top-0 right-[-100px]" />
-        <div className="max-w-7xl mx-auto relative z-10 space-y-28">
+        <div className="max-w-7xl mx-auto relative z-10 space-y-20 md:space-y-28">
 
           <div className="text-center mb-4">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
               Feature Showcase
             </motion.p>
-            <motion.h2 {...fUp(0.1)} className="text-4xl sm:text-5xl font-black tracking-tight">
+            <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight">
               Real Screenshots. <span className="gold-text">Real Features.</span>
             </motion.h2>
           </div>
@@ -522,18 +522,18 @@ export default function App() {
       </section>
 
       {/* ══════ OWNER vs USER ═════════════════════════ */}
-      <section id="owner" className="py-28 px-6 relative overflow-hidden">
+      <section id="owner" className="py-16 md:py-28 px-6 relative overflow-hidden">
         <div className="orb w-[700px] h-[700px] bg-yellow-400/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="orb w-[400px] h-[400px] bg-blue-700/10 top-0 right-[-100px]" />
 
         <div className="max-w-7xl mx-auto relative z-10">
 
           {/* ── Heading ── */}
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-14">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
               Role-Based Access Control
             </motion.p>
-            <motion.h2 {...fUp(0.1)} className="text-4xl sm:text-5xl font-black tracking-tight mb-4">
+            <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-4">
               Owner vs Buyer — <span className="gold-text">Unified Architecture.</span>
             </motion.h2>
             <motion.p {...fUp(0.2)} className="text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">
@@ -753,7 +753,7 @@ export default function App() {
 
 
       {/* ══════ STATS ════════════════════════════════ */}
-      <section className="py-20 px-6 border-y border-white/5">
+      <section className="py-12 md:py-20 px-6 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5">
           <Stat val="6×" label="Faster to market" icon={Zap} delay={0} />
           <Stat val="100%" label="Source code yours" icon={ShieldCheck} delay={0.1} />
@@ -763,14 +763,14 @@ export default function App() {
       </section>
 
       {/* ══════ PRICING ══════════════════════════════ */}
-      <section id="pricing" className="py-28 px-6 relative overflow-hidden">
+      <section id="pricing" className="py-16 md:py-28 px-6 relative overflow-hidden">
         <div className="orb w-[600px] h-[600px] bg-blue-900/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-14">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
               Pricing
             </motion.p>
-            <motion.h2 {...fUp(0.1)} className="text-4xl sm:text-5xl font-black tracking-tight mb-3">
+            <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-3">
               One License. <span className="gold-text">Fully Yours.</span>
             </motion.h2>
             <motion.p {...fUp(0.2)} className="text-gray-400 text-base">No subscriptions. No royalties.</motion.p>
@@ -788,12 +788,12 @@ export default function App() {
 
 
       {/* ══════ CTA ══════════════════════════════════ */}
-      <section id="contact" className="py-24 px-6 relative overflow-hidden">
+      <section id="contact" className="py-16 md:py-24 px-6 relative overflow-hidden">
         <div className="orb w-[700px] h-[700px] bg-blue-700/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-3xl mx-auto relative z-10 text-center">
-          <motion.div {...fUp(0)} className="glass g-card rounded-3xl p-12 sm:p-16">
+          <motion.div {...fUp(0)} className="glass g-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 lg:p-16">
             <p className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">Ready to Launch?</p>
-            <h2 className="text-4xl sm:text-5xl font-black mb-5 tracking-tight leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tight leading-tight">
               Your App.<br /><span className="gold-text">Built for Scale.</span>
             </h2>
             <p className="text-gray-400 text-base mb-10 leading-relaxed">
