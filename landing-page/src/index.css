@@ -131,6 +131,20 @@ body {
   animation: ticker 22s linear infinite;
 }
 
+/* ─── Faded Grid Background ─────────────────────────── */
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* ─── Carousel Scroll ─────────────────────────────── */
 @keyframes carouselScroll {
   from {
