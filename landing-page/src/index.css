@@ -131,16 +131,20 @@ body {
   animation: ticker 22s linear infinite;
 }
 
-/* ─── Faded Grid Background ─────────────────────────── */
-.grid-bg {
-  position: absolute;
+/* ─── Interactive Faded Grid Background ──────────────── */
+.grid-bg-interactive {
+  position: fixed;
   inset: 0;
   background-size: 50px 50px;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
-  -webkit-mask-image: radial-gradient(circle at center, black 10%, transparent 80%);
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  mask-image: radial-gradient(circle 600px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      black 0%,
+      transparent 100%);
+  -webkit-mask-image: radial-gradient(circle 600px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      black 0%,
+      transparent 100%);
   pointer-events: none;
   z-index: 0;
 }

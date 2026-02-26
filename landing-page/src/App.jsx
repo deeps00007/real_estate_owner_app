@@ -82,7 +82,7 @@ const ScreenCarousel = ({ images }) => {
 
   return (
     <>
-      <section className="py-20 bg-[#04091a] relative overflow-hidden">
+      <section className="py-20 relative overflow-hidden">
         <div className="orb w-[500px] h-[500px] bg-blue-700/10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
         {/* Heading */}
@@ -327,6 +327,7 @@ export default function App() {
   const [videoOpen, setVideoOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const gridRef = React.useRef(null);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 30);
@@ -334,8 +335,20 @@ export default function App() {
     return () => window.removeEventListener('scroll', h);
   }, []);
 
+  const handleMouseMove = (e) => {
+    if (!gridRef.current) return;
+    const { clientX, clientY } = e;
+    gridRef.current.style.setProperty('--mouse-x', `${clientX}px`);
+    gridRef.current.style.setProperty('--mouse-y', `${clientY}px`);
+  };
+
   return (
-    <div className="bg-[#04091a] min-h-screen text-white overflow-x-hidden select-none">
+    <div
+      className="bg-[#04091a] min-h-screen text-white overflow-x-hidden select-none"
+      onMouseMove={handleMouseMove}
+    >
+      {/* ── GLOBAL INTERACTIVE GRID ── */}
+      <div ref={gridRef} className="grid-bg-interactive" />
 
       {/* ══════ NAV ══════════════════════════════════ */}
       <header className={`fixed top-0 w-full z-50 transition-all duration-300
@@ -380,8 +393,6 @@ export default function App() {
 
       {/* ══════ HERO ═════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center pt-28 pb-16 px-6 overflow-hidden">
-        {/* Background Effects */}
-        <div className="grid-bg" />
         <div className="orb w-[700px] h-[700px] bg-blue-700/15 -top-48 -left-56" style={{ animation: 'drift 12s ease-in-out infinite' }} />
         <div className="orb w-[500px] h-[500px] bg-yellow-400/6  bottom-0 right-[-120px]" style={{ animation: 'drift 9s ease-in-out infinite alternate' }} />
 
@@ -448,7 +459,7 @@ export default function App() {
       <ScreenCarousel images={{ homeScreen, mapScreen, propDetail1, propDetail2, ownerProfile, userProfile, myProperty, addProp1, pushNotif }} />
 
       {/* ══════ FEATURES SHOWCASE ════════════════════ */}
-      <section id="features" className="py-28 px-6 bg-[#060f1f] relative">
+      <section id="features" className="py-28 px-6 relative">
         <div className="orb w-[500px] h-[500px] bg-blue-800/10 top-0 right-[-100px]" />
         <div className="max-w-7xl mx-auto relative z-10 space-y-28">
 
@@ -509,7 +520,7 @@ export default function App() {
       </section>
 
       {/* ══════ OWNER vs USER ═════════════════════════ */}
-      <section id="owner" className="py-28 px-6 relative overflow-hidden bg-[#060f1f]">
+      <section id="owner" className="py-28 px-6 relative overflow-hidden">
         <div className="orb w-[700px] h-[700px] bg-yellow-400/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="orb w-[400px] h-[400px] bg-blue-700/10 top-0 right-[-100px]" />
 
@@ -735,7 +746,7 @@ export default function App() {
 
 
       {/* ══════ STATS ════════════════════════════════ */}
-      <section className="py-20 px-6 bg-[#060f1f] border-y border-white/5">
+      <section className="py-20 px-6 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5">
           <Stat val="6×" label="Faster to market" icon={Zap} delay={0} />
           <Stat val="100%" label="Source code yours" icon={ShieldCheck} delay={0.1} />
@@ -758,9 +769,9 @@ export default function App() {
             <motion.p {...fUp(0.2)} className="text-gray-400 text-base">No subscriptions. No royalties.</motion.p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            <PricingCard tier="Starter" price="₹49,999" note="/ one-time" delay={0.1}
+            <PricingCard tier="Starter" price="₹6,000" note="/ one-time" delay={0.1}
               features={['Full Flutter Source Code', 'Firebase Integration Guide', 'Custom Splash & App Icon', 'Google Play Ready APK', '3 Months Email Support']} />
-            <PricingCard tier="Professional" price="₹99,999" note="/ one-time" hot delay={0.15}
+            <PricingCard tier="Professional" price="₹8,000" note="/ one-time" hot delay={0.15}
               features={['Everything in Starter', 'Node.js Push Backend', 'Instagram Reel Integration', 'Owner Role System Setup', '6 Months Priority Support', '1-hour Onboarding Call']} />
             <PricingCard tier="Enterprise" price="Custom" delay={0.2}
               features={['Everything in Pro', 'On-demand Features', 'Dedicated Slack Channel', '12-Month Support SLA', 'App Store Help', 'NDA & Source Escrow']} />
@@ -786,7 +797,12 @@ export default function App() {
               <button className="gold-btn px-10 py-4 rounded-full text-base">
                 Book Free Demo <ArrowUpRight className="inline w-5 h-5 ml-1" />
               </button>
-              <button className="outline-btn px-10 py-4 rounded-full text-base">💬 WhatsApp Us</button>
+              <button
+                onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20am%20interested%20in%20the%20Real%20Estate%20App', '_blank')}
+                className="outline-btn px-10 py-4 rounded-full text-base"
+              >
+                💬 WhatsApp Us
+              </button>
             </div>
           </motion.div>
         </div>
