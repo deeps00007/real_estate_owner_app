@@ -104,11 +104,11 @@ const ScreenCarousel = ({ images }) => {
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          {/* Fade edges */}
+          {/* Fade edges with blur mask */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-28 z-10
-            bg-gradient-to-r from-[#04091a] to-transparent" />
+            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_right,black,transparent)] [mask-image:linear-gradient(to_right,black,transparent)]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-28 z-10
-            bg-gradient-to-l from-[#04091a] to-transparent" />
+            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_left,black,transparent)] [mask-image:linear-gradient(to_left,black,transparent)]" />
 
           <div
             className="flex gap-6 w-max px-6"
@@ -435,7 +435,8 @@ export default function App() {
             </div>
           </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#04091a] to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 z-10
+          backdrop-blur-md [-webkit-mask-image:linear-gradient(to_top,black,transparent)] [mask-image:linear-gradient(to_top,black,transparent)]" />
       </section>
 
       {/* ── TICKER ──────────────────────────────────── */}
