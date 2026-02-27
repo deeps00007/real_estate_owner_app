@@ -152,7 +152,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
               autoPlay: true,
               looping: false,
               showControls: false,
-              aspectRatio: _videoController!.value.aspectRatio,
+              aspectRatio: _frameWidth / _frameHeight,
             );
 
             _videoController!.setVolume(_isMuted ? 0.0 : 1.0);
@@ -182,9 +182,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
         !_videoController!.value.isPlaying) {
       _videoController!.removeListener(_videoListener);
       // Advance in next microtask to avoid building while listening
-      Future.microtask(() {
-        if (mounted) _playNextVideo();
-      });
+      Future.microtask(() => _playNextVideo());
     }
   }
 
@@ -233,9 +231,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
     }
 
     // wait until the controller is created and initialized, then apply volume
-    // max 50 iterations = 5 seconds to avoid an infinite loop
-    int retries = 0;
-    while (mounted && retries < 50) {
+    while (mounted) {
       if (_chewieController != null &&
           _videoController != null &&
           _videoController!.value.isInitialized) {
@@ -243,7 +239,6 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
         break;
       }
       await Future.delayed(const Duration(milliseconds: 100));
-      retries++;
     }
   }
 
@@ -373,7 +368,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: Colors.black.withOpacity(0.25),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -386,7 +381,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
                   _videoController!.value.isInitialized)
                 ClipRRect(
                   key: ValueKey(_currentIndex), // Help track different videos
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(8),
                   child: Chewie(controller: _chewieController!),
                 )
               else
@@ -432,7 +427,7 @@ class _FloatingPromotionVideoState extends State<FloatingPromotionVideo> {
                         margin: const EdgeInsets.symmetric(horizontal: 2),
                         height: 3,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: Colors.white.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(2),
                         ),
                         child: FractionallySizedBox(
