@@ -43,8 +43,8 @@ const Ticker = () => (
 
 /* ── Phone Frame ──────────────────────────────── */
 const Phone = ({ src, alt, className = '' }) => (
-  <div className={`relative shrink-0 ${className || 'w-[180px] md:w-[230px]'}`}>
-    <div className="w-full rounded-[24px] md:rounded-[38px] border-[4px] md:border-[6px] border-white/10 overflow-hidden
+  <div className={`relative shrink-0 ${className || 'w-45 md:w-57.5'}`}>
+    <div className="w-full rounded-3xl md:rounded-[38px] border-4 md:border-[6px] border-white/10 overflow-hidden
       shadow-[0_20px_50px_rgba(0,0,0,0.65)] md:shadow-[0_30px_80px_rgba(0,0,0,0.65)]" style={{ background: '#111' }}>
       <img src={src} alt={alt} className="w-full object-cover" />
     </div>
@@ -85,7 +85,7 @@ const ScreenCarousel = ({ images }) => {
   return (
     <>
       <section className="py-12 md:py-20 relative overflow-hidden">
-        <div className="orb w-[500px] h-[500px] bg-blue-700/10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="orb w-125 h-125 bg-blue-700/10 top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" />
 
         {/* Heading */}
         <div className="text-center mb-8 md:mb-12 px-6 relative z-10">
@@ -108,9 +108,9 @@ const ScreenCarousel = ({ images }) => {
         >
           {/* Fade edges with blur mask */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-28 z-10
-            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_right,black,transparent)] [mask-image:linear-gradient(to_right,black,transparent)]" />
+            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_right,black,transparent)] mask-[linear-gradient(to_right,black,transparent)]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-28 z-10
-            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_left,black,transparent)] [mask-image:linear-gradient(to_left,black,transparent)]" />
+            backdrop-blur-md [-webkit-mask-image:linear-gradient(to_left,black,transparent)] mask-[linear-gradient(to_left,black,transparent)]" />
 
           <div
             className="flex gap-6 w-max px-6"
@@ -126,7 +126,7 @@ const ScreenCarousel = ({ images }) => {
                 className="flex flex-col items-center gap-2.5 shrink-0 group focus:outline-none"
               >
                 <div
-                  className="w-[110px] md:w-[148px] rounded-[24px] md:rounded-[30px] border-[3px] md:border-[4px] border-white/10 overflow-hidden
+                  className="w-27.5 md:w-37 rounded-3xl md:rounded-[30px] border-[3px] md:border-4 border-white/10 overflow-hidden
                   shadow-[0_12px_35px_rgba(0,0,0,0.5)] md:shadow-[0_16px_45px_rgba(0,0,0,0.5)] transition-all duration-300
                   group-hover:scale-105 group-hover:border-yellow-400/40
                   group-hover:shadow-[0_20px_55px_rgba(255,215,0,0.18)]"
@@ -149,7 +149,7 @@ const ScreenCarousel = ({ images }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/92 backdrop-blur-md"
+            className="fixed inset-0 z-200 flex items-center justify-center bg-black/92 backdrop-blur-md"
             onClick={() => setLightbox(null)}
           >
             {/* Container */}
@@ -182,7 +182,7 @@ const ScreenCarousel = ({ images }) => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -40 }}
                   transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="w-[240px] md:w-[280px] rounded-[32px] md:rounded-[40px] border-[5px] md:border-[6px] border-white/15
+                  className="w-60 md:w-70 rounded-4xl md:rounded-[40px] border-[5px] md:border-[6px] border-white/15
                   overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.8)] md:shadow-[0_40px_100px_rgba(0,0,0,0.8)]"
                 >
                   <img
@@ -238,27 +238,107 @@ const ScreenCarousel = ({ images }) => {
 
 
 /* ── Feature Row ──────────────────────────────── */
-const FeatureRow = ({ tag, heading, sub, bullets, img, alt, reverse = false, delay = 0 }) => (
-  <div className={`flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-14`}>
-    <motion.div {...fUp(delay)} className="flex-1">
-      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.18em]
-        text-yellow-400 mb-4">{tag}</span>
-      <h3 className="text-3xl font-black tracking-tight mb-4 text-white" dangerouslySetInnerHTML={{ __html: heading }} />
-      <p className="text-gray-400 mb-7 leading-relaxed">{sub}</p>
-      <ul className="space-y-3">
-        {bullets.map((b, i) => (
-          <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
-            <CheckCheck className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
-            <span>{b}</span>
-          </li>
-        ))}
-      </ul>
-    </motion.div>
-    <motion.div {...fUp(delay + 0.1)} className="flex-shrink-0 flex justify-center w-full lg:w-auto mt-12 lg:mt-0">
-      <Phone src={img} alt={alt} className="w-[240px] sm:w-[280px] md:w-[260px] lg:w-[280px] phone-float drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]" />
-    </motion.div>
-  </div>
-);
+/* ── Feature Row accent palette ──────────────── */
+const FEAT_ACCENT = {
+  amber: {
+    pill:     'bg-amber-400/10 text-amber-300 border-amber-400/25',
+    badge:    'bg-amber-400/10 text-amber-400 border-amber-400/25',
+    card:     'border-l-amber-400/50 hover:border-l-amber-300',
+    glow:     'bg-amber-400/18',
+    stepClr:  'text-amber-400/[0.045]',
+  },
+  blue: {
+    pill:     'bg-blue-400/10 text-blue-300 border-blue-400/25',
+    badge:    'bg-blue-400/10 text-blue-400 border-blue-400/25',
+    card:     'border-l-blue-400/50 hover:border-l-blue-300',
+    glow:     'bg-blue-500/18',
+    stepClr:  'text-blue-400/[0.045]',
+  },
+  purple: {
+    pill:     'bg-purple-400/10 text-purple-300 border-purple-400/25',
+    badge:    'bg-purple-400/10 text-purple-400 border-purple-400/25',
+    card:     'border-l-purple-400/50 hover:border-l-purple-300',
+    glow:     'bg-purple-500/15',
+    stepClr:  'text-purple-400/[0.045]',
+  },
+};
+
+const FeatureRow = ({ tag, tagIcon, highlight, heading, sub, bullets, img, alt, reverse = false, delay = 0, step, accent = 'amber' }) => {
+  const a = FEAT_ACCENT[accent];
+  return (
+    <div className={`relative flex flex-col ${reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-14 lg:gap-20`}>
+
+      {/* Big faded step number — decorative background */}
+      <span
+        aria-hidden
+        className={`pointer-events-none select-none absolute hidden lg:block font-black leading-none ${a.stepClr}
+          ${reverse ? '-right-2 lg:right-0' : '-left-2 lg:left-0'} -top-10`}
+        style={{ fontSize: 'clamp(130px, 15vw, 210px)' }}
+      >
+        {step}
+      </span>
+
+      {/* ── Text column ── */}
+      <motion.div {...fUp(delay)} className="flex-1 relative z-10">
+        {/* Tag + highlight pill row */}
+        <div className="flex flex-wrap items-center gap-2.5 mb-5">
+          <span className={`inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.17em]
+            border rounded-full px-3.5 py-1.5 ${a.pill}`}>
+            {tagIcon && <span className="text-sm leading-none">{tagIcon}</span>}
+            {tag}
+          </span>
+          {highlight && (
+            <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider
+              border rounded-full px-2.5 py-1 ${a.badge}`}>
+              {highlight}
+            </span>
+          )}
+        </div>
+
+        <h3
+          className="text-3xl md:text-4xl font-black tracking-tight mb-4 text-white leading-[1.12]"
+          dangerouslySetInnerHTML={{ __html: heading }}
+        />
+        <p className="text-gray-400 mb-8 leading-relaxed text-[15px] max-w-lg">{sub}</p>
+
+        {/* Bullets as 2-col glass cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {bullets.map((b, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: delay + 0.1 + i * 0.07, duration: 0.45 }}
+              className={`glass g-card rounded-xl p-3.5 flex items-start gap-3 border-l-[3px]
+                transition-colors duration-200 ${a.card}`}
+            >
+              <CheckCheck className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+              <span className="text-[13px] text-gray-300 leading-snug">{b}</span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Phone + colored glow ── */}
+      <motion.div
+        {...fUp(delay + 0.12)}
+        className="shrink-0 flex justify-center relative w-full lg:w-auto mt-12 lg:mt-0"
+      >
+        {/* Glow blob behind phone */}
+        <div
+          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+            w-55 h-75 rounded-full blur-[70px] opacity-70 ${a.glow}`}
+        />
+        <Phone
+          src={img} alt={alt}
+          className="w-57.5 sm:w-65 md:w-62.5 lg:w-67.5 phone-float relative z-10
+            drop-shadow-[0_25px_60px_rgba(0,0,0,0.65)]"
+        />
+      </motion.div>
+    </div>
+  );
+};
 
 /* ── Stat ─────────────────────────────────────── */
 const Stat = ({ val, label, icon: Icon, delay }) => (
@@ -275,7 +355,7 @@ const Stat = ({ val, label, icon: Icon, delay }) => (
 const PricingCard = ({ tier, price, note, features, hot, delay }) => (
   <motion.div {...fUp(delay)}
     className={`g-card rounded-2xl p-8 flex flex-col gap-5 relative overflow-hidden
-      ${hot ? 'bg-gradient-to-b from-[#132d5e]/60 to-[#0a1628]/90' : 'glass'}`}>
+      ${hot ? 'bg-linear-to-b from-[#132d5e]/60 to-[#0a1628]/90' : 'glass'}`}>
     {hot && (
       <>
         <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-400/8 rounded-full blur-3xl" />
@@ -395,8 +475,8 @@ export default function App() {
 
       {/* ══════ HERO ═════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center justify-center pt-24 md:pt-32 pb-16 px-6 overflow-hidden">
-        <div className="orb w-[700px] h-[700px] bg-blue-700/15 -top-48 -left-56" style={{ animation: 'drift 12s ease-in-out infinite' }} />
-        <div className="orb w-[500px] h-[500px] bg-yellow-400/6  bottom-0 right-[-120px]" style={{ animation: 'drift 9s ease-in-out infinite alternate' }} />
+        <div className="orb w-175 h-175 bg-blue-700/15 -top-48 -left-56" style={{ animation: 'drift 12s ease-in-out infinite' }} />
+        <div className="orb w-125 h-125 bg-yellow-400/6  bottom-0 -right-30" style={{ animation: 'drift 9s ease-in-out infinite alternate' }} />
 
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 items-center gap-16 relative z-10">
           {/* Text */}
@@ -438,27 +518,27 @@ export default function App() {
           {/* 3-Phone cluster */}
           <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex items-end justify-center mt-12 lg:mt-0 h-[400px] md:h-auto md:-space-x-6">
+            className="relative flex items-end justify-center mt-12 lg:mt-0 h-100 md:h-auto md:-space-x-6">
 
             <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-5deg)' }}
-              className="absolute left-[-20px] sm:left-10 md:static md:mb-[-20px] z-0 opacity-50 md:opacity-100">
-              <Phone src={homeScreen} alt="Home Screen" className="w-[140px] md:w-[180px]" />
+              className="absolute -left-5 sm:left-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100">
+              <Phone src={homeScreen} alt="Home Screen" className="w-35 md:w-45" />
             </div>
 
             <div style={{ animation: 'float 6s ease-in-out .5s infinite' }}
               className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-              <Phone src={mapScreen} alt="Map Screen" className="w-[200px] sm:w-[220px] md:w-[210px]" />
+              <Phone src={mapScreen} alt="Map Screen" className="w-50 sm:w-55 md:w-52.5" />
             </div>
 
             <div style={{ animation: 'float 8s ease-in-out 1s infinite', transform: 'rotate(5deg)' }}
-              className="absolute right-[-20px] sm:right-10 md:static md:mb-[-20px] z-0 opacity-50 md:opacity-100">
-              <Phone src={propDetail1} alt="Property Detail" className="w-[140px] md:w-[180px]" />
+              className="absolute -right-5 sm:right-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100">
+              <Phone src={propDetail1} alt="Property Detail" className="w-35 md:w-45" />
             </div>
 
           </motion.div>
         </div>
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 z-10
-          backdrop-blur-md [-webkit-mask-image:linear-gradient(to_top,black,transparent)] [mask-image:linear-gradient(to_top,black,transparent)]" />
+          backdrop-blur-md [-webkit-mask-image:linear-gradient(to_top,black,transparent)] mask-[linear-gradient(to_top,black,transparent)]" />
       </section>
 
       {/* ── TICKER ──────────────────────────────────── */}
@@ -468,70 +548,110 @@ export default function App() {
       <ScreenCarousel images={{ homeScreen, mapScreen, propDetail1, propDetail2, ownerProfile, userProfile, myProperty, addProp1, pushNotif }} />
 
       {/* ══════ FEATURES SHOWCASE ════════════════════ */}
-      <section id="features" className="py-16 md:py-28 px-6 relative">
-        <div className="orb w-[500px] h-[500px] bg-blue-800/10 top-0 right-[-100px]" />
-        <div className="max-w-7xl mx-auto relative z-10 space-y-20 md:space-y-28">
+      <section id="features" className="py-16 md:py-28 px-6 relative overflow-hidden">
+        <div className="orb w-150 h-150 bg-blue-800/8 -top-20 -right-45" />
+        <div className="orb w-125 h-125 bg-amber-400/4 bottom-0 -left-45" />
 
-          <div className="text-center mb-4">
+        <div className="max-w-7xl mx-auto relative z-10">
+
+          {/* ── Section header ── */}
+          <div className="text-center mb-16 md:mb-24">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
               Feature Showcase
             </motion.p>
-            <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight">
+            <motion.h2 {...fUp(0.1)} className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-4">
               Real Screenshots. <span className="gold-text">Real Features.</span>
             </motion.h2>
+            <motion.p {...fUp(0.15)} className="text-gray-500 text-sm max-w-lg mx-auto mb-8 leading-relaxed">
+              Every pixel purposeful — built for real buyers, agents, and property owners.
+            </motion.p>
+            {/* Category pills */}
+            <motion.div {...fUp(0.2)} className="flex flex-wrap justify-center gap-2.5">
+              {[
+                { icon: '🏠', label: 'Home Screen', color: 'bg-amber-400/8 border-amber-400/20 text-amber-300' },
+                { icon: '🗺️', label: 'Map View',    color: 'bg-blue-400/8   border-blue-400/20   text-blue-300' },
+                { icon: '🏡', label: 'Property Detail', color: 'bg-purple-400/8 border-purple-400/20 text-purple-300' },
+              ].map(({ icon, label, color }) => (
+                <span key={label} className={`inline-flex items-center gap-2 text-[11px] font-semibold
+                  border rounded-full px-4 py-1.5 ${color}`}>
+                  <span>{icon}</span>{label}
+                </span>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Home Screen */}
-          <FeatureRow
-            tag="🏠 Home Screen"
-            heading="Smart Discovery,<br/>Voice-Powered Search"
-            sub="Users land on a beautiful property feed showing Best Offers and Nearest Properties. A rotating animated search bar hints at popular categories, and a single tap of the mic activates the AI voice search with a custom waveform animation."
-            bullets={[
-              'Rotating search bar: "Apartment" → "Villa" → "Office"',
-              'Voice mic with live waveform visualizer',
-              'Location-aware header with GPS address',
-              'Floating Instagram Reel story player (draggable)',
-            ]}
-            img={homeScreen} alt="Home Screen"
-            delay={0}
-          />
+          {/* ── Feature rows with dividers ── */}
+          <div className="space-y-24 md:space-y-36">
 
-          {/* Map */}
-          <FeatureRow
-            tag="🗺️ Map Screen"
-            heading="Every Property,<br/>Pinned on the Map"
-            sub="Buyers explore a fully interactive map with property image-pins. Tap any pin to see a quick card with price, rating, and distance. The bottom search bar enables voice-dictated or typed map searches in real time."
-            bullets={[
-              'Property photo-pins on an interactive OSM map',
-              'Tap pin → see instant property preview card',
-              'Current location awareness + GPS zoom',
-              'Voice search overlaid directly on map',
-            ]}
-            img={mapScreen} alt="Map Screen"
-            reverse delay={0.05}
-          />
+            {/* 01 — Home Screen */}
+            <FeatureRow
+              step="01" accent="amber"
+              tag="Home Screen" tagIcon="🏠" highlight="★ Most Loved"
+              heading="Smart Discovery,<br/>Voice-Powered Search"
+              sub="Users land on a beautiful property feed with Best Offers and Nearest Properties. A rotating animated search bar hints at popular categories — one mic tap activates AI voice search with a live waveform animation."
+              bullets={[
+                'Rotating bar: "Apartment" → "Villa" → "Office"',
+                'Voice mic with live waveform visualizer',
+                'Location-aware header with GPS address',
+                'Draggable Instagram Reel story player',
+              ]}
+              img={homeScreen} alt="Home Screen"
+              delay={0}
+            />
 
-          {/* Property Detail */}
-          <FeatureRow
-            tag="🏡 Property Detail"
-            heading="Rich Details,<br/>One Tap to Connect"
-            sub="The property detail page is a clean, image-first layout. Swipeable photo gallery, amenities grid (beds, baths, sqft, kitchen), listing agent info, and a prominent 'Rent Now' / 'Chat with Agent' CTA at the bottom bar."
-            bullets={[
-              'Full-width hero image with back + favourite buttons',
-              'Swipeable photo gallery strip',
-              'Amenities grid: Beds, Baths, Sqft, Kitchen',
-              'Chat with Agent button → opens real-time chat',
-            ]}
-            img={propDetail1} alt="Property Detail"
-            delay={0.05}
-          />
+            {/* Divider */}
+            <div aria-hidden className="flex items-center gap-4">
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
+              <span className="text-white/10 text-xs font-bold tracking-widest uppercase">✦</span>
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
+            </div>
+
+            {/* 02 — Map */}
+            <FeatureRow
+              step="02" accent="blue"
+              tag="Map Screen" tagIcon="🗺️" highlight="Live Pins"
+              heading="Every Property,<br/>Pinned on the Map"
+              sub="Buyers explore a fully interactive map with property image-pins. Tap any pin to see a quick card with price, rating, and distance. The bottom search bar supports voice-dictated or typed map searches in real time."
+              bullets={[
+                'Property photo-pins on an interactive OSM map',
+                'Tap pin → instant property preview card',
+                'GPS zoom + current location awareness',
+                'Voice search overlaid directly on map',
+              ]}
+              img={mapScreen} alt="Map Screen"
+              reverse delay={0.05}
+            />
+
+            {/* Divider */}
+            <div aria-hidden className="flex items-center gap-4">
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
+              <span className="text-white/10 text-xs font-bold tracking-widest uppercase">✦</span>
+              <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
+            </div>
+
+            {/* 03 — Property Detail */}
+            <FeatureRow
+              step="03" accent="purple"
+              tag="Property Detail" tagIcon="🏡" highlight="1-Tap Connect"
+              heading="Rich Details,<br/>One Tap to Connect"
+              sub="A clean, image-first layout with swipeable gallery, full amenities grid, and listing agent info. A sticky bottom bar puts Rent Now and Chat with Agent always within reach."
+              bullets={[
+                'Full-width hero image with favourite button',
+                'Swipeable photo gallery strip',
+                'Amenities grid: Beds, Baths, Sqft, Kitchen',
+                'Chat with Agent → opens real-time chat',
+              ]}
+              img={propDetail1} alt="Property Detail"
+              delay={0.05}
+            />
+          </div>
         </div>
       </section>
 
       {/* ══════ OWNER vs USER ═════════════════════════ */}
       <section id="owner" className="py-16 md:py-28 px-6 relative overflow-hidden">
-        <div className="orb w-[700px] h-[700px] bg-yellow-400/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-        <div className="orb w-[400px] h-[400px] bg-blue-700/10 top-0 right-[-100px]" />
+        <div className="orb w-175 h-175 bg-yellow-400/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="orb w-100 h-100 bg-blue-700/10 top-0 -right-25" />
 
         <div className="max-w-7xl mx-auto relative z-10">
 
@@ -577,7 +697,7 @@ export default function App() {
                     <button
                       onClick={() => setTab('owner')}
                       className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${isOwner
-                        ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
+                        ? 'bg-linear-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
                         : 'text-gray-400 hover:text-white'
                         }`}
                     >
@@ -586,7 +706,7 @@ export default function App() {
                     <button
                       onClick={() => setTab('buyer')}
                       className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${!isOwner
-                        ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
+                        ? 'bg-linear-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
                         : 'text-gray-400 hover:text-white'
                         }`}
                     >
@@ -606,36 +726,36 @@ export default function App() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 30 }}
                       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="relative flex justify-center items-end mt-8 lg:mt-0 h-[380px] md:h-auto md:-space-x-6"
+                      className="relative flex justify-center items-end mt-8 lg:mt-0 h-95 md:h-auto md:-space-x-6"
                     >
                       {isOwner ? (
                         <>
                           <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                            className="absolute left-[-10px] sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={ownerProfile} alt="Owner Profile" className="w-[130px] md:w-[175px]" />
+                            className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={ownerProfile} alt="Owner Profile" className="w-32.5 md:w-43.75" />
                           </div>
                           <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
                             className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-                            <Phone src={myProperty} alt="My Properties" className="w-[180px] sm:w-[200px] md:w-[195px]" />
+                            <Phone src={myProperty} alt="My Properties" className="w-45 sm:w-50 md:w-48.75" />
                           </div>
                           <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                            className="absolute right-[-10px] sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={pushNotif} alt="Push Notification" className="w-[130px] md:w-[175px]" />
+                            className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={pushNotif} alt="Push Notification" className="w-32.5 md:w-43.75" />
                           </div>
                         </>
                       ) : (
                         <>
                           <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                            className="absolute left-[-10px] sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={homeScreen} alt="Home Screen" className="w-[130px] md:w-[175px]" />
+                            className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={homeScreen} alt="Home Screen" className="w-32.5 md:w-43.75" />
                           </div>
                           <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
                             className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-                            <Phone src={propDetail2} alt="Property Detail" className="w-[180px] sm:w-[200px] md:w-[195px]" />
+                            <Phone src={propDetail2} alt="Property Detail" className="w-45 sm:w-50 md:w-48.75" />
                           </div>
                           <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                            className="absolute right-[-10px] sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={userProfile} alt="User Profile" className="w-[130px] md:w-[175px]" />
+                            className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                            <Phone src={userProfile} alt="User Profile" className="w-32.5 md:w-43.75" />
                           </div>
                         </>
                       )}
@@ -652,7 +772,7 @@ export default function App() {
                       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     >
                       <div className="flex items-center gap-3 mb-6">
-                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isOwner ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isOwner ? 'bg-linear-to-br from-yellow-400 to-orange-500' : 'bg-linear-to-br from-blue-500 to-blue-700'
                           }`}>
                           {isOwner
                             ? <Crown className="w-5 h-5 text-[#0F2C59]" />
@@ -697,7 +817,7 @@ export default function App() {
 
                 {/* ── Comparison Table ── */}
                 <motion.div {...fUp(0.15)} className="mt-14 glass g-card rounded-2xl overflow-x-auto w-full max-w-full">
-                  <div className="min-w-[500px] md:min-w-0 md:w-full">
+                  <div className="min-w-125 md:min-w-0 md:w-full">
                     <div className="grid grid-cols-3 bg-white/5 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gray-400">
                       <span>Feature</span>
                       <span className="text-center text-yellow-400">👑 Owner</span>
@@ -714,7 +834,7 @@ export default function App() {
                       ['My Properties Dashboard', true, false],
                       ['Owner Tools in Profile', true, false],
                     ].map(([label, owner, buyer], i) => (
-                      <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/[0.04] ${i % 2 === 0 ? '' : 'bg-white/[0.02]'
+                      <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/4 ${i % 2 === 0 ? '' : 'bg-white/2'
                         }`}>
                         <span className="text-gray-300">{label}</span>
                         <span className="flex justify-center text-center">
@@ -779,7 +899,7 @@ export default function App() {
 
       {/* ══════ PRICING ══════════════════════════════ */}
       <section id="pricing" className="py-16 md:py-28 px-6 relative overflow-hidden">
-        <div className="orb w-[600px] h-[600px] bg-blue-900/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="orb w-150 h-150 bg-blue-900/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-10 md:mb-14">
             <motion.p {...fUp(0)} className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">
@@ -804,9 +924,9 @@ export default function App() {
 
       {/* ══════ CTA ══════════════════════════════════ */}
       <section id="contact" className="py-16 md:py-24 px-6 relative overflow-hidden">
-        <div className="orb w-[700px] h-[700px] bg-blue-700/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+        <div className="orb w-175 h-175 bg-blue-700/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-3xl mx-auto relative z-10 text-center">
-          <motion.div {...fUp(0)} className="glass g-card rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 lg:p-16">
+          <motion.div {...fUp(0)} className="glass g-card rounded-4xl md:rounded-[3rem] p-8 md:p-12 lg:p-16">
             <p className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">Ready to Launch?</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tight leading-tight">
               Your App.<br /><span className="gold-text">Built for Scale.</span>
@@ -850,7 +970,7 @@ export default function App() {
       <AnimatePresence>
         {videoOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12 bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-100 flex items-center justify-center p-4 md:p-12 bg-black/90 backdrop-blur-sm"
             onClick={() => setVideoOpen(false)}>
             <motion.div
               initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
