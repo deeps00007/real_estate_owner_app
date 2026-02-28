@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 import {
   Mic, Play, MessageSquare, Map, Bell, ShieldCheck, ChevronRight,
   X, Star, Zap, Heart, Building2, Users, ArrowUpRight, Menu,
@@ -1040,6 +1041,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      <Analytics />
     </div>
   );
 }
