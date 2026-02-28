@@ -82,7 +82,7 @@ const ScreenCarousel = ({ images }) => {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [lightbox]);
+  }, [lightbox, items.length]);
 
   return (
     <>
@@ -342,11 +342,232 @@ const FeatureRow = ({ tag, tagIcon, highlight, heading, sub, bullets, img, alt, 
   );
 };
 
+/* ── Role-Based Features Component ─────────────── */
+const RoleBasedFeatures = () => {
+  const [tab, setTab] = React.useState('owner');
+  const isOwner = tab === 'owner';
+
+  const ownerFeatures = [
+    { icon: <Home className="w-5 h-5 text-yellow-400" />, label: 'My Properties', desc: 'Manage all listings with edit & delete controls' },
+    { icon: <Plus className="w-5 h-5 text-yellow-400" />, label: 'Add New Property', desc: 'Full form: image, price, type, amenities, location' },
+    { icon: <ScrollText className="w-5 h-5 text-yellow-400" />, label: 'Batch Push Broadcast', desc: 'Send rich notifications with images to all users in batches' },
+    { icon: <Settings className="w-5 h-5 text-yellow-400" />, label: 'Owner Tools Panel', desc: 'Exclusive section visible only in admin profile' },
+    { icon: <TrendingUp className="w-5 h-5 text-yellow-400" />, label: 'Listing Insights', desc: 'See how many users saved or viewed your properties' },
+  ];
+  const userFeatures = [
+    { icon: <Search className="w-5 h-5 text-blue-400" />, label: 'Browse Properties', desc: 'Discover best offers and nearest properties on home' },
+    { icon: <Bookmark className="w-5 h-5 text-blue-400" />, label: 'Save Properties', desc: 'Wishlist any property and revisit anytime' },
+    { icon: <MessageSquare className="w-5 h-5 text-blue-400" />, label: 'Chat with Agent', desc: 'Open WhatsApp-style real-time chat from property detail' },
+    { icon: <Clock className="w-5 h-5 text-blue-400" />, label: 'Recently Viewed', desc: 'Instantly revisit properties you\'ve explored' },
+    { icon: <MapPin className="w-5 h-5 text-blue-400" />, label: 'Explore on Map', desc: 'Tap markers to preview property cards on the map' },
+  ];
+
+  return (
+    <>
+      {/* Tab pills */}
+      <motion.div {...fUp(0.15)} className="flex justify-center mb-10">
+        <div className="glass g-card inline-flex rounded-2xl p-1.5 gap-1">
+          <button
+            onClick={() => setTab('owner')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${isOwner
+              ? 'bg-linear-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
+              : 'text-gray-400 hover:text-white'
+              }`}
+          >
+            <Crown className="w-4 h-4" /> Owner / Admin
+          </button>
+          <button
+            onClick={() => setTab('buyer')}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${!isOwner
+              ? 'bg-linear-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
+              : 'text-gray-400 hover:text-white'
+              }`}
+          >
+            <UserCircle2 className="w-4 h-4" /> Buyer / User
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Main panel */}
+      <div className="grid lg:grid-cols-2 gap-10 items-center">
+
+        {/* Phone showcase */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 30 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="relative flex justify-center items-end mt-8 lg:mt-0 h-95 md:h-auto md:-space-x-6"
+          >
+            {isOwner ? (
+              <>
+                <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
+                  className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                  <Phone src={ownerProfile} alt="Owner Profile" className="w-32.5 md:w-43.75" />
+                </div>
+                <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
+                  className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+                  <Phone src={myProperty} alt="My Properties" className="w-45 sm:w-50 md:w-48.75" />
+                </div>
+                <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
+                  className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                  <Phone src={pushNotif} alt="Push Notification" className="w-32.5 md:w-43.75" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
+                  className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
+                  <Phone src={homeScreen} alt="Home Screen" className="w-32.5 md:w-43.75" />
+                </div>
+                <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
+                  className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
+                  <Phone src={propDetail2} alt="Property Detail" className="w-45 sm:w-50 md:w-48.75" />
+                </div>
+                <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
+                  className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
+                  <Phone src={userProfile} alt="User Profile" className="w-32.5 md:w-43.75" />
+                </div>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Feature list */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab + '_features'}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isOwner ? 'bg-linear-to-br from-yellow-400 to-orange-500' : 'bg-linear-to-br from-blue-500 to-blue-700'
+                }`}>
+                {isOwner
+                  ? <Crown className="w-5 h-5 text-[#0F2C59]" />
+                  : <UserCircle2 className="w-5 h-5 text-white" />}
+              </div>
+              <div>
+                <p className="text-white font-black text-xl">
+                  {isOwner ? 'Owner / Admin' : 'Buyer / User'}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {isOwner ? 'Firebase UID registered as owner' : 'Regular Google Sign-in'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              {(isOwner ? ownerFeatures : userFeatures).map((f, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07 }}
+                  className={`group relative flex items-center gap-4 rounded-2xl px-4 py-3.5 border transition-all duration-200 cursor-default
+                    ${isOwner
+                      ? 'border-yellow-400/10 bg-yellow-400/[0.03] hover:bg-yellow-400/[0.07] hover:border-yellow-400/25'
+                      : 'border-blue-400/10 bg-blue-400/[0.03] hover:bg-blue-400/[0.07] hover:border-blue-400/25'}`}
+                >
+                  {/* Step number */}
+                  <span className={`shrink-0 w-5 text-center text-[10px] font-black tabular-nums
+                    ${isOwner ? 'text-yellow-400/40' : 'text-blue-400/40'}`}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {/* Icon badge */}
+                  <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border
+                    ${isOwner
+                      ? 'bg-yellow-400/10 border-yellow-400/20 shadow-[0_0_14px_rgba(250,204,21,0.12)] group-hover:shadow-[0_0_20px_rgba(250,204,21,0.2)]'
+                      : 'bg-blue-400/10 border-blue-400/20 shadow-[0_0_14px_rgba(96,165,250,0.12)] group-hover:shadow-[0_0_20px_rgba(96,165,250,0.2)]'}
+                    transition-shadow duration-200`}>
+                    {f.icon}
+                  </div>
+                  {/* Text */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-bold text-sm leading-tight">{f.label}</p>
+                    <p className="text-gray-500 text-xs mt-0.5 leading-snug">{f.desc}</p>
+                  </div>
+                  {/* Arrow */}
+                  <ChevronRight className={`shrink-0 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                    ${isOwner ? 'text-yellow-400' : 'text-blue-400'}`} />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* ── Comparison Table ── */}
+      <motion.div {...fUp(0.15)} className="mt-14 rounded-2xl overflow-hidden w-full border border-white/8 shadow-xl shadow-black/30">
+        {/* Header */}
+        <div className="grid grid-cols-3 px-5 py-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Feature</span>
+          <span className="flex flex-col items-center gap-1">
+            <span className="w-8 h-8 rounded-xl bg-yellow-400/15 border border-yellow-400/25 flex items-center justify-center">
+              <Crown className="w-4 h-4 text-yellow-400" />
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400">Owner</span>
+          </span>
+          <span className="flex flex-col items-center gap-1">
+            <span className="w-8 h-8 rounded-xl bg-blue-400/15 border border-blue-400/25 flex items-center justify-center">
+              <UserCircle2 className="w-4 h-4 text-blue-400" />
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Buyer</span>
+          </span>
+        </div>
+        {/* Rows */}
+        <div className="divide-y divide-white/5">
+          {[
+            { feature: 'Add / Edit / Delete Properties', owner: true, buyer: false },
+            { feature: 'Send Push Notifications', owner: true, buyer: false },
+            { feature: 'Admin Tools Panel', owner: true, buyer: false },
+            { feature: 'Property Insights & Analytics', owner: true, buyer: false },
+            { feature: 'Browse All Properties', owner: true, buyer: true },
+            { feature: 'Save / Wishlist Properties', owner: true, buyer: true },
+            { feature: 'View on Interactive Map', owner: true, buyer: true },
+            { feature: 'Live Chat with Agent', owner: true, buyer: true },
+            { feature: 'Story Video Player', owner: true, buyer: true },
+            { feature: 'Voice AI Search', owner: true, buyer: true },
+          ].map(({ feature, owner, buyer }, idx) => (
+            <div key={idx} className="grid grid-cols-3 px-5 py-3 items-center hover:bg-white/[0.015] transition-colors">
+              <span className="text-xs text-gray-400 font-medium">{feature}</span>
+              <span className="flex justify-center">
+                {owner ? (
+                  <CheckCircle2 className="w-4.5 h-4.5 text-yellow-400" />
+                ) : (
+                  <MinusCircle className="w-4.5 h-4.5 text-gray-600" />
+                )}
+              </span>
+              <span className="flex justify-center">
+                {buyer ? (
+                  <CheckCircle2 className="w-4.5 h-4.5 text-blue-400" />
+                ) : (
+                  <MinusCircle className="w-4.5 h-4.5 text-gray-600" />
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="px-5 py-4 bg-white/[0.015]">
+          <p className="text-gray-600 text-xs text-center">
+            No extra app builds. No separate APK. One codebase, two experiences.
+          </p>
+        </div>
+      </motion.div>
+    </>
+  );
+};
+
 /* ── Stat ─────────────────────────────────────── */
-const Stat = ({ val, label, icon: Icon, delay }) => (
+// eslint-disable-next-line no-unused-vars
+const Stat = ({ val, label, icon: IconComponent, delay }) => (
   <motion.div {...fUp(delay)} className="glass g-card rounded-2xl p-6 flex flex-col gap-1 items-center text-center">
     <div className="w-10 h-10 rounded-full bg-yellow-400/10 flex items-center justify-center mb-2">
-      <Icon className="w-5 h-5 text-yellow-400" />
+      <IconComponent className="w-5 h-5 text-yellow-400" />
     </div>
     <p className="text-4xl font-black stat-n gold-text">{val}</p>
     <p className="text-gray-400 text-xs font-medium">{label}</p>
@@ -673,264 +894,8 @@ export default function App() {
             </motion.p>
           </div>
 
-          {/* ── Tab selector (with inline state) ── */}
-          {(() => {
-            const [tab, setTab] = React.useState('owner');
-            const isOwner = tab === 'owner';
-
-            const ownerFeatures = [
-              { icon: <Home className="w-5 h-5 text-yellow-400" />, label: 'My Properties', desc: 'Manage all listings with edit & delete controls' },
-              { icon: <Plus className="w-5 h-5 text-yellow-400" />, label: 'Add New Property', desc: 'Full form: image, price, type, amenities, location' },
-              { icon: <ScrollText className="w-5 h-5 text-yellow-400" />, label: 'Batch Push Broadcast', desc: 'Send rich notifications with images to all users in batches' },
-              { icon: <Settings className="w-5 h-5 text-yellow-400" />, label: 'Owner Tools Panel', desc: 'Exclusive section visible only in admin profile' },
-              { icon: <TrendingUp className="w-5 h-5 text-yellow-400" />, label: 'Listing Insights', desc: 'See how many users saved or viewed your properties' },
-            ];
-            const userFeatures = [
-              { icon: <Search className="w-5 h-5 text-blue-400" />, label: 'Browse Properties', desc: 'Discover best offers and nearest properties on home' },
-              { icon: <Bookmark className="w-5 h-5 text-blue-400" />, label: 'Save Properties', desc: 'Wishlist any property and revisit anytime' },
-              { icon: <MessageSquare className="w-5 h-5 text-blue-400" />, label: 'Chat with Agent', desc: 'Open WhatsApp-style real-time chat from property detail' },
-              { icon: <Clock className="w-5 h-5 text-blue-400" />, label: 'Recently Viewed', desc: 'Instantly revisit properties you\'ve explored' },
-              { icon: <MapPin className="w-5 h-5 text-blue-400" />, label: 'Explore on Map', desc: 'Tap markers to preview property cards on the map' },
-            ];
-
-            return (
-              <>
-                {/* Tab pills */}
-                <motion.div {...fUp(0.15)} className="flex justify-center mb-10">
-                  <div className="glass g-card inline-flex rounded-2xl p-1.5 gap-1">
-                    <button
-                      onClick={() => setTab('owner')}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${isOwner
-                        ? 'bg-linear-to-r from-yellow-400 to-orange-500 text-[#0F2C59] shadow-[0_0_20px_rgba(255,215,0,0.35)]'
-                        : 'text-gray-400 hover:text-white'
-                        }`}
-                    >
-                      <Crown className="w-4 h-4" /> Owner / Admin
-                    </button>
-                    <button
-                      onClick={() => setTab('buyer')}
-                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${!isOwner
-                        ? 'bg-linear-to-r from-blue-500 to-blue-700 text-white shadow-[0_0_20px_rgba(59,130,246,0.35)]'
-                        : 'text-gray-400 hover:text-white'
-                        }`}
-                    >
-                      <UserCircle2 className="w-4 h-4" /> Buyer / User
-                    </button>
-                  </div>
-                </motion.div>
-
-                {/* Main panel */}
-                <div className="grid lg:grid-cols-2 gap-10 items-center">
-
-                  {/* Phone showcase */}
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={tab}
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 30 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                      className="relative flex justify-center items-end mt-8 lg:mt-0 h-95 md:h-auto md:-space-x-6"
-                    >
-                      {isOwner ? (
-                        <>
-                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                            className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={ownerProfile} alt="Owner Profile" className="w-32.5 md:w-43.75" />
-                          </div>
-                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
-                            className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-                            <Phone src={myProperty} alt="My Properties" className="w-45 sm:w-50 md:w-48.75" />
-                          </div>
-                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                            className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={pushNotif} alt="Push Notification" className="w-32.5 md:w-43.75" />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                            className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={homeScreen} alt="Home Screen" className="w-32.5 md:w-43.75" />
-                          </div>
-                          <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
-                            className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-                            <Phone src={propDetail2} alt="Property Detail" className="w-45 sm:w-50 md:w-48.75" />
-                          </div>
-                          <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                            className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                            <Phone src={userProfile} alt="User Profile" className="w-32.5 md:w-43.75" />
-                          </div>
-                        </>
-                      )}
-                    </motion.div>
-                  </AnimatePresence>
-
-                  {/* Feature list */}
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={tab + '_features'}
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -30 }}
-                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${isOwner ? 'bg-linear-to-br from-yellow-400 to-orange-500' : 'bg-linear-to-br from-blue-500 to-blue-700'
-                          }`}>
-                          {isOwner
-                            ? <Crown className="w-5 h-5 text-[#0F2C59]" />
-                            : <UserCircle2 className="w-5 h-5 text-white" />}
-                        </div>
-                        <div>
-                          <p className="text-white font-black text-xl">
-                            {isOwner ? 'Owner / Admin' : 'Buyer / User'}
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            {isOwner ? 'Firebase UID registered as owner' : 'Regular Google Sign-in'}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2.5">
-                        {(isOwner ? ownerFeatures : userFeatures).map((f, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.07 }}
-                            className={`group relative flex items-center gap-4 rounded-2xl px-4 py-3.5 border transition-all duration-200 cursor-default
-                              ${isOwner
-                                ? 'border-yellow-400/10 bg-yellow-400/[0.03] hover:bg-yellow-400/[0.07] hover:border-yellow-400/25'
-                                : 'border-blue-400/10 bg-blue-400/[0.03] hover:bg-blue-400/[0.07] hover:border-blue-400/25'}`}
-                          >
-                            {/* Step number */}
-                            <span className={`shrink-0 w-5 text-center text-[10px] font-black tabular-nums
-                              ${isOwner ? 'text-yellow-400/40' : 'text-blue-400/40'}`}>
-                              {String(i + 1).padStart(2, '0')}
-                            </span>
-                            {/* Icon badge */}
-                            <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border
-                              ${isOwner
-                                ? 'bg-yellow-400/10 border-yellow-400/20 shadow-[0_0_14px_rgba(250,204,21,0.12)] group-hover:shadow-[0_0_20px_rgba(250,204,21,0.2)]'
-                                : 'bg-blue-400/10 border-blue-400/20 shadow-[0_0_14px_rgba(96,165,250,0.12)] group-hover:shadow-[0_0_20px_rgba(96,165,250,0.2)]'}
-                              transition-shadow duration-200`}>
-                              {f.icon}
-                            </div>
-                            {/* Text */}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white font-bold text-sm leading-tight">{f.label}</p>
-                              <p className="text-gray-500 text-xs mt-0.5 leading-snug">{f.desc}</p>
-                            </div>
-                            {/* Arrow */}
-                            <ChevronRight className={`shrink-0 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                              ${isOwner ? 'text-yellow-400' : 'text-blue-400'}`} />
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-
-                {/* ── Comparison Table ── */}
-                <motion.div {...fUp(0.15)} className="mt-14 rounded-2xl overflow-hidden w-full border border-white/8 shadow-xl shadow-black/30">
-                  {/* Header */}
-                  <div className="grid grid-cols-3 px-5 py-4">
-                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Feature</span>
-                    <span className="flex flex-col items-center gap-1">
-                      <span className="w-8 h-8 rounded-xl bg-yellow-400/15 border border-yellow-400/25 flex items-center justify-center">
-                        <Crown className="w-4 h-4 text-yellow-400" />
-                      </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400">Owner</span>
-                    </span>
-                    <span className="flex flex-col items-center gap-1">
-                      <span className="w-8 h-8 rounded-xl bg-blue-400/15 border border-blue-400/25 flex items-center justify-center">
-                        <UserCircle2 className="w-4 h-4 text-blue-400" />
-                      </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Buyer</span>
-                    </span>
-                  </div>
-                  {/* Rows */}
-                  {[
-                    { label: 'Browse & Search Properties', icon: <Search className="w-4 h-4" />, owner: true,  buyer: true  },
-                    { label: 'Voice AI Search',            icon: <Mic    className="w-4 h-4" />, owner: true,  buyer: true  },
-                    { label: 'Map with Property Pins',     icon: <MapPin className="w-4 h-4" />, owner: true,  buyer: true  },
-                    { label: 'Chat with Agents',           icon: <MessageSquare className="w-4 h-4" />, owner: true, buyer: true },
-                    { label: 'Save to Wishlist',           icon: <Bookmark className="w-4 h-4" />, owner: true, buyer: true  },
-                    { label: 'Add / Edit / Delete Listings', icon: <Plus className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
-                    { label: 'Push Notification Broadcast', icon: <Bell  className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
-                    { label: 'My Properties Dashboard',   icon: <BarChart3 className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
-                    { label: 'Owner Tools in Profile',    icon: <Settings className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
-                  ].map(({ label, icon, owner, buyer, ownerOnly }, i) => (
-                    <div key={i} className={`grid grid-cols-3 px-5 py-3.5 border-t text-sm items-center transition-colors
-                      ${ownerOnly
-                        ? 'border-yellow-400/10 bg-yellow-400/[0.04] hover:bg-yellow-400/[0.07]'
-                        : 'border-white/5 bg-white/[0.01] hover:bg-white/[0.03]'}`}>
-                      <span className="flex items-center gap-2.5">
-                        <span className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center
-                          ${ownerOnly ? 'bg-yellow-400/12 text-yellow-400' : 'bg-white/6 text-gray-400'}`}>
-                          {icon}
-                        </span>
-                        <span className={`text-xs font-medium leading-tight ${ownerOnly ? 'text-white' : 'text-gray-300'}`}>{label}</span>
-                        {ownerOnly && <span className="hidden sm:inline text-[9px] font-black uppercase tracking-wider text-yellow-400/70 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full ml-1">Owner</span>}
-                      </span>
-                      <span className="flex justify-center">
-                        {owner
-                          ? <span className="w-7 h-7 rounded-full bg-green-400/12 border border-green-400/25 flex items-center justify-center">
-                              <CheckCircle2 className="w-4 h-4 text-green-400" />
-                            </span>
-                          : <span className="w-7 h-7 rounded-full bg-white/4 flex items-center justify-center">
-                              <MinusCircle className="w-4 h-4 text-gray-700" />
-                            </span>}
-                      </span>
-                      <span className="flex justify-center">
-                        {buyer
-                          ? <span className="w-7 h-7 rounded-full bg-green-400/12 border border-green-400/25 flex items-center justify-center">
-                              <CheckCircle2 className="w-4 h-4 text-green-400" />
-                            </span>
-                          : <span className="w-7 h-7 rounded-full bg-white/4 flex items-center justify-center">
-                              <MinusCircle className="w-4 h-4 text-gray-700" />
-                            </span>}
-                      </span>
-                    </div>
-                  ))}
-                </motion.div>
-
-                {/* ── How it works flow ── */}
-                <motion.div {...fUp(0.2)} className="mt-10 glass g-card rounded-2xl p-7">
-                  <div className="flex items-center gap-2 mb-5">
-                    <Lock className="w-4 h-4 text-purple-400" />
-                    <p className="text-white font-bold">How Role Separation Works — Under the Hood</p>
-                  </div>
-                  <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-2 text-sm">
-                    {[
-                      { step: '1', text: 'User opens the app', color: 'bg-blue-500/20 border-blue-500/30 text-blue-300' },
-                      { step: '→', text: '', color: '' },
-                      { step: '2', text: `App checks their account type`, color: 'bg-purple-500/20 border-purple-500/30 text-purple-300', code: false },
-                      { step: '→', text: '', color: '' },
-                      { step: '3', text: `Are they an owner?`, color: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300', code: false },
-                      { step: '→', text: '', color: '' },
-                      { step: '4', text: 'If YES, unlock powerful management tools instantly', color: 'bg-green-500/20 border-green-500/30 text-green-300' },
-                    ].map((s, i) => (
-                      s.step === '→'
-                        ? <span key={i} className="text-gray-600 font-bold hidden sm:block">→</span>
-                        : (
-                          <div key={i} className={`sm:flex-1 min-w-0 border rounded-xl px-3 py-3 text-center ${s.color}`}>
-                            <span className="font-bold text-xs opacity-60 block mb-0.5">Step {s.step}</span>
-                            {s.code
-                              ? <code className="text-xs font-mono">{s.text}</code>
-                              : <p className="text-xs leading-snug">{s.text}</p>}
-                          </div>
-                        )
-                    ))}
-                  </div>
-                  <p className="text-gray-600 text-xs mt-4 text-center">
-                    No extra app builds. No separate APK. One codebase, two experiences.
-                  </p>
-                </motion.div>
-              </>
-            );
-          })()}
+          {/* ── Tab selector ── */}
+          <RoleBasedFeatures />
         </div>
       </section>
 
@@ -938,14 +903,14 @@ export default function App() {
       {/* ══════ STATS ════════════════════════════════ */}
       <section className="py-12 md:py-20 px-6 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-5">
-          <Stat val="6×" label="Faster to market" icon={Zap} delay={0} />
+          <Stat val="6��" label="Faster to market" icon={Zap} delay={0} />
           <Stat val="100%" label="Source code yours" icon={ShieldCheck} delay={0.1} />
           <Stat val="99.9%" label="Firebase uptime" icon={Globe} delay={0.2} />
           <Stat val="2-in-1" label="Apps, one codebase" icon={Building2} delay={0.3} />
         </div>
       </section>
 
-      {/* ══════ PRICING ══════════════════════════════ */}
+      {/* ═══��══ PRICING ════���═════════════════════════ */}
       <section id="pricing" className="py-16 md:py-28 px-6 relative overflow-hidden">
         <div className="orb w-150 h-150 bg-blue-900/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-6xl mx-auto relative z-10">
