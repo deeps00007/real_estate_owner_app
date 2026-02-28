@@ -19,6 +19,7 @@ import myProperty from './assets/img/my-property.jpeg';
 import addProp1 from './assets/img/Add-property-owner1.jpeg';
 import pushNotif from './assets/img/push-notification-broadcast-ownerside.jpeg';
 import appLogo from './assets/img/real_estate-logo.png';
+import demoVideo from './assets/img/real-estate-application.mp4';
 /* ── Motion preset ────────────────────────────── */
 const fUp = (d = 0) => ({
   initial: { opacity: 0, y: 32 },
@@ -352,7 +353,7 @@ const Stat = ({ val, label, icon: Icon, delay }) => (
 );
 
 /* ── Pricing ──────────────────────────────────── */
-const PricingCard = ({ tier, price, note, features, hot, delay }) => (
+const PricingCard = ({ tier, price, note, features, hot, delay, whatsappMsg }) => (
   <motion.div {...fUp(delay)}
     className={`g-card rounded-2xl p-8 flex flex-col gap-5 relative overflow-hidden
       ${hot ? 'bg-linear-to-b from-[#132d5e]/60 to-[#0a1628]/90' : 'glass'}`}>
@@ -377,7 +378,9 @@ const PricingCard = ({ tier, price, note, features, hot, delay }) => (
         </li>
       ))}
     </ul>
-    <button className={`w-full py-3.5 rounded-full text-sm font-bold ${hot ? 'gold-btn' : 'outline-btn'}`}>
+    <button
+      onClick={() => window.open(`https://wa.me/8368804883?text=${encodeURIComponent(whatsappMsg)}`, '_blank')}
+      className={`w-full py-3.5 rounded-full text-sm font-bold ${hot ? 'gold-btn' : 'outline-btn'}`}>
       {hot ? 'Get Started Now' : 'Contact Sales'} →
     </button>
   </motion.div>
@@ -451,8 +454,8 @@ export default function App() {
             ))}
           </nav>
           <div className="hidden md:flex gap-3 items-center">
-            <button className="outline-btn text-sm px-5 py-2.5 rounded-full">Contact Sales</button>
-            <button className="gold-btn text-sm px-5 py-2.5 rounded-full">Get the App →</button>
+            <button onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20am%20interested%20in%20the%20Real%20Estate%20App', '_blank')} className="outline-btn text-sm px-5 py-2.5 rounded-full">Contact Sales</button>
+            <button onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20am%20interested%20in%20the%20Real%20Estate%20App', '_blank')} className="gold-btn text-sm px-5 py-2.5 rounded-full">Get the App →</button>
           </div>
           <button className="md:hidden text-gray-400 p-1" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -467,7 +470,7 @@ export default function App() {
                 <a key={l} href={h} onClick={() => setMenuOpen(false)}
                   className="text-gray-300 hover:text-white py-2 border-b border-white/5 text-sm">{l}</a>
               ))}
-              <button className="gold-btn text-sm px-6 py-3 rounded-full mt-2">Get the App →</button>
+              <button onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20am%20interested%20in%20the%20Real%20Estate%20App', '_blank')} className="gold-btn text-sm px-6 py-3 rounded-full mt-2">Get the App →</button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -496,8 +499,8 @@ export default function App() {
               voice AI search, Instagram Reels, live chat, push notifications — and brand it as yours.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <button className="gold-btn px-9 py-4 rounded-full text-base flex items-center justify-center gap-2">
-                Buy License <ArrowUpRight className="w-5 h-5" />
+              <button onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20want%20to%20get%20the%20Real%20Estate%20App%20source%20code', '_blank')} className="gold-btn px-9 py-4 rounded-full text-base flex items-center justify-center gap-2">
+                Get Source Code <ArrowUpRight className="w-5 h-5" />
               </button>
               <button onClick={() => setVideoOpen(true)}
                 className="outline-btn px-9 py-4 rounded-full text-base flex items-center justify-center gap-2">
@@ -509,7 +512,7 @@ export default function App() {
             </div>
             <div className="flex flex-wrap gap-5 text-xs text-gray-500 font-medium">
               <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-green-400" /> Firebase Secured</span>
-              <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-blue-400" /> 10+ Agencies Live</span>
+              <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-blue-400" /> Launch-Ready</span>
               <span className="flex items-center gap-1.5"><Heart className="w-4 h-4 text-red-400" fill="#f87171" /> 4.9★ Rated</span>
               <span className="flex items-center gap-1.5"><Smartphone className="w-4 h-4 text-purple-400" /> Android Ready</span>
             </div>
@@ -788,26 +791,39 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2.5">
                         {(isOwner ? ownerFeatures : userFeatures).map((f, i) => (
                           <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.07 }}
-                            className={`glass g-card rounded-xl p-4 flex items-start gap-4 border-l-[3px] ${isOwner ? 'border-yellow-400/40' : 'border-blue-400/40'
-                              }`}
+                            className={`group relative flex items-center gap-4 rounded-2xl px-4 py-3.5 border transition-all duration-200 cursor-default
+                              ${isOwner
+                                ? 'border-yellow-400/10 bg-yellow-400/[0.03] hover:bg-yellow-400/[0.07] hover:border-yellow-400/25'
+                                : 'border-blue-400/10 bg-blue-400/[0.03] hover:bg-blue-400/[0.07] hover:border-blue-400/25'}`}
                           >
-                            <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm ${isOwner
-                              ? 'bg-yellow-400/10 border-yellow-400/20 shadow-yellow-400/5'
-                              : 'bg-blue-400/10 border-blue-400/20 shadow-blue-400/5'
-                              }`}>
+                            {/* Step number */}
+                            <span className={`shrink-0 w-5 text-center text-[10px] font-black tabular-nums
+                              ${isOwner ? 'text-yellow-400/40' : 'text-blue-400/40'}`}>
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            {/* Icon badge */}
+                            <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border
+                              ${isOwner
+                                ? 'bg-yellow-400/10 border-yellow-400/20 shadow-[0_0_14px_rgba(250,204,21,0.12)] group-hover:shadow-[0_0_20px_rgba(250,204,21,0.2)]'
+                                : 'bg-blue-400/10 border-blue-400/20 shadow-[0_0_14px_rgba(96,165,250,0.12)] group-hover:shadow-[0_0_20px_rgba(96,165,250,0.2)]'}
+                              transition-shadow duration-200`}>
                               {f.icon}
                             </div>
-                            <div>
-                              <p className="text-white font-semibold text-sm">{f.label}</p>
-                              <p className="text-gray-400 text-xs mt-0.5 leading-snug">{f.desc}</p>
+                            {/* Text */}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white font-bold text-sm leading-tight">{f.label}</p>
+                              <p className="text-gray-500 text-xs mt-0.5 leading-snug">{f.desc}</p>
                             </div>
+                            {/* Arrow */}
+                            <ChevronRight className={`shrink-0 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                              ${isOwner ? 'text-yellow-400' : 'text-blue-400'}`} />
                           </motion.div>
                         ))}
                       </div>
@@ -816,36 +832,67 @@ export default function App() {
                 </div>
 
                 {/* ── Comparison Table ── */}
-                <motion.div {...fUp(0.15)} className="mt-14 glass g-card rounded-2xl overflow-x-auto w-full max-w-full">
-                  <div className="min-w-125 md:min-w-0 md:w-full">
-                    <div className="grid grid-cols-3 bg-white/5 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gray-400">
-                      <span>Feature</span>
-                      <span className="text-center text-yellow-400">👑 Owner</span>
-                      <span className="text-center text-blue-400">🧑 Buyer</span>
-                    </div>
-                    {[
-                      ['Browse & Search Properties', true, true],
-                      ['Voice AI Search', true, true],
-                      ['Map with Property Pins', true, true],
-                      ['Chat with Agents', true, true],
-                      ['Save to Wishlist', true, true],
-                      ['Add / Edit / Delete Listings', true, false],
-                      ['Push Notification Broadcast', true, false],
-                      ['My Properties Dashboard', true, false],
-                      ['Owner Tools in Profile', true, false],
-                    ].map(([label, owner, buyer], i) => (
-                      <div key={i} className={`grid grid-cols-3 px-6 py-3.5 text-sm border-t border-white/4 ${i % 2 === 0 ? '' : 'bg-white/2'
-                        }`}>
-                        <span className="text-gray-300">{label}</span>
-                        <span className="flex justify-center text-center">
-                          {owner ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
-                        </span>
-                        <span className="flex justify-center text-center">
-                          {buyer ? <CheckCircle2 className="w-5 h-5 text-green-400" /> : <MinusCircle className="w-5 h-5 text-gray-700" />}
-                        </span>
-                      </div>
-                    ))}
+                <motion.div {...fUp(0.15)} className="mt-14 rounded-2xl overflow-hidden w-full border border-white/8 shadow-xl shadow-black/30">
+                  {/* Header */}
+                  <div className="grid grid-cols-3 px-5 py-4">
+                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Feature</span>
+                    <span className="flex flex-col items-center gap-1">
+                      <span className="w-8 h-8 rounded-xl bg-yellow-400/15 border border-yellow-400/25 flex items-center justify-center">
+                        <Crown className="w-4 h-4 text-yellow-400" />
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-yellow-400">Owner</span>
+                    </span>
+                    <span className="flex flex-col items-center gap-1">
+                      <span className="w-8 h-8 rounded-xl bg-blue-400/15 border border-blue-400/25 flex items-center justify-center">
+                        <UserCircle2 className="w-4 h-4 text-blue-400" />
+                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Buyer</span>
+                    </span>
                   </div>
+                  {/* Rows */}
+                  {[
+                    { label: 'Browse & Search Properties', icon: <Search className="w-4 h-4" />, owner: true,  buyer: true  },
+                    { label: 'Voice AI Search',            icon: <Mic    className="w-4 h-4" />, owner: true,  buyer: true  },
+                    { label: 'Map with Property Pins',     icon: <MapPin className="w-4 h-4" />, owner: true,  buyer: true  },
+                    { label: 'Chat with Agents',           icon: <MessageSquare className="w-4 h-4" />, owner: true, buyer: true },
+                    { label: 'Save to Wishlist',           icon: <Bookmark className="w-4 h-4" />, owner: true, buyer: true  },
+                    { label: 'Add / Edit / Delete Listings', icon: <Plus className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
+                    { label: 'Push Notification Broadcast', icon: <Bell  className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
+                    { label: 'My Properties Dashboard',   icon: <BarChart3 className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
+                    { label: 'Owner Tools in Profile',    icon: <Settings className="w-4 h-4" />, owner: true, buyer: false, ownerOnly: true },
+                  ].map(({ label, icon, owner, buyer, ownerOnly }, i) => (
+                    <div key={i} className={`grid grid-cols-3 px-5 py-3.5 border-t text-sm items-center transition-colors
+                      ${ownerOnly
+                        ? 'border-yellow-400/10 bg-yellow-400/[0.04] hover:bg-yellow-400/[0.07]'
+                        : 'border-white/5 bg-white/[0.01] hover:bg-white/[0.03]'}`}>
+                      <span className="flex items-center gap-2.5">
+                        <span className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center
+                          ${ownerOnly ? 'bg-yellow-400/12 text-yellow-400' : 'bg-white/6 text-gray-400'}`}>
+                          {icon}
+                        </span>
+                        <span className={`text-xs font-medium leading-tight ${ownerOnly ? 'text-white' : 'text-gray-300'}`}>{label}</span>
+                        {ownerOnly && <span className="hidden sm:inline text-[9px] font-black uppercase tracking-wider text-yellow-400/70 bg-yellow-400/10 border border-yellow-400/20 px-1.5 py-0.5 rounded-full ml-1">Owner</span>}
+                      </span>
+                      <span className="flex justify-center">
+                        {owner
+                          ? <span className="w-7 h-7 rounded-full bg-green-400/12 border border-green-400/25 flex items-center justify-center">
+                              <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            </span>
+                          : <span className="w-7 h-7 rounded-full bg-white/4 flex items-center justify-center">
+                              <MinusCircle className="w-4 h-4 text-gray-700" />
+                            </span>}
+                      </span>
+                      <span className="flex justify-center">
+                        {buyer
+                          ? <span className="w-7 h-7 rounded-full bg-green-400/12 border border-green-400/25 flex items-center justify-center">
+                              <CheckCircle2 className="w-4 h-4 text-green-400" />
+                            </span>
+                          : <span className="w-7 h-7 rounded-full bg-white/4 flex items-center justify-center">
+                              <MinusCircle className="w-4 h-4 text-gray-700" />
+                            </span>}
+                      </span>
+                    </div>
+                  ))}
                 </motion.div>
 
                 {/* ── How it works flow ── */}
@@ -854,7 +901,7 @@ export default function App() {
                     <Lock className="w-4 h-4 text-purple-400" />
                     <p className="text-white font-bold">How Role Separation Works — Under the Hood</p>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-2 text-sm">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-2 text-sm">
                     {[
                       { step: '1', text: 'User opens the app', color: 'bg-blue-500/20 border-blue-500/30 text-blue-300' },
                       { step: '→', text: '', color: '' },
@@ -867,7 +914,7 @@ export default function App() {
                       s.step === '→'
                         ? <span key={i} className="text-gray-600 font-bold hidden sm:block">→</span>
                         : (
-                          <div key={i} className={`flex-1 min-w-0 border rounded-xl px-3 py-2.5 text-center ${s.color}`}>
+                          <div key={i} className={`sm:flex-1 min-w-0 border rounded-xl px-3 py-3 text-center ${s.color}`}>
                             <span className="font-bold text-xs opacity-60 block mb-0.5">Step {s.step}</span>
                             {s.code
                               ? <code className="text-xs font-mono">{s.text}</code>
@@ -893,7 +940,7 @@ export default function App() {
           <Stat val="6×" label="Faster to market" icon={Zap} delay={0} />
           <Stat val="100%" label="Source code yours" icon={ShieldCheck} delay={0.1} />
           <Stat val="99.9%" label="Firebase uptime" icon={Globe} delay={0.2} />
-          <Stat val="10+" label="Agencies deployed" icon={Building2} delay={0.3} />
+          <Stat val="2-in-1" label="Apps, one codebase" icon={Building2} delay={0.3} />
         </div>
       </section>
 
@@ -911,11 +958,14 @@ export default function App() {
             <motion.p {...fUp(0.2)} className="text-gray-400 text-base">No subscriptions. No royalties.</motion.p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            <PricingCard tier="Starter" price="₹6,000" note="/ one-time" delay={0.1}
+            <PricingCard tier="Starter" price="₹10,000" note="/ one-time" delay={0.1}
+              whatsappMsg="Hi, I am interested in the Starter plan (₹10,000) for the Real Estate App."
               features={['Full Flutter Source Code', 'Firebase Integration Guide', 'Custom Splash & App Icon', 'Google Play Ready APK', '3 Months Email Support']} />
-            <PricingCard tier="Professional" price="₹8,000" note="/ one-time" hot delay={0.15}
+            <PricingCard tier="Professional" price="₹12,000" note="/ one-time" hot delay={0.15}
+              whatsappMsg="Hi, I want to get started with the Professional plan (₹12,000) for the Real Estate App."
               features={['Everything in Starter', 'Node.js Push Backend', 'Instagram Reel Integration', 'Owner Role System Setup', '6 Months Priority Support', '1-hour Onboarding Call']} />
             <PricingCard tier="Enterprise" price="Custom" delay={0.2}
+              whatsappMsg="Hi, I want to discuss the Enterprise plan for the Real Estate App. Can we schedule a call?"
               features={['Everything in Pro', 'On-demand Features', 'Dedicated Slack Channel', '12-Month Support SLA', 'App Store Help', 'NDA & Source Escrow']} />
           </div>
         </div>
@@ -927,20 +977,22 @@ export default function App() {
         <div className="orb w-175 h-175 bg-blue-700/12 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         <div className="max-w-3xl mx-auto relative z-10 text-center">
           <motion.div {...fUp(0)} className="glass g-card rounded-4xl md:rounded-[3rem] p-8 md:p-12 lg:p-16">
-            <p className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">Ready to Launch?</p>
+            <p className="text-yellow-400 text-[11px] font-bold uppercase tracking-[0.2em] mb-4">Let's Connect</p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black mb-5 tracking-tight leading-tight">
-              Your App.<br /><span className="gold-text">Built for Scale.</span>
+              Book a Free<br /><span className="gold-text">30-Min Meeting.</span>
             </h2>
             <p className="text-gray-400 text-base mb-10 leading-relaxed">
-              Book a free 30-minute demo. We walk you through every screen — from the home screen
-              to the push notification broadcast — live on a call.
+              Let's jump on a quick call. We'll walk you through the full app live —
+              answer your questions and get you started the same day.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="gold-btn px-10 py-4 rounded-full text-base">
-                Book Free Demo <ArrowUpRight className="inline w-5 h-5 ml-1" />
+              <button
+                onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20want%20to%20schedule%20a%20meeting%20to%20discuss%20the%20Real%20Estate%20App', '_blank')}
+                className="gold-btn px-10 py-4 rounded-full text-base">
+                Schedule a Meeting <ArrowUpRight className="inline w-5 h-5 ml-1" />
               </button>
               <button
-                onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20am%20interested%20in%20the%20Real%20Estate%20App', '_blank')}
+                onClick={() => window.open('https://wa.me/8368804883?text=Hi,%20I%20want%20to%20schedule%20a%20meeting%20to%20discuss%20the%20Real%20Estate%20App', '_blank')}
                 className="outline-btn px-10 py-4 rounded-full text-base"
               >
                 💬 WhatsApp Us
@@ -975,12 +1027,15 @@ export default function App() {
             <motion.div
               initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.88, opacity: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="w-full max-w-4xl aspect-video g-card glass rounded-2xl shadow-2xl
-                flex flex-col items-center justify-center gap-3 text-gray-500"
+              className="w-full max-w-4xl aspect-video g-card glass rounded-2xl shadow-2xl overflow-hidden relative"
               onClick={e => e.stopPropagation()}>
-              <Play className="w-14 h-14 text-gray-600" />
-              <p className="text-sm">Your product demo video embeds here.</p>
-              <button onClick={() => setVideoOpen(false)} className="mt-3 text-xs underline hover:text-white transition-colors">Close</button>
+              <video
+                src={demoVideo}
+                controls
+                autoPlay
+                className="w-full h-full object-contain rounded-2xl"
+              />
+              <button onClick={() => setVideoOpen(false)} className="absolute top-3 right-3 z-10 text-xs bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-full transition-colors">✕ Close</button>
             </motion.div>
           </motion.div>
         )}
