@@ -171,11 +171,11 @@ html {
 
   0%,
   100% {
-    transform: translateY(0) rotate(-1.5deg);
+    transform: translateY(0);
   }
 
   50% {
-    transform: translateY(-20px) rotate(-1.5deg);
+    transform: translateY(-20px);
   }
 }
 

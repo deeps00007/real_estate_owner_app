@@ -47,7 +47,7 @@ const Phone = ({ src, alt, className = '' }) => (
   <div className={`relative shrink-0 ${className || 'w-45 md:w-57.5'}`}>
     <div className="w-full rounded-3xl md:rounded-[38px] border-4 md:border-[6px] border-white/10 overflow-hidden
       shadow-[0_20px_50px_rgba(0,0,0,0.65)] md:shadow-[0_30px_80px_rgba(0,0,0,0.65)]" style={{ background: '#111' }}>
-      <img src={src} alt={alt} className="w-full object-cover" />
+      <img src={src} alt={alt} className="w-full aspect-[9/19.5] object-cover" />
     </div>
     <div className="absolute -bottom-4 md:-bottom-6 left-1/2 -translate-x-1/2 w-[80%] h-10 bg-blue-500/15 blur-2xl rounded-full" />
   </div>
@@ -402,32 +402,36 @@ const RoleBasedFeatures = () => {
           >
             {isOwner ? (
               <>
-                <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                  className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                  <Phone src={ownerProfile} alt="Owner Profile" className="w-32.5 md:w-43.75" />
+                <div className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100 rotate-[-4deg]">
+                  <div style={{ animation: 'float 7s ease-in-out infinite' }}>
+                    <Phone src={ownerProfile} alt="Owner Profile" className="w-32.5 md:w-43.75" />
+                  </div>
                 </div>
                 <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
                   className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
                   <Phone src={myProperty} alt="My Properties" className="w-45 sm:w-50 md:w-48.75" />
                 </div>
-                <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                  className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                  <Phone src={pushNotif} alt="Push Notification" className="w-32.5 md:w-43.75" />
+                <div className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100 rotate-[4deg]">
+                  <div style={{ animation: 'float 8s ease-in-out 0.8s infinite' }}>
+                    <Phone src={pushNotif} alt="Push Notification" className="w-32.5 md:w-43.75" />
+                  </div>
                 </div>
               </>
             ) : (
               <>
-                <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-4deg)' }}
-                  className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100">
-                  <Phone src={homeScreen} alt="Home Screen" className="w-32.5 md:w-43.75" />
+                <div className="absolute -left-2.5 sm:left-12 md:static z-0 opacity-50 md:opacity-100 rotate-[-4deg]">
+                  <div style={{ animation: 'float 7s ease-in-out infinite' }}>
+                    <Phone src={homeScreen} alt="Home Screen" className="w-32.5 md:w-43.75" />
+                  </div>
                 </div>
                 <div style={{ animation: 'float 6s ease-in-out 0.4s infinite' }}
                   className="relative z-10 drop-shadow-[0_0_40px_rgba(0,0,0,0.8)]">
                   <Phone src={propDetail2} alt="Property Detail" className="w-45 sm:w-50 md:w-48.75" />
                 </div>
-                <div style={{ animation: 'float 8s ease-in-out 0.8s infinite', transform: 'rotate(4deg)' }}
-                  className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100">
-                  <Phone src={userProfile} alt="User Profile" className="w-32.5 md:w-43.75" />
+                <div className="absolute -right-2.5 sm:right-12 md:static z-0 opacity-50 md:opacity-100 rotate-[4deg]">
+                  <div style={{ animation: 'float 8s ease-in-out 0.8s infinite' }}>
+                    <Phone src={userProfile} alt="User Profile" className="w-32.5 md:w-43.75" />
+                  </div>
                 </div>
               </>
             )}
@@ -744,9 +748,10 @@ export default function App() {
             transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="relative flex items-end justify-center mt-12 lg:mt-0 h-100 md:h-auto md:-space-x-6">
 
-            <div style={{ animation: 'float 7s ease-in-out infinite', transform: 'rotate(-5deg)' }}
-              className="absolute -left-5 sm:left-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100">
-              <Phone src={homeScreen} alt="Home Screen" className="w-35 md:w-45" />
+            <div className="absolute -left-5 sm:left-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100 rotate-[-5deg]">
+              <div style={{ animation: 'float 7s ease-in-out infinite' }}>
+                <Phone src={homeScreen} alt="Home Screen" className="w-35 md:w-45" />
+              </div>
             </div>
 
             <div style={{ animation: 'float 6s ease-in-out .5s infinite' }}
@@ -754,9 +759,10 @@ export default function App() {
               <Phone src={mapScreen} alt="Map Screen" className="w-50 sm:w-55 md:w-52.5" />
             </div>
 
-            <div style={{ animation: 'float 8s ease-in-out 1s infinite', transform: 'rotate(5deg)' }}
-              className="absolute -right-5 sm:right-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100">
-              <Phone src={propDetail1} alt="Property Detail" className="w-35 md:w-45" />
+            <div className="absolute -right-5 sm:right-10 md:static md:-mb-5 z-0 opacity-50 md:opacity-100 rotate-[5deg]">
+              <div style={{ animation: 'float 8s ease-in-out 1s infinite' }}>
+                <Phone src={propDetail1} alt="Property Detail" className="w-35 md:w-45" />
+              </div>
             </div>
 
           </motion.div>
